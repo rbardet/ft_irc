@@ -6,27 +6,28 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:54:32 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/19 17:36:40 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/19 18:18:26 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
+#include <cstdlib>
 #include "../includes/Server.hpp"
-#include <sys/types.h>
-#include <sys/socket.h>
+
+#define PORT 1
+#define PASSWORD 2
 
 int main(int ac, char **av) {
-	(void)av;
+
 	if (ac != 3) {
 		std::cout << "usage: ./ircserv <port> <password>" << std::endl;
 		return (1);
 	}
-	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	pollfd *pol = new pollfd;
-	nfds_t fd = sockfd;
-	pol->fd = sockfd;
-	int j = poll(pol, fd, 0);
-	std::cout << "i = " << sockfd << std::endl;
-	std::cout << "j = " << j << std::endl;
+	try {
+		Server serv(atoi(av[PORT]), av[PASSWORD]);
+	}
+	catch(const std::exception& e) {
+		std::cerr << e.what() << '\n';
+	}
 	return (0);
 }

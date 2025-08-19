@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/19 16:36:19 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/19 18:06:13 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,15 @@
 
 #include <iostream>
 #include <poll.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 class Server
 {
 private:
 	int			port;
+	int			socketfd;
 	std::string	password;
 public:
 	Server();
