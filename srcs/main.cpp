@@ -12,9 +12,17 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <signal.h>
 #include "../includes/Server.hpp"
 #include "../includes/Utils.hpp"
 
+
+void setupSignal()
+{
+	signal(SIGINT, Server::signalHandler);
+
+
+}
 
 int main(int ac, char **av) {
 
@@ -24,7 +32,9 @@ int main(int ac, char **av) {
 	}
 	try {
 		Server serv;
+		setupSignal();
 		serv.initServer(std::atoi(av[PORT]), av[PASSWORD]);
+		serv.RunServer();
 	}
 	catch(const std::exception& e) {
 		std::cerr << e.what() << '\n';

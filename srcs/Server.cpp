@@ -11,6 +11,17 @@
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+#include <signal.h>
+
+bool Server::running = true;
+
+void Server::signalHandler(int signum)
+{
+	(void) signum;
+	std::cout << std::endl << "Closing server..." << std::endl;
+	running = false;
+
+}
 
 Server::Server() {}
 Server::Server(const Server &src) {*this = src;}
@@ -50,9 +61,21 @@ void Server::initServer(const int &port, const std::string &password) {
 	this->port = port;
 	this->password = password;
 	this->initSocket();
+}
 
-	while (1) {
+
+
+
+void Server::RunServer()
+{
+
+	while (running ==  true)
+	{
+
 
 	}
-
 }
+
+
+
+

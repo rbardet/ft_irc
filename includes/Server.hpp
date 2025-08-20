@@ -30,6 +30,10 @@ private:
 	int			socketfd;
 	std::string	password;
 	std::vector<Channel>	channelList;
+	static bool running; 
+	
+
+
 public:
 	Server();
 	Server(const Server &src);
@@ -38,4 +42,7 @@ public:
 
 	void	initSocket();
 	void	initServer(const int &port, const std::string &password);
+	void	RunServer();
+	static void	signalHandler(int signum);
+
 };
