@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 13:45:46 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/19 14:45:23 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/19 18:41:48 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ class Channel
 private:
 	std::string	name;
 	std::string	password;
+	bool		invite_only;
 public:
 	Channel();
 	Channel(const Channel &src);
