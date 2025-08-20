@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/20 16:03:00 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/20 18:11:04 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,6 @@
 #include <signal.h>
 
 bool Server::running = true;
-
-void Server::signalHandler(int signum)
-{
-	(void) signum;
-	std::cout << std::endl << "Closing server..." << std::endl;
-	running = false;
-
-}
 
 Server::Server() {}
 Server::Server(const Server &src) {*this = src;}
@@ -31,8 +23,12 @@ Server	Server::operator=(const Server &src) {
 	return (*this);
 }
 
-Server::~Server() {
-	close(this->socketfd);
+Server::~Server() {close(this->socketfd);}
+
+void Server::signalHandler(int signum) {
+	(void) signum;
+	std::cout << std::endl << "Closing server..." << std::endl;
+	running = false;
 }
 
 void Server::initSocket() {
@@ -63,15 +59,8 @@ void Server::initServer(const int &port, const std::string &password) {
 	this->initSocket();
 }
 
-
-
-
-void Server::RunServer()
-{
-
-	while (running ==  true)
-	{
-
+void Server::RunServer() {
+	while (running ==  true) {
 
 	}
 }
