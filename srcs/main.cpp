@@ -20,7 +20,7 @@
 void setupSignal()
 {
 	signal(SIGINT, Server::signalHandler);
-
+	signal(SIGQUIT, Server::signalHandler);
 
 }
 
