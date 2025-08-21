@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:54:32 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/20 18:18:04 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/21 15:02:30 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,18 +38,16 @@ int main(int ac, char **av) {
 
 	if (ac != 3 || !checkArgs(std::atoi(av[PORT]), av[PASSWORD])) {
 		std::cout << "usage: ./ircserv <port> <password>" << std::endl;
-		return (1);
+		return (EXIT_FAILURE);
 	}
-
 	try {
-
 		Server serv;
 		setupSignal();
 		serv.initServer(std::atoi(av[PORT]), av[PASSWORD]);
-		serv.RunServer();
+		serv.runServer();
 	}
 	catch(const std::exception& e) {
 		std::cerr << e.what() << '\n';
 	}
-	return (0);
+	return (EXIT_SUCCESS);
 }

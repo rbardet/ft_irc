@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/20 18:11:04 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/21 15:02:27 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,10 @@ Server	Server::operator=(const Server &src) {
 	return (*this);
 }
 
-Server::~Server() {close(this->socketfd);}
+Server::~Server() {
+	close(this->socketfd);
+	close(this->epollFd);
+}
 
 void Server::signalHandler(int signum) {
 	(void) signum;
@@ -37,9 +40,7 @@ void Server::initSocket() {
 		throw(std::runtime_error("Error while opening the socket"));
 	}
 
-	std::cout << "Socketfd = " << this->socketfd << std::endl;
 	struct sockaddr_in servAddress;
-
 	servAddress.sin_family = AF_INET;
 	servAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 	servAddress.sin_port = htons(this->port);
@@ -51,20 +52,43 @@ void Server::initSocket() {
 	if (listen(this->socketfd, MAX_USER) < 0) {
 		throw(std::runtime_error("Error while opening the server"));
 	}
+
+}
+
+void Server::initEpoll() {
+	this->epollFd = epoll_create1(0);
+	if (this->epollFd < 0) {
+		throw(std::runtime_error("Error while creating epoll fd"));
+	}
+
+	this->event.events = EPOLLIN;
+	this->event.data.fd = this->socketfd;
+	if (epoll_ctl(this->epollFd, EPOLL_CTL_ADD, this->socketfd, &this->event)) {
+		throw(std::runtime_error("Error while adding server to epoll instance"));
+	}
+
+	std::cout << "Server listening on port : " << this->port << std::endl;
 }
 
 void Server::initServer(const int &port, const std::string &password) {
 	this->port = port;
 	this->password = password;
 	this->initSocket();
+	this->initEpoll();
 }
 
-void Server::RunServer() {
-	while (running ==  true) {
+void Server::runServer() {
+	while (running) {
+		int eventNumber = epoll_wait(this->epollFd, this->events, MAX_EVENTS, -1);
+		if (eventNumber == -1) {
+			std::cerr << "Failed to get events" << std::endl;
+			break;
+		}
 
+		for (int i = 0; i < eventNumber; i++) {
+			if (events[i].data.fd == this->socketfd) {
+
+			}
+		}
 	}
 }
-
-
-
-
