@@ -23,8 +23,8 @@ private:
 	std::string		name;
 	std::string		password;
 	bool			invite_only;
-	bool			user_limit;
-	int				user_limit_nb;
+	// bool			user_limit;
+	// int				user_limit_nb;
 	std::set <User> operators; // evite doublons contrairement vector , recherche rapide = find 
 	std::set <User> users;
 	std::string		admin;

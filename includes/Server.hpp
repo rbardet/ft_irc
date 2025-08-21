@@ -53,5 +53,5 @@ public:
 	void	runServer();
 	static void	signalHandler(int signum);
 	void	acceptUser();
-	void	handleInput(int i);
+	// void	handleInput(int i);
 };

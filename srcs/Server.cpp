@@ -88,7 +88,7 @@ void Server::runServer() {
 			if (events[i].data.fd == this->socketfd) {
 				this->acceptUser();
 			} else {
-				this->handleInput(i);
+				// this->handleInput(i);
 			}
 		}
 	}
@@ -115,6 +115,6 @@ void Server::acceptUser() {
 	std::cout << "New User on fd : " << UserFd << std::endl;
 }
 
-void Server::handleInput(int i) {
+// void Server::handleInput(int i) {
 	
-}
+// }
