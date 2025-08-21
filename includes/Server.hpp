@@ -17,7 +17,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <vector>
+#include <set>
 #include "Channel.hpp"
 #include <arpa/inet.h>
 
@@ -26,11 +26,12 @@
 class Server
 {
 private:
-	int			port;
-	int			socketfd;
-	std::string	password;
-	std::vector<Channel>	channelList;
-	static bool running; 
+	int					port;
+	int					socketfd;
+	std::string			password;
+	std::set<Channel>	channelList;
+	std::set<User>		userlist;
+	static bool 		running; 
 	
 
 
@@ -43,6 +44,7 @@ public:
 	void	initSocket();
 	void	initServer(const int &port, const std::string &password);
 	void	RunServer();
+	void 	JoinChannel(std::string channel_name, std::string user);
 	static void	signalHandler(int signum);
 
 };

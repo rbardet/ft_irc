@@ -13,15 +13,26 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
+#include <set>
+#include "User.hpp"
 
 class Channel
 {
 private:
-	std::string	name;
-	std::string	password;
-	bool		invite_only;
+	std::string		name;
+	std::string		password;
+	bool			invite_only;
+	bool			user_limit;
+	int				user_limit_nb;
+	std::set <User> operators; // evite doublons contrairement vector , recherche rapide = find 
+	std::set <User> users;
+	std::string		admin;
+
+
 public:
 	Channel();
+	Channel(std::string name, std::string admin);
 	Channel(const Channel &src);
 	Channel	operator=(const Channel &src);
 	~Channel();

@@ -1,29 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
+/*   User.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/19 13:11:58 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/19 14:45:16 by rbardet-         ###   ########.fr       */
+/*   Created: 2025/08/19 13:13:27 by rbardet-          #+#    #+#             */
+/*   Updated: 2025/08/19 17:18:56 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#include "../includes/User.hpp"
 
-#include <iostream>
+User::User() {}
+User::User(const User &src) {*this = src;}
+User User::operator=(const User &src) {
+	this->nickname = src.nickname;
+	this->username = src.username;
+	return(*this);
+}
 
-class Client
-{
-private:
-	std::string	nickname;
-	std::string	username;
-public:
-	Client();
-	Client(const Client &src);
-	Client operator=(const Client &src);
-	~Client();
-
-	Client(const std::string &nickname, const std::string &username);
-};
+User::~User() {}
+User::User(const std::string &nickname, const std::string &username) {
+	this->nickname = nickname;
+	this->username = username;
+}

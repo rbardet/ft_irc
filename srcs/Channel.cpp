@@ -13,6 +13,14 @@
 #include "../includes/Channel.hpp"
 
 Channel::Channel() {}
+
+Channel::Channel(std::string name, std::string admin)
+{
+	this->name = name;
+	this->admin = admin;
+}
+
+
 Channel::Channel(const Channel &src) {*this = src;}
 Channel Channel::operator=(const Channel &src) {
 	this->name = src.name;
