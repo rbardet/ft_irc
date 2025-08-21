@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/21 16:05:37 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:28:12 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 
 #define MAX_USER 1024
 #define MAX_EVENTS 10
+#define BUFFER_SIZE 1024
 
 class Server
 {
@@ -53,5 +54,5 @@ public:
 	void	runServer();
 	static void	signalHandler(int signum);
 	void	acceptUser();
-	// void	handleInput(int i);
+	void	handleInput(int userFd);
 };

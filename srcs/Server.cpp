@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/21 16:08:28 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:38:14 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void Server::runServer() {
 			if (events[i].data.fd == this->socketfd) {
 				this->acceptUser();
 			} else {
-				// this->handleInput(i);
+				this->handleInput(events[i].data.fd);
 			}
 		}
 	}
@@ -110,11 +110,19 @@ void Server::acceptUser() {
 
 	User newUser;
 	newUser.setFd(UserFd);
-	this->Users.push_back(newUser);
+	// this->Users.push_back(newUser);
 
 	std::cout << "New User on fd : " << UserFd << std::endl;
 }
 
-// void Server::handleInput(int i) {
-	
-// }
+void Server::handleInput(int clientFd) {
+	char input[BUFFER_SIZE];
+
+	int inputLength = read(clientFd, &input, sizeof(input) - 1);
+	if (inputLength < 0) {
+		std::cerr << "Error while reading client input from fd : " << clientFd << std::endl;
+	}
+
+	input[inputLength] = '\0';
+	std::cout << input << std::endl;
+}
