@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/21 16:44:13 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/21 18:29:06 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ Server	Server::operator=(const Server &src) {
 Server::~Server() {
 	close(this->socketfd);
 	close(this->epollFd);
+	for (size_t i = 0; i < this->Users.size(); i++) {
+		this->Users[i].closeConnection();
+	}
 }
 
 void Server::signalHandler(int signum) {
@@ -95,24 +98,24 @@ void Server::runServer() {
 }
 
 void Server::acceptUser() {
-	int UserFd = accept(this->socketfd, NULL, NULL);
-	if (UserFd < 0) {
+	int userFd = accept(this->socketfd, NULL, NULL);
+	if (userFd < 0) {
 		std::cerr << "Failed to accept User" << std::endl;
 		return ;
 	}
 
 	epoll_event UserEvent;
 	UserEvent.events = EPOLLIN;
-	UserEvent.data.fd = UserFd;
-	if (epoll_ctl(this->epollFd, EPOLL_CTL_ADD, UserFd, &UserEvent)) {
+	UserEvent.data.fd = userFd;
+	if (epoll_ctl(this->epollFd, EPOLL_CTL_ADD, userFd, &UserEvent)) {
 		throw(std::runtime_error("Error while adding User to epoll instance"));
 	}
 
 	User newUser;
-	newUser.setFd(UserFd);
-	// this->Users.push_back(newUser);
+	newUser.setFd(userFd);
+	this->Users.push_back(newUser);
 
-	std::cout << "New User on fd : " << UserFd << std::endl;
+	std::cout << "New User on fd : " << userFd << std::endl;
 }
 
 void Server::handleInput(int clientFd) {

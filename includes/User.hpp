@@ -13,6 +13,7 @@
 #pragma once
 
 #include <iostream>
+#include <unistd.h>
 
 class User
 {
@@ -23,11 +24,13 @@ private:
 public:
 	User();
 	User(const User &src);
-	User operator=(const User &src);
+	User &operator=(const User &src);
 	~User();
 
 	User(const std::string &nickname, const std::string &username);
 	void setFd(const int &fd);
 	void setNickname(const std::string &nickname);
 	void setUsername(const std::string &username);
+
+	void closeConnection();
 };

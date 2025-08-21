@@ -14,9 +14,10 @@
 
 User::User() {}
 User::User(const User &src) {*this = src;}
-User User::operator=(const User &src) {
+User &User::operator=(const User &src) {
 	this->nickname = src.nickname;
 	this->username = src.username;
+	this->fd = src.fd;
 	return(*this);
 }
 User::~User() {}
@@ -29,3 +30,5 @@ User::User(const std::string &nickname, const std::string &username) {
 void User::setFd(const int &fd) {this->fd = fd;}
 void User::setNickname(const std::string &nickname) {this->nickname = nickname;}
 void User::setUsername(const std::string &username) {this->username = username;}
+
+void User::closeConnection() {close(this->fd);}
