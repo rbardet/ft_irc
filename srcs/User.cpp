@@ -19,13 +19,13 @@ User User::operator=(const User &src) {
 	this->username = src.username;
 	return(*this);
 }
-Client::~Client() {}
+User::~User() {}
 
-Client::Client(const std::string &nickname, const std::string &username) {
+User::User(const std::string &nickname, const std::string &username) {
 	this->nickname = nickname;
 	this->username = username;
 }
 
-void Client::setFd(const int &fd) {this->fd = fd;}
-void Client::setNickname(const std::string &nickname) {this->nickname = nickname;}
-void Client::setUsername(const std::string &username) {this->username = username;}
+void User::setFd(const int &fd) {this->fd = fd;}
+void User::setNickname(const std::string &nickname) {this->nickname = nickname;}
+void User::setUsername(const std::string &username) {this->username = username;}

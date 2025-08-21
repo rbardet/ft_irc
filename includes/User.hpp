@@ -26,7 +26,7 @@ public:
 	User operator=(const User &src);
 	~User();
 
-	Client(const std::string &nickname, const std::string &username);
+	User(const std::string &nickname, const std::string &username);
 	void setFd(const int &fd);
 	void setNickname(const std::string &nickname);
 	void setUsername(const std::string &username);

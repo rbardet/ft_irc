@@ -13,7 +13,7 @@
 NAME = ircserv
 
 SOURCES =	srcs/main.cpp \
-			srcs/Client.cpp \
+			srcs/User.cpp \
 			srcs/Channel.cpp \
 			srcs/Server.cpp \
 

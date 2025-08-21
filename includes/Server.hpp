@@ -24,7 +24,7 @@
 #include <sys/epoll.h>
 #include <signal.h>
 #include <map>
-#include "Client.hpp"
+#include "User.hpp"
 
 #define MAX_USER 1024
 #define MAX_EVENTS 10
@@ -40,7 +40,7 @@ private:
 	int			epollFd;
 	epoll_event	event;
 	epoll_event	events[MAX_EVENTS];
-	std::vector<Client>	clients;
+	std::vector<User>	Users;
 public:
 	Server();
 	Server(const Server &src);
@@ -52,6 +52,6 @@ public:
 	void	initServer(const int &port, const std::string &password);
 	void	runServer();
 	static void	signalHandler(int signum);
-	void	acceptClient();
+	void	acceptUser();
 	void	handleInput(int i);
 };

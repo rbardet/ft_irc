@@ -86,7 +86,7 @@ void Server::runServer() {
 
 		for (int i = 0; i < eventNumber; i++) {
 			if (events[i].data.fd == this->socketfd) {
-				this->acceptClient();
+				this->acceptUser();
 			} else {
 				this->handleInput(i);
 			}
@@ -94,25 +94,25 @@ void Server::runServer() {
 	}
 }
 
-void Server::acceptClient() {
-	int clientFd = accept(this->socketfd, NULL, NULL);
-	if (clientFd < 0) {
-		std::cerr << "Failed to accept client" << std::endl;
+void Server::acceptUser() {
+	int UserFd = accept(this->socketfd, NULL, NULL);
+	if (UserFd < 0) {
+		std::cerr << "Failed to accept User" << std::endl;
 		return ;
 	}
 
-	epoll_event clientEvent;
-	clientEvent.events = EPOLLIN;
-	clientEvent.data.fd = clientFd;
-	if (epoll_ctl(this->epollFd, EPOLL_CTL_ADD, clientFd, &clientEvent)) {
-		throw(std::runtime_error("Error while adding client to epoll instance"));
+	epoll_event UserEvent;
+	UserEvent.events = EPOLLIN;
+	UserEvent.data.fd = UserFd;
+	if (epoll_ctl(this->epollFd, EPOLL_CTL_ADD, UserFd, &UserEvent)) {
+		throw(std::runtime_error("Error while adding User to epoll instance"));
 	}
 
-	Client newClient;
-	newClient.setFd(clientFd);
-	this->clients.push_back(newClient);
+	User newUser;
+	newUser.setFd(UserFd);
+	this->Users.push_back(newUser);
 
-	std::cout << "New client on fd : " << clientFd << std::endl;
+	std::cout << "New User on fd : " << UserFd << std::endl;
 }
 
 void Server::handleInput(int i) {
