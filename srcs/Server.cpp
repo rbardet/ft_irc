@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/21 15:49:34 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:08:28 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void Server::runServer() {
 			if (events[i].data.fd == this->socketfd) {
 				this->acceptClient();
 			} else {
-				this->handleInput();
+				this->handleInput(i);
 			}
 		}
 	}
@@ -101,15 +101,20 @@ void Server::acceptClient() {
 		return ;
 	}
 
-	this->event.events = EPOLLIN;
-	this->event.data.fd = clientFd;
-	if (epoll_ctl(this->epollFd, EPOLL_CTL_ADD, clientFd, &this->event)) {
+	epoll_event clientEvent;
+	clientEvent.events = EPOLLIN;
+	clientEvent.data.fd = clientFd;
+	if (epoll_ctl(this->epollFd, EPOLL_CTL_ADD, clientFd, &clientEvent)) {
 		throw(std::runtime_error("Error while adding client to epoll instance"));
 	}
+
+	Client newClient;
+	newClient.setFd(clientFd);
+	this->clients.push_back(newClient);
 
 	std::cout << "New client on fd : " << clientFd << std::endl;
 }
 
-void Server::handleInput() {
-
+void Server::handleInput(int i) {
+	
 }

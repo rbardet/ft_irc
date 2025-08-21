@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/21 15:47:52 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/21 16:05:37 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,9 @@ private:
 	std::vector<Channel>	channelList;
 	static bool running;
 	int			epollFd;
-	epoll_event	event, events[MAX_EVENTS];
-	std::map<int, Client>	clients;
+	epoll_event	event;
+	epoll_event	events[MAX_EVENTS];
+	std::vector<Client>	clients;
 public:
 	Server();
 	Server(const Server &src);
@@ -52,5 +53,5 @@ public:
 	void	runServer();
 	static void	signalHandler(int signum);
 	void	acceptClient();
-	void	handleInput();
+	void	handleInput(int i);
 };
