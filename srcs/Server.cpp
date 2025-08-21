@@ -6,12 +6,11 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/21 15:02:27 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/21 15:47:39 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include <signal.h>
 
 bool Server::running = true;
 
@@ -82,13 +81,38 @@ void Server::runServer() {
 		int eventNumber = epoll_wait(this->epollFd, this->events, MAX_EVENTS, -1);
 		if (eventNumber == -1) {
 			std::cerr << "Failed to get events" << std::endl;
-			break;
+			continue ;
 		}
 
 		for (int i = 0; i < eventNumber; i++) {
 			if (events[i].data.fd == this->socketfd) {
-
+				this->acceptClient();
+			} else {
+				this->handleInput();
 			}
 		}
 	}
+}
+
+void Server::acceptClient() {
+	int clientFd = accept(this->socketfd, NULL, NULL);
+	if (clientFd < 0) {
+		std::cerr << "Failed to accept client" << std::endl;
+		return ;
+	}
+
+	this->event.events = EPOLLIN;
+	this->event.data.fd = clientFd;
+	if (epoll_ctl(this->epollFd, EPOLL_CTL_ADD, clientFd, &this->event)) {
+		throw(std::runtime_error("Error while adding client to epoll instance"));
+	}
+
+	Client newClient;
+	gethostbyname();
+	this->clients
+	std::cout << "New client on fd : " << clientFd << std::endl;
+}
+
+void Server::handleInput() {
+
 }

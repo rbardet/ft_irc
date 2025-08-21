@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/21 14:57:53 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/21 15:47:52 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,15 @@
 #include <poll.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netdb.h>
 #include <unistd.h>
 #include <vector>
 #include "Channel.hpp"
 #include <arpa/inet.h>
 #include <sys/epoll.h>
+#include <signal.h>
+#include <map>
+#include "Client.hpp"
 
 #define MAX_USER 1024
 #define MAX_EVENTS 10
@@ -35,6 +39,7 @@ private:
 	static bool running;
 	int			epollFd;
 	epoll_event	event, events[MAX_EVENTS];
+	std::map<int, Client>	clients;
 public:
 	Server();
 	Server(const Server &src);
@@ -46,5 +51,6 @@ public:
 	void	initServer(const int &port, const std::string &password);
 	void	runServer();
 	static void	signalHandler(int signum);
-
+	void	acceptClient();
+	void	handleInput();
 };
