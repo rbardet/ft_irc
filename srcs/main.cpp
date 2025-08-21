@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 12:54:32 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/20 14:39:47 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/21 15:02:30 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,47 +16,38 @@
 #include "../includes/Server.hpp"
 #include "../includes/Utils.hpp"
 
-
-void setupSignal()
-{
+void setupSignal() {
 	signal(SIGINT, Server::signalHandler);
 	signal(SIGQUIT, Server::signalHandler);
-
 }
 
-bool checkArgs(int port, std::string password)
-{
-	if (port < 1024 || port > 65535)
-	{
+bool checkArgs(int port, std::string password) {
+	if (port < 1024 || port > 65535) {
 		std::cout << "Port needs to be between 1024 and 65535" << std::endl;
-		return false;
+		return (false);
 	}
-	if (password.length() > 18)
-	{
+	if (password.length() > 18) {
 		std::cout << "Password too long" << std::endl;
-		return false;
+		return (false);
 	}
-	return true;
+	return (true);
 }
 
 
 int main(int ac, char **av) {
 
-	if (ac != 3) {
+	if (ac != 3 || !checkArgs(std::atoi(av[PORT]), av[PASSWORD])) {
 		std::cout << "usage: ./ircserv <port> <password>" << std::endl;
-		return (1);
+		return (EXIT_FAILURE);
 	}
-	if (!checkArgs(std::atoi(av[PORT]), av[PASSWORD]))
-		return (1);
 	try {
-		
 		Server serv;
 		setupSignal();
 		serv.initServer(std::atoi(av[PORT]), av[PASSWORD]);
-		serv.RunServer();
+		serv.runServer();
 	}
 	catch(const std::exception& e) {
 		std::cerr << e.what() << '\n';
 	}
-	return (0);
+	return (EXIT_SUCCESS);
 }
