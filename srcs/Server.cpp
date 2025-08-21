@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/21 15:47:39 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/21 15:49:34 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,9 +107,6 @@ void Server::acceptClient() {
 		throw(std::runtime_error("Error while adding client to epoll instance"));
 	}
 
-	Client newClient;
-	gethostbyname();
-	this->clients
 	std::cout << "New client on fd : " << clientFd << std::endl;
 }
 
