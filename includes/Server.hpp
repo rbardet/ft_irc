@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: robin <robin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/21 18:21:54 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/22 15:02:23 by robin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <signal.h>
 #include <map>
 #include "User.hpp"
+#include <fcntl.h>
 
 #define MAX_USER 1024
 #define MAX_EVENTS 10
@@ -41,7 +42,7 @@ private:
 	int			epollFd;
 	epoll_event	event;
 	epoll_event	events[MAX_EVENTS];
-	std::vector<User>	Users;
+	std::map<int, User>	Users;
 public:
 	Server();
 	Server(const Server &src);

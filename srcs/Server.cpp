@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: robin <robin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/21 18:29:06 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/22 15:03:31 by robin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,8 @@ void Server::acceptUser() {
 		return ;
 	}
 
+	fcntl(userFd, F_SETFL, O_NONBLOCK);
+
 	epoll_event UserEvent;
 	UserEvent.events = EPOLLIN;
 	UserEvent.data.fd = userFd;
@@ -113,7 +115,7 @@ void Server::acceptUser() {
 
 	User newUser;
 	newUser.setFd(userFd);
-	this->Users.push_back(newUser);
+	this->Users.insert(std::pair<int, User>(userFd, newUser));
 
 	std::cout << "New User on fd : " << userFd << std::endl;
 }
@@ -124,8 +126,15 @@ void Server::handleInput(int clientFd) {
 	int inputLength = read(clientFd, &input, sizeof(input) - 1);
 	if (inputLength < 0) {
 		std::cerr << "Error while reading client input from fd : " << clientFd << std::endl;
+		return ;
 	}
-
+	else if (inputLength == 0) {
+		close(clientFd);
+		this->Users.erase(clientFd);
+		std::cout << "Closing connection on fd : " << clientFd << std::endl;
+		return ; 
+	}
+	
 	input[inputLength] = '\0';
 	std::cout << input << std::endl;
 }
