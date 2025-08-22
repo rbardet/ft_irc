@@ -6,7 +6,7 @@
 /*   By: robin <robin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/22 18:46:44 by robin            ###   ########.fr       */
+/*   Updated: 2025/08/22 18:49:04 by robin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,13 +99,6 @@ void Server::runServer() {
 				this->parseInput(events[i].data.fd);
 			}
 		}
-	}
-}
-
-void Server::sendMessage(const int &userFd, const int &code) const {
-	std::string message = " " + code;
-	if (send(userFd, message.c_str(), message.length(), 0) == -1) {
-		std::cerr << "Failed to send message";
 	}
 }
 
