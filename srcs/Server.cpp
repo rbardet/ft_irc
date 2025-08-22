@@ -30,9 +30,9 @@ Server::~Server() {
 	if (this->epollFd > 0) {
 		close(this->epollFd);
 	}
-	for (size_t i = 0; i < this->Users.size(); i++) {
-		this->Users[i].closeConnection();
-	}
+    for (std::map<int, User>::iterator it = Users.begin(); it != Users.end(); ++it) {
+        it->second.closeConnection();
+    }
 }
 
 void Server::signalHandler(int signum) {
@@ -52,7 +52,7 @@ void Server::initSocket() {
 	servAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 	servAddress.sin_port = htons(this->port);
 
-	if (bind(this->socketfd, (struct sockaddr *) &servAddress, sizeof(servAddress)) < 0) {
+	if (bind(this->socketfd, (struct sock addr *) &servAddress, sizeof(servAddress)) < 0) {
 		throw(std::runtime_error("Error while binding address"));
 	}
 
