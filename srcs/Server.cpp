@@ -6,7 +6,7 @@
 /*   By: robin <robin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/22 17:02:31 by robin            ###   ########.fr       */
+/*   Updated: 2025/08/22 18:46:44 by robin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ void Server::runServer() {
 			if (events[i].data.fd == this->socketfd) {
 				this->acceptUser();
 			} else {
-				this->handleInput(events[i].data.fd);
+				this->parseInput(events[i].data.fd);
 			}
 		}
 	}
@@ -109,7 +109,7 @@ void Server::sendMessage(const int &userFd, const int &code) const {
 	}
 }
 
-void Server::sendInitialCap(const int &userFd) const {
+void Server::handleCapReq(const int &userFd) const {
     std::string msg = ":server CAP * LS :multi-prefix sasl\r\n";
     send(userFd, msg.c_str(), msg.length(), 0);
 }
@@ -135,46 +135,52 @@ void Server::acceptUser() {
 	newUser.setFd(userFd);
 	this->Users.insert(std::pair<int, User>(userFd, newUser));
 
-	sendInitialCap(userFd);
+	handleCapReq(userFd);
 	std::cout << "New User on fd : " << userFd << std::endl;
 }
 
-std::vector<std::string> Server::parseInput(std::string &input) {
-	std::vector<std::string> token;
-	size_t	pos = 0;
-	size_t	lastPos = 0;
-	while (pos != std::string::npos) {
-		pos = input.find("\r\n");
-		if (pos == std::string::npos) {
-			break ;
-		}
-		std::string tmp = input.substr(lastPos, pos);
-		lastPos = pos + 2;
-		token.push_back(tmp);
-	}
-	return (token);
-}
-
-void Server::handleInput(int clientFd) {
+void Server::parseInput(int clientFd) {
     char input[BUFFER_SIZE];
 
     int inputLength = read(clientFd, input, sizeof(input) - 1);
     if (inputLength < 0) {
         std::cerr << "Error while reading client input from fd : " << clientFd << std::endl;
-        return ;
+        return;
     } else if (inputLength == 0) {
         close(clientFd);
         this->Users.erase(clientFd);
         std::cout << "Closing connection on fd : " << clientFd << std::endl;
-        return ;
+        return;
     }
 
     input[inputLength] = '\0';
-    // std::string tmp(input, inputLength);
 
-    // std::vector<std::string> token = parseInput(tmp);
-    // for (size_t i = 0; i < token.size(); i++) {
-    //     std::cout << "TOKEN N" << i << ": " << token[i] << std::endl;
-    // }
+    std::string &tmp = this->Users[clientFd].getInput();
+    tmp.append(input, inputLength);
+
+    size_t pos;
+    while ((pos = tmp.find("\r\n")) != std::string::npos) {
+        std::string line = tmp.substr(0, pos);
+        tmp.erase(0, pos + 2);
+        std::cout << "LINE: " << line << std::endl;
+
+        handleLine(clientFd, line);
+    }
 }
 
+void Server::handleLine(int clientFd, const std::string &line) {
+    if (line.rfind("CAP REQ", 0) == 0) {
+        handleCapReq(clientFd);
+    }
+    else if (line.rfind("NICK", 0) == 0) {
+        handleNick(clientFd, line);
+    }
+}
+
+void Server::handleNick(int clientFd, const std::string &line) {
+    std::string nick = line.substr(5);
+    this->Users[clientFd].setNickname(nick);
+    std::string welcome  = ":server 001 :Welcome to the IRC server, " + nick + "\r\n";
+
+    send(clientFd, welcome.c_str(), welcome.size(), 0);
+}

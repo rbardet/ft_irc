@@ -20,6 +20,7 @@ class User
 private:
 	std::string	nickname;
 	std::string	username;
+	std::string input;
 	int			fd;
 public:
 	User();
@@ -33,4 +34,8 @@ public:
 	void setUsername(const std::string &username);
 
 	void closeConnection();
+	const std::string &getNickname() const {return (nickname);};
+	const std::string &getUsername() const {return (username);};
+	std::string &getInput() {return (input);};
+	const int &getFd() const {return (fd);};
 };
