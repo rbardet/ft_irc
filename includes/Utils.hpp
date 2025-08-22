@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: robin <robin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:39:17 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/20 14:39:32 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:18:21 by robin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,3 +14,8 @@
 
 #define PORT 1
 #define PASSWORD 2
+
+#define SERV_NAME "ircserv"
+#define WE_MESSAGE ":Welcome to the ircserv\r\n"
+
+#define WE_CODE 001

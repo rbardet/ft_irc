@@ -6,7 +6,7 @@
 /*   By: robin <robin@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/22 15:02:23 by robin            ###   ########.fr       */
+/*   Updated: 2025/08/22 16:57:52 by robin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,7 @@ public:
 	static void	signalHandler(int signum);
 	void	acceptUser();
 	void	handleInput(int userFd);
+	void	sendMessage(const int &userFd, const int &code) const;
+	void	sendInitialCap(const int &userFd)const;
+	std::vector<std::string> parseInput(std::string &input);
 };

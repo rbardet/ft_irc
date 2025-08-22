@@ -31,4 +31,8 @@ void User::setFd(const int &fd) {this->fd = fd;}
 void User::setNickname(const std::string &nickname) {this->nickname = nickname;}
 void User::setUsername(const std::string &username) {this->username = username;}
 
-void User::closeConnection() {close(this->fd);}
+void User::closeConnection() {
+	if (this->fd > 0) {
+		close(this->fd);
+	}
+}
