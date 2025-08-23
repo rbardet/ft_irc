@@ -38,7 +38,6 @@ private:
 	int			socketfd;
 	std::string	password;
 	std::vector<Channel>	channelList;
-	static bool running;
 	int			epollFd;
 	epoll_event	event;
 	epoll_event	events[MAX_EVENTS];
@@ -49,6 +48,7 @@ public:
 	Server operator=(const Server &src);
 	~Server();
 
+	static bool running;
 	void	initSocket();
 	void	initEpoll();
 	void	initServer(const int &port, const std::string &password);
@@ -60,4 +60,15 @@ public:
 	void	handleCapReq(const int &userFd)const;
 	void	handleNick(int clientFd, const std::string &line);
 	void	handleLine(int clientFd, const std::string &line);
+	void	handleUser(int clientFd, const std::string &line);
+	void	handleJoin(int clientFd, const std::string &line);
+	void	handlePrivMsg(int clientFd, const std::string &line);
+	void	handlePart(int clientFd, const std::string &line);
+	void	handleQuit(int clientFd, const std::string &line);
+	
+	//   JOIN
+	std::string	parseJoinChannelName(const std::string &line);
+	bool		channelExists(const std::string &channelName);
+	void		createChannel(const std::string &channelName, int creatorFd);
+	void		joinExistingChannel(const std::string &channelName, int userFd);
 };

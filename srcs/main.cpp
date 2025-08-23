@@ -48,6 +48,7 @@ int main(int ac, char **av) {
 	}
 	catch(const std::exception& e) {
 		std::cerr << e.what() << '\n';
+		Server::running = false;
 	}
 	return (EXIT_SUCCESS);
 }

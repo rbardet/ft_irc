@@ -30,7 +30,7 @@ Server::~Server() {
 	if (this->epollFd > 0) {
 		close(this->epollFd);
 	}
-    for (std::map<int, User>::iterator it = Users.begin(); it != Users.end(); ++it) {
+	for (std::map<int, User>::iterator it = Users.begin(); it != Users.end(); ++it) {
         it->second.closeConnection();
     }
 }
@@ -52,7 +52,7 @@ void Server::initSocket() {
 	servAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 	servAddress.sin_port = htons(this->port);
 
-	if (bind(this->socketfd, (struct sock addr *) &servAddress, sizeof(servAddress)) < 0) {
+	if (bind(this->socketfd, (struct sockaddr *) &servAddress, sizeof(servAddress)) < 0) {
 		throw(std::runtime_error("Error while binding address"));
 	}
 
@@ -168,6 +168,9 @@ void Server::handleLine(int clientFd, const std::string &line) {
     else if (line.rfind("NICK", 0) == 0) {
         handleNick(clientFd, line);
     }
+    else if (line.rfind("JOIN", 0) == 0) {
+        handleJoin(clientFd, line);
+    }
 }
 
 void Server::handleNick(int clientFd, const std::string &line) {
@@ -176,4 +179,79 @@ void Server::handleNick(int clientFd, const std::string &line) {
     std::string welcome  = ":server 001 :Welcome to the IRC server, " + nick + "\r\n";
 
     send(clientFd, welcome.c_str(), welcome.size(), 0);
+}
+
+
+
+std::string Server::parseJoinChannelName(const std::string &line) 
+{
+    // Format attendu: JOIN #channelname
+    size_t spacePos = line.find(' ');
+
+    if (spacePos == std::string::npos)
+        return "";
+    
+    std::string channelName = line.substr(spacePos + 1);
+    
+    // verif que commence par # ou &
+    if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
+        return "";
+    
+    return channelName;
+}
+
+void Server::handleJoin(int clientFd, const std::string &line) 
+{
+    std::string channelName = parseJoinChannelName(line);
+    
+	// le channel sera vide si input vide ou faux (dans le parse au dessus)
+    if (channelName.empty()) 
+	{
+        std::cout << "Invalid JOIN command received from user " << clientFd << std::endl;
+        return;
+    }
+    
+    if (channelExists(channelName)) 
+	{
+        // Rejoindre un channel existant
+        joinExistingChannel(channelName, clientFd);
+        std::cout << "User " << clientFd << " joined existing channel: " << channelName << std::endl;
+    }
+    else
+    {
+        // Créer un nouveau channel
+        createChannel(channelName, clientFd);
+        std::cout << "New channel created: " << channelName << " by user " << clientFd << std::endl;
+    }
+}
+
+
+
+bool Server::channelExists(const std::string &channelName) 
+{
+    for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
+	{
+        if (it->getName() == channelName)
+            return true;
+    }
+    return false;
+}
+
+void Server::createChannel(const std::string &channelName, int creatorFd) 
+{
+    channelList.push_back(Channel(channelName, creatorFd));
+}
+
+void Server::joinExistingChannel(const std::string &channelName, int userFd) 
+{
+    // Trouver le channel existant
+    for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
+    {
+        if (it->getName() == channelName)
+        {
+            // Ajouter l'utilisateur au channel existant
+            it->addMember(userFd);
+            break;
+        }
+    }
 }

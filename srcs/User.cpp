@@ -12,24 +12,34 @@
 
 #include "../includes/User.hpp"
 
-User::User() {}
-User::User(const User &src) {*this = src;}
+User::User() : nickname(""), username(""), input(""), fd(0) {}
+User::User(const User &src) {
+	*this = src;
+}
 User &User::operator=(const User &src) {
+	if (this == &src)
+		return (*this);
 	this->nickname = src.nickname;
 	this->username = src.username;
+	this->input = src.input;
 	this->fd = src.fd;
-	return(*this);
+	return (*this);
 }
 User::~User() {}
 
-User::User(const std::string &nickname, const std::string &username) {
-	this->nickname = nickname;
-	this->username = username;
+User::User(const std::string &nickname, const std::string &username) : nickname(nickname), username(username), input(""), fd(0) {}
+
+void User::setFd(const int &fd) {
+	this->fd = fd;
 }
 
-void User::setFd(const int &fd) {this->fd = fd;}
-void User::setNickname(const std::string &nickname) {this->nickname = nickname;}
-void User::setUsername(const std::string &username) {this->username = username;}
+void User::setNickname(const std::string &nickname) {
+	this->nickname = nickname;
+}
+
+void User::setUsername(const std::string &username) {
+	this->username = username;
+}
 
 void User::closeConnection() {
 	if (this->fd > 0) {
