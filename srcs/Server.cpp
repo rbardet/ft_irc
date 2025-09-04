@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/04 16:30:49 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:54:06 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,13 +178,17 @@ void Server::handleLine(int clientFd, const std::string &line) {
 	}
 }
 
-// bool Server::nickAlreadyInUse(const std::string &nick) const {
-// 	for (std::map<int, User>::iterator it = Users.begin(); it != Users.end(); ++it) {
-// 	}
-// }
+bool Server::nickAlreadyInUse(const std::string &nick) {
+	for (std::map<int, User>::iterator it = this->Users.begin(); it != this->Users.end(); ++it) {
+		if (it->second.getNickname() == nick) {
+			return (true);
+		}
+	}
+	return (false);
+}
 
 void Server::sendMessage(int &clientFd, int code, const std::string &message) const {
-	const std::string buffer = ":server " + code + ' ' + message + "\r\n";
+	const std::string buffer = ":server " + to_string(code) + " " + message + "\r\n";
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
@@ -207,7 +211,16 @@ void Server::handleNick(int clientFd, const std::string &line) {
 }
 
 void Server::handleUsername(int clientFd, const std::string &line) {
+	std::string username = line.substr(USER_CMD);
+	if (username.empty()) {
+		sendMessage(clientFd, ERR_NEEDMOREPARAMS, "no username given");
+		return ;
+	}
 
+	this->Users[clientFd].setUsername(username);
+	std::string welcome  = ":server 001 :Welcome to the IRC server, " + username + "\r\n";
+
+	send(clientFd, welcome.c_str(), welcome.size(), 0);
 }
 
 std::string Server::parseJoinChannelName(const std::string &line)

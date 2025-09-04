@@ -9,6 +9,7 @@ SRCS = srcs/main.cpp \
 	   srcs/User.cpp \
 	   srcs/Channel.cpp \
 	   srcs/Server.cpp \
+		srcs/Utils.cpp \
 
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 

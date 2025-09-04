@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/04 16:27:37 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:36:02 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ public:
 	void	handleLine(int clientFd, const std::string &line);
 	void	handleJoin(int clientFd, const std::string &line);
 
-	bool	nickAlreadyInUse(const std::string &nick) const;
+	bool	nickAlreadyInUse(const std::string &nick);
 
 	//   JOIN
 	std::string	parseJoinChannelName(const std::string &line);
