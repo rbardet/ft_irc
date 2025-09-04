@@ -47,3 +47,12 @@ void Server::handleUsername(int clientFd, const std::string &line) {
 
 	welcomeUser(clientFd, username);
 }
+
+int Server::findIdByName(const std::string &name) {
+	for (std::map<int, User>::iterator it = this->Users.begin(); it != this->Users.end(); ++it) {
+		if (it->second.getNickname() == name) {
+			return (it->first);
+		}
+	}
+	return (-1);
+}

@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:39:17 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/04 19:25:11 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/04 20:29:18 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 
 #define NICK_CMD 5
 #define USER_CMD 5
-#define KICK_CMD 5
 
 #define MODE_CHAR 1
 
@@ -43,7 +42,10 @@
 
 #define ERR_NONICKNAMEGIVEN "431"
 #define ERR_NICKCOLLISION "436"
+#define ERR_USERNOTINCHANNEL "441"
 #define ERR_NEEDMOREPARAMS "461"
+#define ERR_NOPERMFORHOST "463"
+#define ERR_INVALIDUSERNAME "468"
 #define ERR_UNKNOWNMODE "472"
 
 const std::string getParam(int cmdLength, const std::string &line);
