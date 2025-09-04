@@ -1,17 +1,5 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/04 16:54:06 by rbardet-         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "../includes/Server.hpp"
-#include "../includes/Utils.hpp"
+#include "../../includes/Server.hpp"
+#include "../../includes/Utils.hpp"
 
 bool Server::running = true;
 
@@ -182,36 +170,7 @@ void Server::handleLine(int clientFd, const std::string &line) {
 }
 
 
-void Server::handleMode(int clientFd, const std::string &line) 
-{
 
-	
-	char mode = line.find(MODE_CMD) + 1;
-	std::cout << mode;
-
-
-	switch (mode)
-	{
-		case 'i': 
-
-		case 't':
-
-
-		case 'k':
-
-
-		case 'o':
-
-
-		case 'l':
-
-		default:
-			std::string error = ":server " + ERR_UNKNOWNMODE + " :" + mode + " :No such mode\r\n";
-			send(clientFd, error.c_str(), error.length(), 0);
-
-	}
-	
-}
 
 bool Server::nickAlreadyInUse(const std::string &nick) {
 	for (std::map<int, User>::iterator it = this->Users.begin(); it != this->Users.end(); ++it) {
@@ -245,7 +204,7 @@ void Server::handleNick(int clientFd, const std::string &line) {
 	send(clientFd, welcome.c_str(), welcome.size(), 0);
 }
 
-void Server::handleUsername(int clientFd, const std::string &line) {
+void Server::handleUsername(int clientFd, const std::string &line){
 	std::string username = line.substr(USER_CMD);
 	if (username.empty()) {
 		sendMessage(clientFd, ERR_NEEDMOREPARAMS, "no username given");
@@ -258,106 +217,3 @@ void Server::handleUsername(int clientFd, const std::string &line) {
 	send(clientFd, welcome.c_str(), welcome.size(), 0);
 }
 
-std::string Server::parseJoinChannelName(const std::string &line)
-{
-	// Format attendu: JOIN #channelname ou avec &
-	size_t spacePos = line.find(' ');
-
-	if (spacePos == std::string::npos)
-		return "";
-
-	std::string channelName = line.substr(spacePos + 1);
-
-	// verif que commence par # ou &
-	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
-		return "";
-
-	return channelName;
-}
-
-void Server::handleJoin(int clientFd, const std::string &line)
-{
-	std::string channelName = parseJoinChannelName(line);
-
-	if (channelName.empty()) {
-		std::cout << "Invalid JOIN command received from user " << clientFd << std::endl;
-		return;
-	}
-
-	if (channelExists(channelName)) {
-		joinExistingChannel(channelName, clientFd);
-		std::cout << "User " << clientFd << " joined existing channel: " << channelName << std::endl;
-	}
-	else {
-		createChannel(channelName, clientFd);
-		std::cout << "New channel created: " << channelName << " by user " << clientFd << std::endl;
-	}
-}
-
-
-bool Server::channelExists(const std::string &channelName) {
-	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
-		if (it->getName() == channelName)
-			return (true);
-	}
-	return (false);
-}
-
-void Server::createChannel(const std::string &channelName, int creatorFd) {
-	channelList.push_back(Channel(channelName, creatorFd));
-}
-
-void Server::joinExistingChannel(const std::string &channelName, int userFd) {
-	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
-		if (it->getName() == channelName) {
-			it->addMember(userFd);
-			break;
-		}
-	}
-}
-
-void Server::handleChannelMessage(int clientFd, const std::string &line) {
-	size_t firstSpace = line.find(' ');
-	if (firstSpace == std::string::npos)
-		return;
-
-	size_t secondSpace = line.find(' ', firstSpace + 1);
-	if (secondSpace == std::string::npos)
-		return;
-
-	std::string channelName = line.substr(firstSpace + 1, secondSpace - firstSpace - 1);
-	std::string message = line.substr(secondSpace + 1);
-
-	if (!message.empty() && message[0] == ':')
-		message.erase(0, 1);
-
-	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
-		return;
-
-	broadcastToChannel(channelName, message, clientFd);
-}
-
-void Server::broadcastToChannel(const std::string &channelName, const std::string &message, int senderFd) {
-	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
-		if (it->getName() == channelName) {
-			if (!it->isMember(senderFd)) {
-				std::string error = ":server 404 " + channelName + " :Cannot send to channel\r\n";
-				send(senderFd, error.c_str(), error.length(), 0);
-				return;
-			}
-
-			std::string nick = this->Users[senderFd].getNickname();
-			std::string full = ":" + nick + "!user@host PRIVMSG " + channelName + " :" + message + "\r\n";
-
-			std::vector<int> members = it->getAllMembers();
-			for (std::vector<int>::iterator m = members.begin(); m != members.end(); ++m) {
-				if (*m == senderFd)
-					continue;
-				send(*m, full.c_str(), full.length(), 0);
-			}
-			return;
-		}
-	}
-	std::string error = ":server 403 " + channelName + " :No such channel\r\n";
-	send(senderFd, error.c_str(), error.length(), 0);
-}

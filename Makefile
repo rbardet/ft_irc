@@ -8,8 +8,11 @@ OBJDIR = ./objects
 SRCS = srcs/main.cpp \
 	   srcs/User.cpp \
 	   srcs/Channel.cpp \
-	   srcs/Server.cpp \
-		srcs/Utils.cpp \
+	   srcs/Server/Server.cpp \
+	   srcs/Server/Mode.cpp \
+	   srcs/Server/Join.cpp \
+	   srcs/Server/Message.cpp \
+	   srcs/Utils.cpp \
 
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 

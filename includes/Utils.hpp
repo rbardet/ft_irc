@@ -28,8 +28,14 @@
 #define NICK_CMD 5
 #define USER_CMD 5
 
+#define REMOVE_LIMIT 0
+
+#define ERR_NOSUCHCHANNEL 403
+#define ERR_CANNOTSENDTOCHAN 404
 #define ERR_NONICKNAMEGIVEN 431
 #define ERR_NICKCOLLISION 436
 #define ERR_NEEDMOREPARAMS 461
+#define ERR_NOPRIVILEGES 481
+
 
 std::string to_string(int toConvert);
