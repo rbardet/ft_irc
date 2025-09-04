@@ -11,6 +11,7 @@ SRCS = srcs/main.cpp \
 	   srcs/Server/Server.cpp \
 	   srcs/Server/Mode.cpp \
 	   srcs/Server/Join.cpp \
+	   srcs/Server/Kick.cpp \
 	   srcs/Server/Message.cpp \
 	   srcs/Server/handleUser.cpp \
 	   srcs/Utils.cpp \

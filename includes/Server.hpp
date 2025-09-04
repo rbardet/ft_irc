@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/04 19:21:29 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/04 20:32:07 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,15 @@ public:
 	void	handleUsername(int clientFd, const std::string &line);
 	void	handleLine(int clientFd, const std::string &line);
 	void	handleJoin(int clientFd, const std::string &line);
-	void	handleKick(int clientFd, const std::string &line);
 
-	bool	nickAlreadyInUse(const std::string &nick);
-	void	welcomeUser(const int &code, const std::string &name) const;
+
+	void	handleKick(int clientFd, const std::string &line);
+	const	std::string getUserToKick(const std::string &line) const;
+	const	std::string getChannelName(const std::string &line) const;
+
+	bool		nickAlreadyInUse(const std::string &nick);
+	void		welcomeUser(const int &code, const std::string &name) const;
+	int	findIdByName(const std::string &name);
 
 	//   JOIN
 	std::string	parseJoinChannelName(const std::string &line);

@@ -30,6 +30,8 @@ void Server::signalHandler(int signum) {
 }
 
 void Server::initSocket() {
+	int opt = 1;
+
 	this->socketfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->socketfd < 0) {
 		throw(std::runtime_error("Error while opening the socket"));
@@ -39,6 +41,10 @@ void Server::initSocket() {
 	servAddress.sin_family = AF_INET;
 	servAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 	servAddress.sin_port = htons(this->port);
+
+	if (setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
+		throw(std::runtime_error("Error while setting option for socket"));
+	}
 
 	if (bind(this->socketfd, (struct sockaddr *) &servAddress, sizeof(servAddress)) < 0) {
 		throw(std::runtime_error("Error while binding address"));
@@ -164,7 +170,7 @@ void Server::handleLine(int clientFd, const std::string &line) {
 
 
 void Server::sendError(const int &clientFd, const std::string code, const std::string &message) const {
-	const std::string buffer = ":server " + code + " " + message + "\r\n";
+	const std::string buffer = ":server " + code + " :" + message + "\r\n";
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
@@ -173,21 +179,3 @@ void Server::sendRPL(const int &clientFd, std::string code, const std::string &n
 	std::cout << buffer << std::endl;
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
-
-void Server::handleKick(int clientFd, const std::string &line) {
-	(void)clientFd;
-	(void)line;
-	return ;
-	// std::string kick = getParam(KICK_CMD, line);
-
-	// if (kick.empty()) {
-	// 	sendError(clientFd, ERR_NEEDMOREPARAMS, "no param given to kick");
-	// 	return ;
-	// } else {
-	// 	if (this->channelList.hasPerm(clientFd)) {
-	// 		/* code */
-	// 	}
-
-	// }
-}
-
