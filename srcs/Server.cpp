@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: robin <robin@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/22 18:49:04 by robin            ###   ########.fr       */
+/*   Updated: 2025/09/04 16:30:49 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,29 +162,53 @@ void Server::parseInput(int clientFd) {
 }
 
 void Server::handleLine(int clientFd, const std::string &line) {
-	if (line.rfind("CAP REQ", 0) == 0) {
+	if (line.find("CAP REQ", 0) == 0) {
 		handleCapReq(clientFd);
 	}
-	else if (line.rfind("NICK", 0) == 0) {
+	else if (line.find("NICK", 0) == 0) {
 		handleNick(clientFd, line);
+	} else if (line.find("USERNAME", 0) == 0) {
+		handleUsername(clientFd, line);
 	}
-	else if (line.rfind("JOIN", 0) == 0) {
+	else if (line.find("JOIN", 0) == 0) {
 		handleJoin(clientFd, line);
 	}
-	else if (line.rfind("PRIVMSG", 0) == 0) {
+	else if (line.find("PRIVMSG", 0) == 0) {
 		handleChannelMessage(clientFd, line);
 	}
 }
 
+// bool Server::nickAlreadyInUse(const std::string &nick) const {
+// 	for (std::map<int, User>::iterator it = Users.begin(); it != Users.end(); ++it) {
+// 	}
+// }
+
+void Server::sendMessage(int &clientFd, int code, const std::string &message) const {
+	const std::string buffer = ":server " + code + ' ' + message + "\r\n";
+	send(clientFd, buffer.c_str(), buffer.size(), 0);
+}
+
 void Server::handleNick(int clientFd, const std::string &line) {
-	std::string nick = line.substr(5);
+	std::string nick = line.substr(NICK_CMD);
+	if (nick.empty()) {
+		sendMessage(clientFd, ERR_NONICKNAMEGIVEN, "no nickname given");
+		return ;
+	}
+
+	if (this->nickAlreadyInUse(nick)) {
+		sendMessage(clientFd, ERR_NICKCOLLISION, "this nick is already in use");
+		return ;
+	}
+
 	this->Users[clientFd].setNickname(nick);
 	std::string welcome  = ":server 001 :Welcome to the IRC server, " + nick + "\r\n";
 
 	send(clientFd, welcome.c_str(), welcome.size(), 0);
 }
 
+void Server::handleUsername(int clientFd, const std::string &line) {
 
+}
 
 std::string Server::parseJoinChannelName(const std::string &line)
 {
@@ -207,55 +231,44 @@ void Server::handleJoin(int clientFd, const std::string &line)
 {
 	std::string channelName = parseJoinChannelName(line);
 
-	if (channelName.empty())
-	{
+	if (channelName.empty()) {
 		std::cout << "Invalid JOIN command received from user " << clientFd << std::endl;
 		return;
 	}
 
-	if (channelExists(channelName))
-	{
+	if (channelExists(channelName)) {
 		joinExistingChannel(channelName, clientFd);
 		std::cout << "User " << clientFd << " joined existing channel: " << channelName << std::endl;
 	}
-	else
-	{
+	else {
 		createChannel(channelName, clientFd);
 		std::cout << "New channel created: " << channelName << " by user " << clientFd << std::endl;
 	}
 }
 
 
-
-bool Server::channelExists(const std::string &channelName)
-{
-	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
-	{
+bool Server::channelExists(const std::string &channelName) {
+	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
 		if (it->getName() == channelName)
-			return true;
+			return (true);
 	}
-	return false;
+	return (false);
 }
 
-void Server::createChannel(const std::string &channelName, int creatorFd)
-{
+void Server::createChannel(const std::string &channelName, int creatorFd) {
 	channelList.push_back(Channel(channelName, creatorFd));
 }
 
-void Server::joinExistingChannel(const std::string &channelName, int userFd)
-{
-	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
-	{
-		if (it->getName() == channelName)
-		{
+void Server::joinExistingChannel(const std::string &channelName, int userFd) {
+	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
+		if (it->getName() == channelName) {
 			it->addMember(userFd);
 			break;
 		}
 	}
 }
 
-void Server::handleChannelMessage(int clientFd, const std::string &line)
-{
+void Server::handleChannelMessage(int clientFd, const std::string &line) {
 	size_t firstSpace = line.find(' ');
 	if (firstSpace == std::string::npos)
 		return;
@@ -276,14 +289,10 @@ void Server::handleChannelMessage(int clientFd, const std::string &line)
 	broadcastToChannel(channelName, message, clientFd);
 }
 
-void Server::broadcastToChannel(const std::string &channelName, const std::string &message, int senderFd)
-{
-	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
-	{
-		if (it->getName() == channelName)
-		{
-			if (!it->isMember(senderFd))
-			{
+void Server::broadcastToChannel(const std::string &channelName, const std::string &message, int senderFd) {
+	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
+		if (it->getName() == channelName) {
+			if (!it->isMember(senderFd)) {
 				std::string error = ":server 404 " + channelName + " :Cannot send to channel\r\n";
 				send(senderFd, error.c_str(), error.length(), 0);
 				return;
@@ -293,8 +302,7 @@ void Server::broadcastToChannel(const std::string &channelName, const std::strin
 			std::string full = ":" + nick + "!user@host PRIVMSG " + channelName + " :" + message + "\r\n";
 
 			std::vector<int> members = it->getAllMembers();
-			for (std::vector<int>::iterator m = members.begin(); m != members.end(); ++m)
-			{
+			for (std::vector<int>::iterator m = members.begin(); m != members.end(); ++m) {
 				if (*m == senderFd)
 					continue;
 				send(*m, full.c_str(), full.length(), 0);

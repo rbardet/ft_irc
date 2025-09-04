@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: robin <robin@student.42.fr>                +#+  +:+       +#+        */
+/*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/08/22 18:42:21 by robin            ###   ########.fr       */
+/*   Updated: 2025/09/04 16:27:37 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,15 +56,14 @@ public:
 	static void	signalHandler(int signum);
 	void	acceptUser();
 	void	parseInput(int userFd);
-	void	sendMessage(const int &userFd, const int &code) const;
+	void	sendMessage(int &clientFd, int code, const std::string &message) const;
 	void	handleCapReq(const int &userFd)const;
 	void	handleNick(int clientFd, const std::string &line);
+	void	handleUsername(int clientFd, const std::string &line);
 	void	handleLine(int clientFd, const std::string &line);
-	void	handleUser(int clientFd, const std::string &line);
 	void	handleJoin(int clientFd, const std::string &line);
-	void	handlePrivMsg(int clientFd, const std::string &line);
-	void	handlePart(int clientFd, const std::string &line);
-	void	handleQuit(int clientFd, const std::string &line);
+
+	bool	nickAlreadyInUse(const std::string &nick) const;
 
 	//   JOIN
 	std::string	parseJoinChannelName(const std::string &line);
@@ -72,7 +71,7 @@ public:
 	void		createChannel(const std::string &channelName, int creatorFd);
 	void		joinExistingChannel(const std::string &channelName, int userFd);
 
-	// Messages dans les channels (chat normal IRC) irssi écrit privmsg direct 
+	// Messages dans les channels (chat normal IRC) irssi écrit privmsg direct
 	void		handleChannelMessage(int clientFd, const std::string &line);
 	void		broadcastToChannel(const std::string &channelName, const std::string &message, int senderFd);
 };
