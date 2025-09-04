@@ -1,7 +1,7 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
 
-void Server::handleMode(int clientFd, const std::string &line) 
+void Server::handleMode(int clientFd, const std::string &line)
 {
 	size_t idx_after_mode = line.find(' ');
 	if (idx_after_mode == std::string::npos)// npos = not found
@@ -22,7 +22,7 @@ void Server::handleMode(int clientFd, const std::string &line)
 
 	if (!mode.empty() && (mode[0] == '+' || mode[0] == '-'))
 		execMode(clientFd, channelName, mode);
-	else 
+	else
 		return;
 
 }
@@ -44,24 +44,24 @@ void Server::execMode(int clientFd, const std::string &channelName, const std::s
 		setMode(clientFd, channelName, mode_case, false);
 }
 
-// check si membre 
-// check si operator 
-void Server::setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset) 
+// check si membre
+// check si operator
+void Server::setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset)
 {
-	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) 
+	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
 	{
-		if (it->getName() == channelName) 
+		if (it->getName() == channelName)
 		{
-			if (!it->isMember(clientFd)) 
+			if (!it->isMember(clientFd))
 			{
-				sendMessage(clientFd, ERR_NOPRIVILEGES, "No operator privileges");
+				sendError(clientFd, ERR_NOPRIVILEGES, "No operator privileges");
 				return;
 			}
 			if (set_or_unset == true)
 			{
 				switch (mode)
 				{
-					case 'i': 
+					case 'i':
 						it->setInviteOnly(true);
 						break;
 					case 't':
@@ -77,13 +77,13 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 					// 	it->setUserLimit(userlmit);
 					// 	break;
 					default:
-						sendMessage(clientFd, ERR_UNKNOWNMODE, "No such mode");
+						sendError(clientFd, ERR_UNKNOWNMODE, "No such mode");
 				}
 			}
 			else
 				switch (mode)
 				{
-					case 'i': 
+					case 'i':
 						it->setInviteOnly(false);
 						break;
 					case 't':
@@ -99,9 +99,9 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 						it->setUserLimit(REMOVE_LIMIT);
 						break;
 					default:
-						sendMessage(clientFd, ERR_UNKNOWNMODE, "No such mode");
+						sendError(clientFd, ERR_UNKNOWNMODE, "No such mode");
 				}
 		}
 	}
-	sendMessage(clientFd, ERR_NOSUCHCHANNEL, "No such channel");
+	sendError(clientFd, ERR_NOSUCHCHANNEL, "No such channel");
 }
