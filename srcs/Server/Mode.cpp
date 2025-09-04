@@ -51,9 +51,9 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 	{
 		if (it->getName() == channelName)
 		{
-            if (!it->isOperator(clientFd))
-            {
-				sendError(clientFd, ERR_NOPRIVILEGES, "No operator privileges");
+			if (!it->isOperator(clientFd))
+			{
+				sendRPL(clientFd, ERR_NOPRIVILEGES, this->findNameById(clientFd), "No operator privileges");
 				return;
 			}
 			if (set_or_unset == true)
@@ -82,7 +82,7 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
                         std::cout <<  "userLimit is : " << it->getUserLimit() << "\n";
 						break;
 					default:
-						sendError(clientFd, ERR_UNKNOWNMODE, "No such mode");
+						sendRPL(clientFd, ERR_UNKNOWNMODE, this->findNameById(clientFd), "No such mode");
 				}
 			}
 			else
@@ -110,9 +110,9 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
                         std::cout <<  "userLimit is : " << it->getUserLimit() << "\n";
 						break;
 					default:
-						sendError(clientFd, ERR_UNKNOWNMODE, "No such mode");
+						sendRPL(clientFd, ERR_UNKNOWNMODE, this->findNameById(clientFd), "No such mode");
 				}
 		}
 	}
-	sendError(clientFd, ERR_NOSUCHCHANNEL, "No such channel");
+	sendRPL(clientFd, ERR_NOSUCHCHANNEL, this->findNameById(clientFd), "No such channel");
 }

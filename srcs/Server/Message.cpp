@@ -31,7 +31,7 @@ void Server::broadcastToChannel(const std::string &channelName, const std::strin
 		{
 			if (!it->isMember(senderFd))
 			{
-				sendError(senderFd, ERR_NOSUCHCHANNEL, "Cannot send to channel");
+				sendRPL(senderFd, ERR_NOSUCHCHANNEL, this->findNameById(senderFd), "Cannot send to channel");
 				return;
 			}
 
@@ -48,5 +48,5 @@ void Server::broadcastToChannel(const std::string &channelName, const std::strin
 			return;
 		}
 	}
-	sendError(senderFd, ERR_NOSUCHCHANNEL, "No such channel");
+	sendRPL(senderFd, ERR_NOSUCHCHANNEL, this->findNameById(senderFd), "No such channel");
 }

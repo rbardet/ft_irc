@@ -168,14 +168,9 @@ void Server::handleLine(int clientFd, const std::string &line) {
 	}
 }
 
-
-void Server::sendError(const int &clientFd, const std::string code, const std::string &message) const {
-	const std::string buffer = ":server " + code + " :" + message + "\r\n";
-	send(clientFd, buffer.c_str(), buffer.size(), 0);
-}
-
 void Server::sendRPL(const int &clientFd, std::string code, const std::string &nick, const std::string &message) const {
 	std::string buffer = ":server " + code + " " + nick + " :" + message + "\r\n";
-	std::cout << buffer << std::endl;
-	send(clientFd, buffer.c_str(), buffer.size(), 0);
+	if (send(clientFd, buffer.c_str(), buffer.size(), 0) == -1) {
+		std::cout << "Failed to send error message to server" << std::endl;
+	}
 }

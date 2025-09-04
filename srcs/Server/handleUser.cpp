@@ -21,12 +21,12 @@ void Server::handleNick(int clientFd, const std::string &line) {
 	std::string nick = getParam(NICK_CMD, line);
 
 	if (nick.empty()) {
-		sendError(clientFd, ERR_NONICKNAMEGIVEN, "no nickname given");
+		sendRPL(clientFd, ERR_NONICKNAMEGIVEN, this->findNameById(clientFd), "no nickname given");
 		return ;
 	}
 
 	if (this->nickAlreadyInUse(nick)) {
-		sendError(clientFd, ERR_NICKCOLLISION, "this nick is already in use");
+		sendRPL(clientFd, ERR_NICKCOLLISION, this->findNameById(clientFd), "this nick is already in use");
 		return ;
 	}
 
@@ -39,7 +39,7 @@ void Server::handleUsername(int clientFd, const std::string &line) {
 	std::string username = getParam(USER_CMD, line);
 
 	if (username.empty()) {
-		sendError(clientFd, ERR_NEEDMOREPARAMS, "no username given");
+		sendRPL(clientFd, ERR_NEEDMOREPARAMS, this->findNameById(clientFd), "no username given");
 		return ;
 	}
 
@@ -53,4 +53,13 @@ int Server::findIdByName(const std::string &name) {
 		}
 	}
 	return (-1);
+}
+
+std::string Server::findNameById(const int &clientFd) {
+	for (std::map<int, User>::iterator it = this->Users.begin(); it != this->Users.end(); ++it) {
+		if (it->second.getFd() == clientFd) {
+			return (it->second.getNickname());
+		}
+	}
+	return (" ");
 }
