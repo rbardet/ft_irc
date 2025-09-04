@@ -174,6 +174,41 @@ void Server::handleLine(int clientFd, const std::string &line) {
 	else if (line.rfind("PRIVMSG", 0) == 0) {
 		handleChannelMessage(clientFd, line);
 	}
+	else if (line.rfind("MODE", 0) == 0) {
+		handleMode(clientFd, line);
+	}
+}
+
+
+void Server::handleMode(int clientFd, const std::string &line) 
+{
+
+	
+	char mode = line.find(MODE_CMD) + 1;
+	std::cout << mode;
+
+
+	switch (mode)
+	{
+		case 'i': 
+
+		case 't':
+
+
+		case 'k':
+
+
+		case 'o':
+
+
+		case 'l':
+
+		default:
+			std::string error = ":server " + ERR_UNKNOWNMODE + " :" + mode + " :No such mode\r\n";
+			send(clientFd, error.c_str(), error.length(), 0);
+
+	}
+	
 }
 
 void Server::handleNick(int clientFd, const std::string &line) {

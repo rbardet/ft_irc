@@ -19,3 +19,7 @@
 #define WE_MESSAGE ":Welcome to the ircserv\r\n"
 
 #define WE_CODE 001
+
+#define MODE_CMD 5
+
+#define ERR_UNKNOWNMODE 472
