@@ -6,12 +6,11 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/04 16:54:06 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/04 17:51:31 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include "../includes/Utils.hpp"
 
 bool Server::running = true;
 
@@ -167,7 +166,7 @@ void Server::handleLine(int clientFd, const std::string &line) {
 	}
 	else if (line.find("NICK", 0) == 0) {
 		handleNick(clientFd, line);
-	} else if (line.find("USERNAME", 0) == 0) {
+	} else if (line.find("USER", 0) == 0) {
 		handleUsername(clientFd, line);
 	}
 	else if (line.find("JOIN", 0) == 0) {
@@ -176,41 +175,6 @@ void Server::handleLine(int clientFd, const std::string &line) {
 	else if (line.find("PRIVMSG", 0) == 0) {
 		handleChannelMessage(clientFd, line);
 	}
-	else if (line.rfind("MODE", 0) == 0) {
-		handleMode(clientFd, line);
-	}
-}
-
-
-void Server::handleMode(int clientFd, const std::string &line) 
-{
-
-	
-	char mode = line.find(MODE_CMD) + 1;
-	std::cout << mode;
-
-
-	switch (mode)
-	{
-		case 'i': 
-
-		case 't':
-
-
-		case 'k':
-
-
-		case 'o':
-
-
-		case 'l':
-
-		default:
-			std::string error = ":server " + ERR_UNKNOWNMODE + " :" + mode + " :No such mode\r\n";
-			send(clientFd, error.c_str(), error.length(), 0);
-
-	}
-	
 }
 
 bool Server::nickAlreadyInUse(const std::string &nick) {
@@ -222,40 +186,51 @@ bool Server::nickAlreadyInUse(const std::string &nick) {
 	return (false);
 }
 
-void Server::sendMessage(int &clientFd, int code, const std::string &message) const {
-	const std::string buffer = ":server " + to_string(code) + " " + message + "\r\n";
+void Server::sendError(const int &clientFd, int code, const std::string &message) const {
+	const std::string buffer = ":ircserv " + to_string(code) + " " + message + "\r\n";
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
+void Server::sendRPL(const int &clientFd, int code, const std::string &nick, const std::string &message) const {
+	std::string buffer = ":ircserv " + to_string(code) + " " + nick + " :" + message + "\r\n";
+	send(clientFd, buffer.c_str(), buffer.size(), 0);
+}
+
+void Server::welcomeUser(const int &clientFd, const std::string &name) const {
+	sendRPL(clientFd, RPL_WELCOME, name, "Welcome to the Internet Relay Network " + name + "!");
+	sendRPL(clientFd, RPL_YOURHOST, name, "Your host is ircserv");
+	sendRPL(clientFd, RPL_CREATED, name, "This server was created today");
+}
+
 void Server::handleNick(int clientFd, const std::string &line) {
-	std::string nick = line.substr(NICK_CMD);
+	std::string nick = getParam(NICK_CMD, line);
+
 	if (nick.empty()) {
-		sendMessage(clientFd, ERR_NONICKNAMEGIVEN, "no nickname given");
+		sendError(clientFd, ERR_NONICKNAMEGIVEN, "no nickname given");
 		return ;
 	}
 
 	if (this->nickAlreadyInUse(nick)) {
-		sendMessage(clientFd, ERR_NICKCOLLISION, "this nick is already in use");
+		sendError(clientFd, ERR_NICKCOLLISION, "this nick is already in use");
 		return ;
 	}
 
 	this->Users[clientFd].setNickname(nick);
-	std::string welcome  = ":server 001 :Welcome to the IRC server, " + nick + "\r\n";
 
-	send(clientFd, welcome.c_str(), welcome.size(), 0);
+	welcomeUser(clientFd, nick);
 }
 
 void Server::handleUsername(int clientFd, const std::string &line) {
-	std::string username = line.substr(USER_CMD);
+	std::string username = getParam(USER_CMD, line);
+
 	if (username.empty()) {
-		sendMessage(clientFd, ERR_NEEDMOREPARAMS, "no username given");
+		sendError(clientFd, ERR_NEEDMOREPARAMS, "no username given");
 		return ;
 	}
 
 	this->Users[clientFd].setUsername(username);
-	std::string welcome  = ":server 001 :Welcome to the IRC server, " + username + "\r\n";
 
-	send(clientFd, welcome.c_str(), welcome.size(), 0);
+	welcomeUser(clientFd, username);
 }
 
 std::string Server::parseJoinChannelName(const std::string &line)
