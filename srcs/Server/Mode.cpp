@@ -1,5 +1,6 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
+#include <stdlib.h>
 
 void Server::handleMode(int clientFd, const std::string &line)
 {
@@ -12,16 +13,21 @@ void Server::handleMode(int clientFd, const std::string &line)
 		return;
 
 	std::string channelName = line.substr(idx_after_mode + 1, idx_after_channelName - idx_after_mode - 1);
-	std::string mode = line.substr(idx_after_channelName + 1);
+	std::string mode = line.substr(idx_after_channelName + 1, 2);
+    std::string arg = line.substr(idx_after_channelName + 3);
+
+    if (arg.empty())
+    {
+        arg = "";
+    }
 
 	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
 		return;
 
 	if (!mode.empty() && (mode[0] == '+' || mode[0] == '-'))
-		execMode(clientFd, channelName, mode);
-	else
-		return;
-
+		execMode(clientFd, channelName, mode, arg);
+    else
+        return;     
 }
 
 char Server::extractFlag(const std::string &mode)
@@ -30,20 +36,17 @@ char Server::extractFlag(const std::string &mode)
 	return (mode_case);
 }
 
-void Server::execMode(int clientFd, const std::string &channelName, const std::string &mode)
+void Server::execMode(int clientFd, const std::string &channelName, const std::string &mode, std::string arg)
 {
 	char mode_case = extractFlag(mode);
 	if (mode[0] == '+')
-		setMode(clientFd, channelName, mode_case, true);
+		setMode(clientFd, channelName, mode_case, true, arg);
 	else
-		setMode(clientFd, channelName, mode_case, false);
+		setMode(clientFd, channelName, mode_case, false, arg);
 }
 
-void Server::setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset)
+void Server::setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg)
 {
-    std::cout << mode << "\n";
-    std::cout << set_or_unset << "\n";
-
 	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
 	{
 		if (it->getName() == channelName)
@@ -59,20 +62,25 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 				{
 					case 'i':
 						it->setInviteOnly(true);
-                        std::cout << it->getInviteOnly() << "\n";
+                        std::cout <<  "Invite is : " << it->getInviteOnly() << "\n";
 						break;
 					case 't':
 						it->setTopicOpOnly(true);
+                        std::cout <<  "topicOpOnly is : " << it->getTopicOpOnly() << "\n";
 						break;
 					case 'k':
-						it->setKey("mdp");
+						it->setKey(arg);
+                        std::cout <<  "key is : " << it->getHasKey() << "\n";
+                        std::cout <<  "the key is : " << it->getKey() << "\n";
 						break;
-					// case 'o':
-					// 	it->addOperator(opfd);
-					// 	break;
-					// case 'l':
-					// 	it->setUserLimit(userlmit);
-					// 	break;
+					case 'o':
+						it->addOperator(); // a fix 
+                        std::cout <<  arg << " is operator ? : " << it->isOperator(atoi(arg.c_str())) << "\n";
+						break;
+					case 'l':
+						it->setUserLimit(atoi(arg.c_str()));
+                        std::cout <<  "userLimit is : " << it->getUserLimit() << "\n";
+						break;
 					default:
 						sendError(clientFd, ERR_UNKNOWNMODE, "No such mode");
 				}
@@ -82,19 +90,24 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 				{
 					case 'i':
 						it->setInviteOnly(false);
-                        std::cout << it->getInviteOnly() << "\n";
+                        std::cout <<  "Invite is : " << it->getInviteOnly() << "\n";
 						break;
 					case 't':
 						it->setTopicOpOnly(false);
+                        std::cout <<  "topicOnly is : " << it->getInviteOnly() << "\n";
 						break;
 					case 'k':
 						it->clearKey();
+                        std::cout <<  "key is : " << it->getHasKey() << "\n";
+                        std::cout <<  "the key is : " << it->getKey() << "\n";
 						break;
-					// case 'o':
-					// 	it->removeOperator(opfd);
-					// 	break;
+					case 'o':
+						it->removeOperator();
+                        std::cout <<  arg << " is operator ? : " << it->isOperator(atoi(arg.c_str())) << "\n";
+						break;
 					case 'l':
 						it->setUserLimit(REMOVE_LIMIT);
+                        std::cout <<  "userLimit is : " << it->getUserLimit() << "\n";
 						break;
 					default:
 						sendError(clientFd, ERR_UNKNOWNMODE, "No such mode");

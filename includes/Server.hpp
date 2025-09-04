@@ -86,8 +86,8 @@ public:
 
 	//  MODE
 	void		handleMode(int clientFd, const std::string &line);
-	void 		execMode(int clientFd, const std::string &channelName, const std::string &mode);
-	void 		setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset);
+	void 		execMode(int clientFd, const std::string &channelName, const std::string &mode, std::string arg = "");
+	void 		setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg = "");
 	char		extractFlag(const std::string &mode);
 
 };
