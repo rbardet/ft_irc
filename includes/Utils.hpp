@@ -25,6 +25,8 @@
 #define NICK_CMD 5
 #define USER_CMD 5
 
+#define MODE_CHAR 1
+
 #define REMOVE_LIMIT 0
 
 #define ERR_NOSUCHCHANNEL "403"
