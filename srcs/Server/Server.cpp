@@ -117,6 +117,11 @@ void Server::acceptUser() {
 	newUser.setFd(userFd);
 	this->Users.insert(std::pair<int, User>(userFd, newUser));
 
+	if (!this->hasPassword()) {
+		this->Users[userFd].setHasPass();
+	}
+
+	this->Users[userFd].tryRegisterUser();
 	std::cout << "New User on fd : " << userFd << std::endl;
 }
 
@@ -154,8 +159,16 @@ void Server::handleLine(int clientFd, const std::string &line) {
 		handleNick(clientFd, line);
 	} else if (line.find("USER", 0) == 0) {
 		handleUsername(clientFd, line);
+	} else if (line.find("PASS", 0) == 0) {
+		handlePass(clientFd, line);
 	}
-	else if (line.find("JOIN", 0) == 0) {
+
+	if (!this->Users[clientFd].getIsRegister()) {
+		sendRPL(clientFd, ERR_NOTREGISTERED, "guest", ":please enter a nickname, username and pass if needer");
+		return ;
+	}
+
+	if (line.find("JOIN", 0) == 0) {
 		handleJoin(clientFd, line);
 	} else if (line.find("KICK", 0) == 0) {
 		handleKick(clientFd, line);
@@ -163,14 +176,36 @@ void Server::handleLine(int clientFd, const std::string &line) {
 	else if (line.find("PRIVMSG", 0) == 0) {
 		handleChannelMessage(clientFd, line);
 	}
-	else if (line.rfind("MODE", 0) == 0) {
+	else if (line.find("MODE", 0) == 0) {
 		handleMode(clientFd, line);
+	} else if (line.find("PASS", 0) == 0) {
+		handlePass(clientFd, line);
+	} else {
+		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + " this command is unknown" );
 	}
 }
 
 void Server::sendRPL(const int &clientFd, std::string code, const std::string &nick, const std::string &message) const {
 	std::string buffer = ":server " + code + " " + nick + " :" + message + "\r\n";
-	if (send(clientFd, buffer.c_str(), buffer.size(), 0) == -1) {
-		std::cout << "Failed to send error message to server" << std::endl;
+	send(clientFd, buffer.c_str(), buffer.size(), 0);
+}
+
+void Server::handlePass(const int clientFd, const std::string &line) {
+	if (this->password.empty()) {
+		return ;
 	}
+
+	std::string pass = getParam(PASS_CMD, line);
+	if (pass.empty() || pass != this->password) {
+		sendRPL(clientFd, ERR_PASSWDMISMATCH, this->findNameById(clientFd), "Wrong password");
+		this->Users[clientFd].closeConnection();
+		return ;
+	}
+}
+
+bool Server::hasPassword() const {
+	if (this->password.empty()) {
+		return (false);
+	}
+	return (true);
 }

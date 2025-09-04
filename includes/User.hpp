@@ -22,6 +22,11 @@ private:
 	std::string	username;
 	std::string input;
 	int			fd;
+
+	bool		hasNickname;
+	bool		hasUsername;
+	bool		hasPass;
+	bool		isRegister;
 public:
 	User();
 	User(const User &src);
@@ -38,4 +43,12 @@ public:
 	const std::string &getUsername() const {return (username);};
 	std::string &getInput() {return (input);};
 	const int &getFd() const {return (fd);};
+	const bool &getIsRegister() const {return (isRegister);};
+	void setHasNickname () {this->hasNickname = true;};
+	void setHasUsername() {this->hasUsername = true;};
+	void setHasPass() {this->hasPass = true;};
+	const bool &getHasNickname() {return (this->hasNickname);};
+	const bool &getHasUsername() {return (this->hasUsername);};
+	const bool &getHasPass() {return (this->hasPass);};
+	void tryRegisterUser();
 };

@@ -46,3 +46,9 @@ void User::closeConnection() {
 		close(this->fd);
 	}
 }
+
+void User::tryRegisterUser() {
+	if (getHasNickname() && getHasUsername() && getHasPass()) {
+		this->isRegister = true;
+	}
+}

@@ -32,6 +32,10 @@ void Server::handleNick(int clientFd, const std::string &line) {
 
 	this->Users[clientFd].setNickname(nick);
 
+	this->Users[clientFd].setHasNickname();
+
+	this->Users[clientFd].tryRegisterUser();
+
 	welcomeUser(clientFd, nick);
 }
 
@@ -43,7 +47,11 @@ void Server::handleUsername(int clientFd, const std::string &line) {
 		return ;
 	}
 
+	this->Users[clientFd].setHasUsername();
+
 	this->Users[clientFd].setUsername(username);
+
+	this->Users[clientFd].tryRegisterUser();
 }
 
 int Server::findIdByName(const std::string &name) {
