@@ -41,16 +41,16 @@ void Server::execMode(int clientFd, const std::string &channelName, const std::s
 
 void Server::setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset)
 {
-    std::cout << mode << "\n";
-    std::cout << set_or_unset << "\n";
+	std::cout << mode << "\n";
+	std::cout << set_or_unset << "\n";
 
 	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
 	{
 		if (it->getName() == channelName)
 		{
-            if (!it->isOperator(clientFd))
-            {
-				sendError(clientFd, ERR_NOPRIVILEGES, "No operator privileges");
+			if (!it->isOperator(clientFd))
+			{
+				sendRPL(clientFd, ERR_NOPRIVILEGES, this->findNameById(clientFd), "No operator privileges");
 				return;
 			}
 			if (set_or_unset == true)
@@ -59,7 +59,7 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 				{
 					case 'i':
 						it->setInviteOnly(true);
-                        std::cout << it->getInviteOnly() << "\n";
+						std::cout << it->getInviteOnly() << "\n";
 						break;
 					case 't':
 						it->setTopicOpOnly(true);
@@ -74,7 +74,7 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 					// 	it->setUserLimit(userlmit);
 					// 	break;
 					default:
-						sendError(clientFd, ERR_UNKNOWNMODE, "No such mode");
+						sendRPL(clientFd, ERR_UNKNOWNMODE, this->findNameById(clientFd), "No such mode");
 				}
 			}
 			else
@@ -82,7 +82,7 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 				{
 					case 'i':
 						it->setInviteOnly(false);
-                        std::cout << it->getInviteOnly() << "\n";
+						std::cout << it->getInviteOnly() << "\n";
 						break;
 					case 't':
 						it->setTopicOpOnly(false);
@@ -97,9 +97,9 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 						it->setUserLimit(REMOVE_LIMIT);
 						break;
 					default:
-						sendError(clientFd, ERR_UNKNOWNMODE, "No such mode");
+						sendRPL(clientFd, ERR_UNKNOWNMODE, this->findNameById(clientFd), "No such mode");
 				}
 		}
 	}
-	sendError(clientFd, ERR_NOSUCHCHANNEL, "No such channel");
+	sendRPL(clientFd, ERR_NOSUCHCHANNEL, this->findNameById(clientFd), "No such channel");
 }

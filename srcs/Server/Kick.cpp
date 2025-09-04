@@ -42,7 +42,7 @@ void Server::handleKick(int clientFd, const std::string &line) {
 	const int kickId = findIdByName(kick);
 
 	if (kickId == -1) {
-		sendError(clientFd, ERR_INVALIDUSERNAME, "user does not exist");
+		sendRPL(clientFd, ERR_INVALIDUSERNAME, kick, "user does not exist");
 		return ;
 	}
 
@@ -50,7 +50,7 @@ void Server::handleKick(int clientFd, const std::string &line) {
 	std::cout << kick << std::endl;
 
 	if (kick.empty()) {
-		sendError(clientFd, ERR_NEEDMOREPARAMS, "no param given to kick");
+		sendRPL(clientFd, ERR_NEEDMOREPARAMS, kick, "no param given to kick");
 		return ;
 	}
 
@@ -60,14 +60,14 @@ void Server::handleKick(int clientFd, const std::string &line) {
 			if (it->getName() == channelName) {
 				if (!it->hasPerm(clientFd)) {
 					std::cout << "NO PERM" << std::endl;
-					sendError(clientFd, ERR_NOPERMFORHOST, "you have no perm on this channel");
+					sendRPL(clientFd, ERR_NOPERMFORHOST, kick, "you have no perm on this channel");
 					return ;
 				} else if (!it->isMember(kickId)) {
 					std::cout << "NOT MEMBER" << std::endl;
-					sendError(clientFd, ERR_USERNOTINCHANNEL, kick + " is not in this channel");
+					sendRPL(clientFd, ERR_USERNOTINCHANNEL, kick, kick + " is not in this channel");
 					return ;
 				} else {
-					sendError(clientFd, ERR_KICKEDFROMCHAN, kick + " just got kicked from " + channelName);
+					sendRPL(kickId, ERR_KICKEDFROMCHAN, kick, kick + " just got kicked from " + channelName);
 					std::cout << kick << " VA ETRE KICK DE " << channelName << " SON FD EST" << kickId << std::endl;
 					it->removeMember(kickId);
 					return ;
