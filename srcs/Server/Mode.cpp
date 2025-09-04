@@ -14,11 +14,8 @@ void Server::handleMode(int clientFd, const std::string &line)
 	std::string channelName = line.substr(idx_after_mode + 1, idx_after_channelName - idx_after_mode - 1);
 	std::string mode = line.substr(idx_after_channelName + 1);
 
-
-
 	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
 		return;
-
 
 	if (!mode.empty() && (mode[0] == '+' || mode[0] == '-'))
 		execMode(clientFd, channelName, mode);
@@ -29,9 +26,7 @@ void Server::handleMode(int clientFd, const std::string &line)
 
 char Server::extractFlag(const std::string &mode)
 {
-	std::string parsed_mode = mode;
-	parsed_mode.erase(0, 1);
-	char mode_case = mode.find(MODE_CMD) + 1;
+	char mode_case = mode[MODE_CHAR];
 	return (mode_case);
 }
 
@@ -44,16 +39,17 @@ void Server::execMode(int clientFd, const std::string &channelName, const std::s
 		setMode(clientFd, channelName, mode_case, false);
 }
 
-// check si membre
-// check si operator
 void Server::setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset)
 {
+    std::cout << mode << "\n";
+    std::cout << set_or_unset << "\n";
+
 	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
 	{
 		if (it->getName() == channelName)
 		{
-			if (!it->isMember(clientFd))
-			{
+            if (!it->isOperator(clientFd))
+            {
 				sendError(clientFd, ERR_NOPRIVILEGES, "No operator privileges");
 				return;
 			}
@@ -63,6 +59,7 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 				{
 					case 'i':
 						it->setInviteOnly(true);
+                        std::cout << it->getInviteOnly() << "\n";
 						break;
 					case 't':
 						it->setTopicOpOnly(true);
@@ -85,6 +82,7 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 				{
 					case 'i':
 						it->setInviteOnly(false);
+                        std::cout << it->getInviteOnly() << "\n";
 						break;
 					case 't':
 						it->setTopicOpOnly(false);
