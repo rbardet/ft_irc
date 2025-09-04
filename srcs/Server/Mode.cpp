@@ -14,7 +14,9 @@ void Server::handleMode(int clientFd, const std::string &line)
 
 	std::string channelName = line.substr(idx_after_mode + 1, idx_after_channelName - idx_after_mode - 1);
 	std::string mode = line.substr(idx_after_channelName + 1, 2);
-    std::string arg = line.substr(idx_after_channelName + 3);
+    if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
+		return;
+    std::string arg = line.substr(idx_after_channelName + 4);
 
     if (arg.empty())
     {
@@ -74,8 +76,11 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
                         std::cout <<  "the key is : " << it->getKey() << "\n";
 						break;
 					case 'o':
-						it->addOperator(); // a fix 
-                        std::cout <<  arg << " is operator ? : " << it->isOperator(atoi(arg.c_str())) << "\n";
+                        std::cout <<  arg << "\n";
+                        std::cout <<  findIdByName(arg) << "\n";
+                        std::cout <<  it->isMember(findIdByName(arg)) << "\n";
+						it->addOperator(findIdByName(arg));
+                        std::cout << arg << " is operator ? : " << it->isOperator(findIdByName(arg)) << "\n";
 						break;
 					case 'l':
 						it->setUserLimit(atoi(arg.c_str()));
@@ -102,8 +107,8 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
                         std::cout <<  "the key is : " << it->getKey() << "\n";
 						break;
 					case 'o':
-						it->removeOperator();
-                        std::cout <<  arg << " is operator ? : " << it->isOperator(atoi(arg.c_str())) << "\n";
+						it->removeOperator(findIdByName(arg));
+                        std::cout << arg << " is operator ? : " << it->isOperator(findIdByName(arg)) << "\n";
 						break;
 					case 'l':
 						it->setUserLimit(REMOVE_LIMIT);
