@@ -44,8 +44,6 @@ void Server::handleUsername(int clientFd, const std::string &line) {
 	}
 
 	this->Users[clientFd].setUsername(username);
-
-	welcomeUser(clientFd, username);
 }
 
 int Server::findIdByName(const std::string &name) {

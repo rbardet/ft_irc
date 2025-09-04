@@ -10,7 +10,7 @@ const std::string Server::getChannelName(const std::string &line) const {
 
 	const std::string tmp = line.substr(channelPos, line.length());
 
-	const std::string channelName = tmp.substr(1, tmp.find(' '));
+	const std::string channelName = tmp.substr(0, tmp.find(' '));
 
 	return (channelName);
 }
@@ -56,19 +56,18 @@ void Server::handleKick(int clientFd, const std::string &line) {
 
 	else {
 		for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
+			std::cout << it->getName() << std::endl;
 			if (it->getName() == channelName) {
-				std::cout << "TESTTEST" << std::endl;
-				std::cout << it->hasPerm(clientFd) << std::endl;
-				std::cout << it->isMember(kickId) << std::endl;
 				if (!it->hasPerm(clientFd)) {
 					std::cout << "NO PERM" << std::endl;
-					sendError(clientFd, ERR_NOPERMFORHOST, "no perm on this channel");
+					sendError(clientFd, ERR_NOPERMFORHOST, "you have no perm on this channel");
 					return ;
 				} else if (!it->isMember(kickId)) {
 					std::cout << "NOT MEMBER" << std::endl;
-					sendError(clientFd, ERR_USERNOTINCHANNEL, "user not in this channel");
+					sendError(clientFd, ERR_USERNOTINCHANNEL, kick + " is not in this channel");
 					return ;
 				} else {
+					sendError(clientFd, ERR_KICKEDFROMCHAN, kick + " just got kicked from " + channelName);
 					std::cout << kick << " VA ETRE KICK DE " << channelName << " SON FD EST" << kickId << std::endl;
 					it->removeMember(kickId);
 					return ;
