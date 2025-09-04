@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/19 14:34:12 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/04 17:51:31 by rbardet-         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../includes/Server.hpp"
 
 bool Server::running = true;
@@ -101,11 +89,6 @@ void Server::runServer() {
 	}
 }
 
-void Server::handleCapReq(const int &userFd) const {
-	std::string msg = ":server CAP * LS :multi-prefix sasl\r\n";
-	send(userFd, msg.c_str(), msg.length(), 0);
-}
-
 void Server::acceptUser() {
 	int userFd = accept(this->socketfd, NULL, NULL);
 	if (userFd < 0) {
@@ -127,7 +110,6 @@ void Server::acceptUser() {
 	newUser.setFd(userFd);
 	this->Users.insert(std::pair<int, User>(userFd, newUser));
 
-	handleCapReq(userFd);
 	std::cout << "New User on fd : " << userFd << std::endl;
 }
 
@@ -161,16 +143,15 @@ void Server::parseInput(int clientFd) {
 }
 
 void Server::handleLine(int clientFd, const std::string &line) {
-	if (line.find("CAP REQ", 0) == 0) {
-		handleCapReq(clientFd);
-	}
-	else if (line.find("NICK", 0) == 0) {
+	if (line.find("NICK", 0) == 0) {
 		handleNick(clientFd, line);
 	} else if (line.find("USER", 0) == 0) {
 		handleUsername(clientFd, line);
 	}
 	else if (line.find("JOIN", 0) == 0) {
 		handleJoin(clientFd, line);
+	} else if (line.find("KICK", 0) == 0) {
+		handleKick(clientFd, line);
 	}
 	else if (line.find("PRIVMSG", 0) == 0) {
 		handleChannelMessage(clientFd, line);
@@ -186,18 +167,19 @@ bool Server::nickAlreadyInUse(const std::string &nick) {
 	return (false);
 }
 
-void Server::sendError(const int &clientFd, int code, const std::string &message) const {
-	const std::string buffer = ":ircserv " + to_string(code) + " " + message + "\r\n";
+void Server::sendError(const int &clientFd, const std::string code, const std::string &message) const {
+	const std::string buffer = ":server " + code + " " + message + "\r\n";
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
-void Server::sendRPL(const int &clientFd, int code, const std::string &nick, const std::string &message) const {
-	std::string buffer = ":ircserv " + to_string(code) + " " + nick + " :" + message + "\r\n";
+void Server::sendRPL(const int &clientFd, std::string code, const std::string &nick, const std::string &message) const {
+	std::string buffer = ":server " + code + " " + nick + " :" + message + "\r\n";
+	std::cout << buffer << std::endl;
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
 void Server::welcomeUser(const int &clientFd, const std::string &name) const {
-	sendRPL(clientFd, RPL_WELCOME, name, "Welcome to the Internet Relay Network " + name + "!");
+	sendRPL(clientFd, RPL_WELCOME, name, "Welcome to the IRC server " + name + "!");
 	sendRPL(clientFd, RPL_YOURHOST, name, "Your host is ircserv");
 	sendRPL(clientFd, RPL_CREATED, name, "This server was created today");
 }
@@ -231,6 +213,23 @@ void Server::handleUsername(int clientFd, const std::string &line) {
 	this->Users[clientFd].setUsername(username);
 
 	welcomeUser(clientFd, username);
+}
+
+void Server::handleKick(int clientFd, const std::string &line) {
+	(void)clientFd;
+	(void)line;
+	return ;
+	// std::string kick = getParam(KICK_CMD, line);
+
+	// if (kick.empty()) {
+	// 	sendError(clientFd, ERR_NEEDMOREPARAMS, "no param given to kick");
+	// 	return ;
+	// } else {
+	// 	if (this->channelList.hasPerm(clientFd)) {
+	// 		/* code */
+	// 	}
+
+	// }
 }
 
 std::string Server::parseJoinChannelName(const std::string &line)

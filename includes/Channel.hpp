@@ -25,8 +25,9 @@ private:
 
 
 	// chaque user a un fd unique dont on regarde que le fd.  dont tab d int
-	std::set<int>	operators;		// 
-	std::set<int>	users;			// 
+	int				host;
+	std::set<int>	operators;		//
+	std::set<int>	users;			//
 	std::set<int>	invited;		// fd des utilisateurs invit (si mode i)
 
 public:
@@ -43,6 +44,8 @@ public:
 	bool	removeMember(int fd);
 	bool	isMember(int fd) const;
 	bool	isEmpty() const;
+	bool	hasPerm(const int & clientFd) const;
+	bool	isHost(const int &clientFd) const;
 
 	// ===== GESTION DES OPÉRATEURS =====
 	bool	isOperator(int fd) const;
@@ -69,8 +72,8 @@ public:
 	// ===== UTILITAIRES =====
 	const std::string	&getName() const;
 	std::vector<int>	getAllMembers() const;
+	const int 			&getHost() const;
 
-	
 	// ===== GETTERS POUR LES MODES =====
 	bool	getInviteOnly() const;
 	bool	getTopicOpOnly() const;

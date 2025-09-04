@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/04 17:48:55 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/04 19:21:29 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,13 +58,13 @@ public:
 	static void	signalHandler(int signum);
 	void	acceptUser();
 	void	parseInput(int userFd);
-	void	sendError(const int &clientFd, int code, const std::string &message) const;
-	void	sendRPL(const int &clientFd, int code, const std::string &nick, const std::string &message) const;
-	void	handleCapReq(const int &userFd)const;
+	void	sendError(const int &clientFd, const std::string code, const std::string &message) const;
+	void	sendRPL(const int &clientFd, const std::string code, const std::string &nick, const std::string &message) const;
 	void	handleNick(int clientFd, const std::string &line);
 	void	handleUsername(int clientFd, const std::string &line);
 	void	handleLine(int clientFd, const std::string &line);
 	void	handleJoin(int clientFd, const std::string &line);
+	void	handleKick(int clientFd, const std::string &line);
 
 	bool	nickAlreadyInUse(const std::string &nick);
 	void	welcomeUser(const int &code, const std::string &name) const;
