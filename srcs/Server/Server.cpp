@@ -90,11 +90,6 @@ void Server::runServer() {
 	}
 }
 
-void Server::handleCapReq(const int &userFd) const {
-	std::string msg = ":server CAP * LS :multi-prefix sasl\r\n";
-	send(userFd, msg.c_str(), msg.length(), 0);
-}
-
 void Server::acceptUser() {
 	int userFd = accept(this->socketfd, NULL, NULL);
 	if (userFd < 0) {
@@ -116,7 +111,6 @@ void Server::acceptUser() {
 	newUser.setFd(userFd);
 	this->Users.insert(std::pair<int, User>(userFd, newUser));
 
-	handleCapReq(userFd);
 	std::cout << "New User on fd : " << userFd << std::endl;
 }
 
@@ -150,16 +144,15 @@ void Server::parseInput(int clientFd) {
 }
 
 void Server::handleLine(int clientFd, const std::string &line) {
-	if (line.find("CAP REQ", 0) == 0) {
-		handleCapReq(clientFd);
-	}
-	else if (line.find("NICK", 0) == 0) {
+	if (line.find("NICK", 0) == 0) {
 		handleNick(clientFd, line);
-	} else if (line.find("USERNAME", 0) == 0) {
+	} else if (line.find("USER", 0) == 0) {
 		handleUsername(clientFd, line);
 	}
 	else if (line.find("JOIN", 0) == 0) {
 		handleJoin(clientFd, line);
+	} else if (line.find("KICK", 0) == 0) {
+		handleKick(clientFd, line);
 	}
 	else if (line.find("PRIVMSG", 0) == 0) {
 		handleChannelMessage(clientFd, line);
@@ -181,39 +174,68 @@ bool Server::nickAlreadyInUse(const std::string &nick) {
 	return (false);
 }
 
-void Server::sendMessage(int &clientFd, int code, const std::string &message) const {
-	const std::string buffer = ":server " + to_string(code) + " " + message + "\r\n";
+void Server::sendError(const int &clientFd, const std::string code, const std::string &message) const {
+	const std::string buffer = ":server " + code + " " + message + "\r\n";
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
+void Server::sendRPL(const int &clientFd, std::string code, const std::string &nick, const std::string &message) const {
+	std::string buffer = ":server " + code + " " + nick + " :" + message + "\r\n";
+	std::cout << buffer << std::endl;
+	send(clientFd, buffer.c_str(), buffer.size(), 0);
+}
+
+void Server::welcomeUser(const int &clientFd, const std::string &name) const {
+	sendRPL(clientFd, RPL_WELCOME, name, "Welcome to the IRC server " + name + "!");
+	sendRPL(clientFd, RPL_YOURHOST, name, "Your host is ircserv");
+	sendRPL(clientFd, RPL_CREATED, name, "This server was created today");
+}
+
 void Server::handleNick(int clientFd, const std::string &line) {
-	std::string nick = line.substr(NICK_CMD);
+	std::string nick = getParam(NICK_CMD, line);
+
 	if (nick.empty()) {
-		sendMessage(clientFd, ERR_NONICKNAMEGIVEN, "no nickname given");
+		sendError(clientFd, ERR_NONICKNAMEGIVEN, "no nickname given");
 		return ;
 	}
 
 	if (this->nickAlreadyInUse(nick)) {
-		sendMessage(clientFd, ERR_NICKCOLLISION, "this nick is already in use");
+		sendError(clientFd, ERR_NICKCOLLISION, "this nick is already in use");
 		return ;
 	}
 
 	this->Users[clientFd].setNickname(nick);
-	std::string welcome  = ":server 001 :Welcome to the IRC server, " + nick + "\r\n";
 
-	send(clientFd, welcome.c_str(), welcome.size(), 0);
+	welcomeUser(clientFd, nick);
 }
 
-void Server::handleUsername(int clientFd, const std::string &line){
-	std::string username = line.substr(USER_CMD);
+void Server::handleUsername(int clientFd, const std::string &line) {
+	std::string username = getParam(USER_CMD, line);
+
 	if (username.empty()) {
-		sendMessage(clientFd, ERR_NEEDMOREPARAMS, "no username given");
+		sendError(clientFd, ERR_NEEDMOREPARAMS, "no username given");
 		return ;
 	}
 
 	this->Users[clientFd].setUsername(username);
-	std::string welcome  = ":server 001 :Welcome to the IRC server, " + username + "\r\n";
 
-	send(clientFd, welcome.c_str(), welcome.size(), 0);
+	welcomeUser(clientFd, username);
+}
+
+void Server::handleKick(int clientFd, const std::string &line) {
+	(void)clientFd;
+	(void)line;
+	return ;
+	// std::string kick = getParam(KICK_CMD, line);
+
+	// if (kick.empty()) {
+	// 	sendError(clientFd, ERR_NEEDMOREPARAMS, "no param given to kick");
+	// 	return ;
+	// } else {
+	// 	if (this->channelList.hasPerm(clientFd)) {
+	// 		/* code */
+	// 	}
+
+	// }
 }
 

@@ -24,11 +24,12 @@ Channel::Channel(const std::string &name, int creator)
 	this->user_limit = 0;
 
 	// le createur est membre + op direct a la creation
+	this->host = creator;
 	this->users.insert(creator);
 	this->operators.insert(creator);
 }
 
-Channel::Channel(const Channel &src) 
+Channel::Channel(const Channel &src)
 {
 	*this = src;
 }
@@ -40,6 +41,7 @@ Channel &Channel::operator=(const Channel &src)
 
 	this->name = src.name;
 	this->topic = src.topic;
+	this->host = src.host;
 	this->key = src.key;
 	this->invite_only = src.invite_only;
 	this->topic_op_only = src.topic_op_only;
@@ -51,7 +53,7 @@ Channel &Channel::operator=(const Channel &src)
 	return (*this);
 }
 
-Channel::~Channel() 
+Channel::~Channel()
 {
 }
 
@@ -59,43 +61,43 @@ Channel::~Channel()
 // ===== GESTION DES MEMBRES =====
 
 
-// iterateurs pour les set avec find : 
+// iterateurs pour les set avec find :
 // Les iterateurs sont un peut comme des pointeur intelligent.
 // Les set sont un peut comme des liste chaines ameliorer et l iterateur c est le ->next.
 // il sait vers ou aller pour atteindre le prochain noeud du set.
 
 // end est APRES le dernier element (un \0 mais pour pointeurs)
 
-// find revoit un iterateur  l equivalent de l adresse / position du noeud. 
+// find revoit un iterateur  l equivalent de l adresse / position du noeud.
 
 bool Channel::canJoin(int fd, const std::string &key, std::string &reason) const
 {
 	// Mode i (invitation)
-	if (this->invite_only && this->invited.find(fd) == this->invited.end())  // ca veut dire que find est aller a fin sans trouver fd 
+	if (this->invite_only && this->invited.find(fd) == this->invited.end())  // ca veut dire que find est aller a fin sans trouver fd
 	{
 		reason = "You cannot join channel because you have not been invited";
 		return (false);
 	}
-	
+
 	// Mode k (mot de passe)
 	if (this->has_key && key != this->key)
 	{
 		reason = "You cannot join channel because the password is incorrect";
 		return (false);
 	}
-	
+
 	// Mode l (limite users)
 	if (this->user_limit > 0 && (int)this->users.size() >= this->user_limit) // y a limit + elle est deja atteinte
 	{
 		reason = "You cannot join channel because it has reach its limit of users";
 		return (false);
 	}
-	
+
 	return (true);
 }
 
 
-// insert = renvoit paire iterateur +  bool    pair<iterator,bool>  donc  le .first = iterateur (position) vers new elem et 
+// insert = renvoit paire iterateur +  bool    pair<iterator,bool>  donc  le .first = iterateur (position) vers new elem et
 
 // .second  est le bool  qui sait si l insert a   success
 // 	et false si etait deja present donc pas eu d insert
@@ -113,7 +115,7 @@ bool Channel::removeMember(int fd)
 	// Retirer de tous les sets
 	this->operators.erase(fd);
 	this->invited.erase(fd);
-	
+
 	// return true si remove reussi, false si pas retire
 	return this->users.erase(fd) > 0;
 }
@@ -192,7 +194,7 @@ bool Channel::setTopic(int user, const std::string &topic)
 		std::cout << "Only operators can change the topic of this channel." << std::endl;
 		return (false);
 	}
-	
+
 	this->topic = topic;
 	return (true);
 }
@@ -226,12 +228,13 @@ const std::string &Channel::getName() const
 	return this->name;
 }
 
+const int &Channel::getHost() const { return (this->host); }
 
 // find sert a chercher 1 element precis, pas iterer sur tous.
 
 // donc on copie tout dans vector  pour brodcast a tous par exemple car le stockage est contigue ( tableau d int )
 // alors que les element du set peuvent n importe ou dans la memoire car c est plus une liste chainee. donc moins opti
-// pour iterer. 
+// pour iterer.
 std::vector<int> Channel::getAllMembers() const
 {
 	std::vector<int> vector;
@@ -267,4 +270,20 @@ int Channel::getUserLimit() const
 const std::string &Channel::getKey() const
 {
 	return this->key;
+}
+
+bool Channel::isHost(const int &clientFd) const {
+	if (this->host == clientFd) {
+		return (true);
+	}
+	return (false);
+}
+
+bool Channel::hasPerm(const int &clientFd) const {
+	for (std::set<int>::iterator it = operators.begin(); it != operators.end(); ++it) {
+		if (*it == clientFd) {
+			return (true);
+		}
+	}
+	return (false);
 }

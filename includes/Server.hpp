@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/04 16:36:02 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/04 19:21:29 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,15 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <set>
-#include "Channel.hpp"
 #include <arpa/inet.h>
 #include <sys/epoll.h>
 #include <signal.h>
 #include <map>
-#include "User.hpp"
 #include <fcntl.h>
+
+#include "User.hpp"
+#include "Channel.hpp"
+#include "Utils.hpp"
 
 #define MAX_USER 1024
 #define MAX_EVENTS 10
@@ -56,14 +58,16 @@ public:
 	static void	signalHandler(int signum);
 	void	acceptUser();
 	void	parseInput(int userFd);
-	void	sendMessage(int &clientFd, int code, const std::string &message) const;
-	void	handleCapReq(const int &userFd)const;
+	void	sendError(const int &clientFd, const std::string code, const std::string &message) const;
+	void	sendRPL(const int &clientFd, const std::string code, const std::string &nick, const std::string &message) const;
 	void	handleNick(int clientFd, const std::string &line);
 	void	handleUsername(int clientFd, const std::string &line);
 	void	handleLine(int clientFd, const std::string &line);
 	void	handleJoin(int clientFd, const std::string &line);
+	void	handleKick(int clientFd, const std::string &line);
 
 	bool	nickAlreadyInUse(const std::string &nick);
+	void	welcomeUser(const int &code, const std::string &name) const;
 
 	//   JOIN
 	std::string	parseJoinChannelName(const std::string &line);
