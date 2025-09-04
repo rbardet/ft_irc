@@ -20,6 +20,11 @@
 
 #define SERV_NAME "ircserv"
 
+#define WE_CODE 001
+
+#define MODE_CMD 5
+
+#define ERR_UNKNOWNMODE 472
 #define NICK_CMD 5
 #define USER_CMD 5
 

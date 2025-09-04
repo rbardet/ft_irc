@@ -74,4 +74,7 @@ public:
 	// Messages dans les channels (chat normal IRC) irssi écrit privmsg direct
 	void		handleChannelMessage(int clientFd, const std::string &line);
 	void		broadcastToChannel(const std::string &channelName, const std::string &message, int senderFd);
+
+	//  MODE
+	void		handleMode(int clientFd, const std::string &line);
 };
