@@ -61,6 +61,7 @@ public:
 	const	std::string getChannelName(const std::string &line) const;
 
 	const	std::string getTopic(const std::string &line) const;
+	void	sendTopic(const int &clientFd, const Channel &channel);
 
 	bool		nickAlreadyInUse(const std::string &nick);
 	void		welcomeUser(const int &code, const std::string &name) const;

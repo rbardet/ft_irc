@@ -26,23 +26,23 @@ void Server::handleTopic(const int &clientFd, const std::string &line) {
 		for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
 			if (it->getName() == channelName) {
 				if (topic.empty()) {
-					if (it->getTopic().empty()) {
-						sendRPL(clientFd, RPL_NOTOPIC, this->Users[clientFd].getNickname(), channelName + " :" + MSG_NEED_TOPIC);
-					} else {
-						std::cout << "LE TOPIC DU SALON EST :" << it->getTopic() << std::endl;
-						sendRPL(clientFd, RPL_TOPIC, this->Users[clientFd].getNickname(), channelName + " :" + it->getTopic());
-					}
+					sendTopic(clientFd, *it);
 					return ;
-				}
-
-				if (!it->setTopic(clientFd, topic)) {
-					sendRPL(clientFd, ERR_NOPERMFORHOST, this->Users[clientFd].getNickname(), MSG_ERR_NOPERMS);
 				} else {
-					sendRPL(clientFd, RPL_TOPIC, this->Users[clientFd].getNickname(), channelName + " :" + it->getTopic());
+					if (!it->setTopic(clientFd, topic)) {
+						sendRPL(clientFd, ERR_NOPERMFORHOST, this->Users[clientFd].getNickname(), MSG_ERR_NOPERMS);
+					}
 				}
-				return ;
 			}
 		}
 
+	}
+}
+
+void Server::sendTopic(const int &clientFd, const Channel &channel) {
+	if (channel.getTopic().empty()) {
+		sendRPL(clientFd, RPL_NOTOPIC, this->Users[clientFd].getNickname(), channel.getName() + " :" + MSG_NEED_TOPIC);
+	} else {
+		sendRPL(clientFd, RPL_TOPIC, this->Users[clientFd].getNickname(), channel.getName() + " :" + channel.getTopic());
 	}
 }
