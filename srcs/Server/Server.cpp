@@ -233,6 +233,6 @@ void Server::handlePing(const int &clientFd, const std::string &line) {
 		return ;
 	}
 
-	std::cout << "PONG RESPONSE: " << pong << std::endl;
+	std::cout << "PONG RESPONSE:" << pong << std::endl;
 	send(clientFd, pong.c_str(), pong.size(), 0);
 }
