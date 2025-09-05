@@ -38,7 +38,7 @@ void Server::handleTopic(const int &clientFd, const std::string &line) {
 					sendTopic(clientFd, *it);
 					return ;
 				} else {
-					if (!it->setTopic(clientFd, topic)) {
+					if (!it->setTopic(clientFd, topic, this->Users[clientFd].getNickname())) {
 						sendRPL(clientFd, ERR_NOPERMFORHOST, this->Users[clientFd].getNickname(), MSG_ERR_NOPERMS);
 					} else {
 						broadcastNewTopic(topic, channelName, clientFd, *it);
@@ -49,10 +49,22 @@ void Server::handleTopic(const int &clientFd, const std::string &line) {
 		}
 }
 
+void Server::sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel) {
+	std::ostringstream oss;
+	oss << channel.getTopicTime();
+	const std::string code = RPL_TOPICWHOTIME;
+	const std::string msg = ":server " + code + " " + this->Users[clientFd].getNickname() + " " + channel.getName() + " " + channel.getTopicSetter() + " " + oss.str();
+
+	send(clientFd, msg.c_str(), msg.size(), 0);
+}
+
+
 void Server::sendTopic(const int &clientFd, const Channel &channel) {
+
 	if (channel.getTopic().empty()) {
 		sendRPL(clientFd, RPL_NOTOPIC, this->Users[clientFd].getNickname(), channel.getName() + " :" + MSG_NEED_TOPIC);
 	} else {
 		sendRPL(clientFd, RPL_TOPIC, this->Users[clientFd].getNickname(), channel.getName() + " :" + channel.getTopic());
+		this->sendRPL_TOPICWHOTIME(clientFd, channel);
 	}
 }

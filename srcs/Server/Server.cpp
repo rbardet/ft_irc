@@ -157,6 +157,7 @@ void Server::parseInput(int clientFd) {
 void Server::handleLine(const int &clientFd, const std::string &line) {
 	if (line.find(CMD_PING, 0) == 0) {
 		handlePing(clientFd, line);
+		return ;
 	} else if (line.find(CMD_NICK, 0) == 0) {
 		handleNick(clientFd, line);
 		return ;
@@ -196,6 +197,7 @@ void Server::handleLine(const int &clientFd, const std::string &line) {
 
 void Server::sendRPL(const int &clientFd, std::string code, const std::string &nick, const std::string &message) const {
 	std::string buffer = ":server " + code + " " + nick + " :" + message + "\r\n";
+	std::cout << "RPL: " << buffer << std::endl;
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
@@ -242,7 +244,6 @@ void Server::broadcastToAllMember(Channel chanel, const std::string message) {
 	std::vector<int> members = chanel.getAllMembers();
 
 	for (std::vector<int>::iterator it = members.begin(); it != members.end(); ++it) {
-		std::cout << "MESSAGE BROADCAST A " << *it << std::endl;
 		send(*it, message.c_str(), message.size(), 0);
 	}
 }

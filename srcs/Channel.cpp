@@ -53,6 +53,8 @@ Channel &Channel::operator=(const Channel &src)
 	this->users = src.users;
 	this->invited = src.invited;
 	this->user_joined = src.user_joined;
+	this->topicSetter = src.topicSetter;
+	this->topicTimeSet = src.topicTimeSet;
 
 	return (*this);
 }
@@ -190,15 +192,18 @@ void Channel::resetUserLimit()
 
 // ===== GESTION DU TOPIC =====
 
-bool Channel::setTopic(int user, const std::string &topic)
+bool Channel::setTopic(int user, const std::string &topic, const std::string &setterName)
 {
 	// si op only pour modif topic verif que bien op
-	if (this->topic_op_only && this->operators.find(user) == this->operators.end())
-	{
+	if (this->topic_op_only && this->operators.find(user) == this->operators.end()) {
 		std::cout << "Only operators can change the topic of this channel." << std::endl;
 		return (false);
 	}
 
+	time(&this->topicTimeSet);
+	std::cout << "TOPIC SETTER: " << setterName << std::endl;
+	this->topicSetter = setterName;
+	std::cout << topicSetter << std::endl;
 	this->topic = topic;
 	return (true);
 }

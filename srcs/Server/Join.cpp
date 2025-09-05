@@ -56,6 +56,7 @@ void Server::createChannel(const std::string &channelName, int creatorFd) {
 void Server::joinExistingChannel(const std::string &channelName, int userFd) {
 	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
 		if (it->getName() == channelName) {
+			std::cout << it->getName() << std::endl;
 			it->addMember(userFd);
 			this->sendTopic(userFd, *it);
 			break;

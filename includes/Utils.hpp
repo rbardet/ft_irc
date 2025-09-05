@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Utils.hpp                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/20 14:39:17 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/05 22:46:12 by rbardet-         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 
 #include <iostream>
@@ -50,8 +38,9 @@
 #define RPL_WELCOME "001"
 #define RPL_YOURHOST "002"
 #define RPL_CREATED "003"
-#define RPL_TOPIC "332"
 #define RPL_NOTOPIC "331"
+#define RPL_TOPIC "332"
+#define RPL_TOPICWHOTIME "333"
 #define RPL_NAMREPLY "353"
 #define RPL_ENDOFNAMES "366"
 
