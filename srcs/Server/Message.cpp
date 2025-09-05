@@ -35,8 +35,11 @@ void Server::broadcastToChannel(const std::string &channelName, const std::strin
 				return;
 			}
 
-			std::string nick = this->Users[senderFd].getNickname();
-			std::string full = ":" + nick + "!user@host PRIVMSG " + channelName + " :" + message + "\r\n";
+			std::string nick = Users.at(senderFd).getNickname();
+			std::string user = Users.at(senderFd).getUsername();
+			std::string host = "localhost";
+
+			std::string full = ":" + nick + "!" + user + "@" + host + " PRIVMSG " + channelName + " :" + message + "\r\n";
 
 			std::vector<int> members = it->getAllMembers();
 			for (std::vector<int>::iterator m = members.begin(); m != members.end(); ++m)
@@ -50,3 +53,4 @@ void Server::broadcastToChannel(const std::string &channelName, const std::strin
 	}
 	sendRPL(senderFd, ERR_NOSUCHCHANNEL, this->findNameById(senderFd), "No such channel");
 }
+
