@@ -13,6 +13,7 @@ Channel::Channel()
 	this->topic_op_only = false;
 	this->has_key = false;
 	this->user_limit = 0;
+	this->user_joined = 1;
 }
 
 Channel::Channel(const std::string &name, int creator)
@@ -22,6 +23,7 @@ Channel::Channel(const std::string &name, int creator)
 	this->topic_op_only = false;
 	this->has_key = false;
 	this->user_limit = 0;
+	this->user_joined = 1;
 
 	// le createur est membre + op direct a la creation
 	this->host = creator;
@@ -50,6 +52,8 @@ Channel &Channel::operator=(const Channel &src)
 	this->operators = src.operators;
 	this->users = src.users;
 	this->invited = src.invited;
+	this->user_joined = src.user_joined;
+
 	return (*this);
 }
 
@@ -243,6 +247,18 @@ std::vector<int> Channel::getAllMembers() const
 		vector.push_back(*it); // derefenrence l iterateur envoit le contenu
 
 	return vector;
+}
+
+
+bool Channel::isSpace()
+{
+	std::cout << "test" << std::endl;
+	if (user_limit > 0)
+	{
+		if (user_joined == user_limit)
+			return (false);
+	}
+	return (true);
 }
 
 // ===== GETTERS POUR LES MODES =====

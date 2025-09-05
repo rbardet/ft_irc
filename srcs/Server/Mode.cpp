@@ -15,15 +15,15 @@ void Server::handleMode(int clientFd, const std::string &line)
 	std::string channelName = line.substr(space_after_mode + JUMP_TO_CHANNEL, space_after_channelName - space_after_mode - 1);
 	std::string mode = line.substr(space_after_channelName + JUMP_TO_MODE, 2);
 
-    if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
+	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
 		return;
 
 	std::string arg;
 
-	if (space_after_channelName + 3 == line.length())
+	if (line.length() <= space_after_channelName + JUMP_TO_ARG)
 		arg = "";
 	else
-	    arg = line.substr(space_after_channelName + JUMP_TO_ARG);
+		arg = line.substr(space_after_channelName + JUMP_TO_ARG);
 
 	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
 		return;
@@ -85,6 +85,11 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 						std::cout << arg << " is operator ? : " << it->isOperator(findIdByName(arg)) << "\n";
 						break;
 					case 'l':
+						if (arg.empty())
+						{
+							sendRPL(clientFd, ERR_NEEDMOREPARAMS, this->findNameById(clientFd), "MODE +l requires a limit argument");
+							return;
+						}
 						it->setUserLimit(atoi(arg.c_str()));
 						std::cout <<  "userLimit is : " << it->getUserLimit() << "\n";
 						break;

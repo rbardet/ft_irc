@@ -30,6 +30,8 @@ public:
 	Channel &operator=(const Channel &src);
 	~Channel();
 
+	int				user_joined;
+
 
 	// ===== GESTION DES MEMBRES =====
 	bool	canJoin(int fd, const std::string &key, std::string &reason) const;
@@ -62,10 +64,12 @@ public:
 	bool	isInvited(int fd) const;
 	void	clearInvite(int fd);
 
+
 	// ===== UTILITAIRES =====
 	const std::string	&getName() const;
 	std::vector<int>	getAllMembers() const;
 	const int 			&getHost() const;
+	bool				isSpace();
 
 	// ===== GETTERS POUR LES MODES =====
 	bool	getInviteOnly() const;
