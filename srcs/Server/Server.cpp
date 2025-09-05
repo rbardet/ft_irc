@@ -160,11 +160,11 @@ void Server::parseInput(int clientFd) {
 }
 
 void Server::handleLine(int clientFd, const std::string &line) {
-	if (line.find(CMD_NICK, 0) == 0) {
+	if (line.find("NICK", 0) == 0) {
 		handleNick(clientFd, line);
-	} else if (line.find(CMD_USER, 0) == 0) {
+	} else if (line.find("USER", 0) == 0) {
 		handleUsername(clientFd, line);
-	} else if (line.find(CMD_PASS, 0) == 0) {
+	} else if (line.find("PASS", 0) == 0) {
 		handlePass(clientFd, line);
 	}
 

@@ -4,24 +4,26 @@
 
 void Server::handleMode(int clientFd, const std::string &line)
 {
-	size_t idx_after_mode = line.find(' ');
-	if (idx_after_mode == std::string::npos)// npos = not found
+	size_t space_after_mode = line.find(' ');
+	if (space_after_mode == std::string::npos)// npos = not found
 		return;
 
-	size_t idx_after_channelName = line.find(' ', idx_after_mode + 1);
-	if (idx_after_channelName == std::string::npos)
+	size_t space_after_channelName = line.find(' ', space_after_mode + 1);
+	if (space_after_channelName == std::string::npos)
 		return;
 
-	std::string channelName = line.substr(idx_after_mode + 1, idx_after_channelName - idx_after_mode - 1);
-	std::string mode = line.substr(idx_after_channelName + 1, 2);
+	std::string channelName = line.substr(space_after_mode + TO_BE_ON_INDEX_OF_CHANNEL, space_after_channelName - space_after_mode - 1);
+	std::string mode = line.substr(space_after_channelName + TO_BE_ON_INDEX_OF_MODE, 2);
+
     if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
 		return;
-    std::string arg = line.substr(idx_after_channelName + 4);
 
-    if (arg.empty())
-    {
-        arg = "";
-    }
+	std::string arg;
+
+	if (space_after_channelName + 3 == line.length())
+		arg = "";
+	else
+	    arg = line.substr(space_after_channelName + TO_BE_ON_ON_INDEX_OF_ARG);
 
 	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
 		return;
