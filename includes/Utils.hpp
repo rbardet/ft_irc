@@ -42,6 +42,10 @@
 
 #define REMOVE_LIMIT 0
 
+#define TO_BE_ON_INDEX_OF_CHANNEL 1
+#define TO_BE_ON_INDEX_OF_MODE 1
+#define TO_BE_ON_ON_INDEX_OF_ARG 4
+
 #define RPL_WELCOME "001"
 #define RPL_YOURHOST "002"
 #define RPL_CREATED "003"
