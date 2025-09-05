@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:39:17 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/05 19:06:19 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/05 19:35:26 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,15 @@
 #define CMD_JOIN "JOIN"
 #define CMD_KICK "KICK"
 #define CMD_PRIVMSG "PRIVMSG"
+#define CMD_TOPIC "TOPIC"
 
 #define MODE_CMD_LENGTH 5
 #define NICK_CMD_LENGTH 5
 #define USER_CMD_LENGTH 5
 #define PASS_CMD_LENGTH 5
+#define TOPIC_CMD_LENGTH 6
 
-#define MODE_CHAR 1
+#define MODE_FLAG 1
 
 #define REMOVE_LIMIT 0
 

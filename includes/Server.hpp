@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/05 17:52:05 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/05 19:43:40 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,14 @@ public:
 	void	parseInput(int userFd);
 	bool	hasPassword() const;
 	void	sendRPL(const int &clientFd, const std::string code, const std::string &nick, const std::string &message) const;
-	void	handleNick(int clientFd, const std::string &line);
-	void	handleUsername(int clientFd, const std::string &line);
-	void	handleLine(int clientFd, const std::string &line);
-	void	handleJoin(int clientFd, const std::string &line);
-	void	handlePass(int clientFd, const std::string &line);
+	void	handleNick(const int &clientFd, const std::string &line);
+	void	handleUsername(const int &clientFd, const std::string &line);
+	void	handleLine(const int &clientFd, const std::string &line);
+	void	handleJoin(const int &clientFd, const std::string &line);
+	void	handlePass(const int &clientFd, const std::string &line);
+	void	handleTopic(const int &clientFd, const std::string &line);
+	void	handleKick(const int &clientFd, const std::string &line);
 
-	void	handleKick(int clientFd, const std::string &line);
 	const	std::string getUserToKick(const std::string &line) const;
 	const	std::string getChannelName(const std::string &line) const;
 

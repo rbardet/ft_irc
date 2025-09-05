@@ -36,7 +36,7 @@ const std::string Server::getUserToKick(const std::string &line) const {
 	return (user);
 }
 
-void Server::handleKick(int clientFd, const std::string &line) {
+void Server::handleKick(const int &clientFd, const std::string &line) {
 	std::string channelName = getChannelName(line);
 	std::string kick = getUserToKick(line);
 	const int kickId = findIdByName(kick);

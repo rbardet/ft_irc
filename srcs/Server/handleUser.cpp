@@ -17,7 +17,7 @@ void Server::welcomeUser(const int &clientFd, const std::string &name) const {
 	sendRPL(clientFd, RPL_CREATED, name, "This server was created today");
 }
 
-void Server::handleNick(int clientFd, const std::string &line) {
+void Server::handleNick(const int &clientFd, const std::string &line) {
 	std::string nick = getParam(NICK_CMD_LENGTH, line);
 
 	welcomeUser(clientFd, nick);
@@ -40,7 +40,7 @@ void Server::handleNick(int clientFd, const std::string &line) {
 	this->Users[clientFd].tryRegisterUser();
 }
 
-void Server::handleUsername(int clientFd, const std::string &line) {
+void Server::handleUsername(const int &clientFd, const std::string &line) {
 	std::string username = getParam(USER_CMD_LENGTH, line);
 
 	if (username.empty()) {

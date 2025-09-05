@@ -158,13 +158,16 @@ void Server::parseInput(int clientFd) {
 	}
 }
 
-void Server::handleLine(int clientFd, const std::string &line) {
+void Server::handleLine(const int &clientFd, const std::string &line) {
 	if (line.find(CMD_NICK, 0) == 0) {
 		handleNick(clientFd, line);
+		return ;
 	} else if (line.find(CMD_USER, 0) == 0) {
 		handleUsername(clientFd, line);
+		return ;
 	} else if (line.find(CMD_PASS, 0) == 0) {
 		handlePass(clientFd, line);
+		return ;
 	}
 
 	if (!this->Users[clientFd].getIsRegister()) {
@@ -175,15 +178,8 @@ void Server::handleLine(int clientFd, const std::string &line) {
 		if (!this->Users[clientFd].getHasUsername() && this->Users[clientFd].getWelcomeMessage()) {
 			sendRPL(clientFd, ERR_NOTREGISTERED, "guest", MSG_NEED_USER);
 		}
-		std::cout << "NOT REGISTER" << std::endl;
-		std::cout << "NICKNAME: " << this->Users[clientFd].getHasNickname() << std::endl;
-		std::cout << "USERNAME: " << this->Users[clientFd].getHasUsername() << std::endl;
-		std::cout << "PASSWORD: " << this->Users[clientFd].getHasPass() << std::endl;
-		std::cout << "ISREGISTER: " << this->Users[clientFd].getIsRegister() << std::endl;
 		return ;
 	}
-
-	std::cout << "REGISTERED" << std::endl;
 
 	if (line.find(CMD_JOIN, 0) == 0) {
 		handleJoin(clientFd, line);
@@ -195,7 +191,10 @@ void Server::handleLine(int clientFd, const std::string &line) {
 	}
 	else if (line.find(CMD_MODE, 0) == 0) {
 		handleMode(clientFd, line);
-	} else {
+	} else if (line.find(CMD_TOPIC, 0) == 0) {
+		handleTopic(clientFd, line);
+	}
+	else {
 		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + MSG_ERR_UNKNOWNCOMMAND);
 	}
 }
@@ -205,21 +204,21 @@ void Server::sendRPL(const int &clientFd, std::string code, const std::string &n
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
-void Server::handlePass(const int clientFd, const std::string &line) {
-	std::cout << "handle pass" << std::endl;
+void Server::handlePass(const int &clientFd, const std::string &line) {
 
 	if (this->password.empty()) {
-		std::cout << "no pass given" << std::endl;
 		return ;
 	}
 
 	std::string pass = getParam(PASS_CMD_LENGTH, line);
-	std::cout << pass << " MOT DE PASSE DU USER" << std::endl;
+
 	if (pass.empty() || pass != this->password) {
 		sendRPL(clientFd, ERR_PASSWDMISMATCH, this->findNameById(clientFd), MSG_ERR_PASSWDMISMATCH);
 		this->Users[clientFd].closeConnection();
 		return ;
 	}
+
+	this->Users[clientFd].setHasPass();
 }
 
 bool Server::hasPassword() const {
