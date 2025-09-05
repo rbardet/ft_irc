@@ -1,7 +1,7 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
 
-void Server::handleJoin(int clientFd, const std::string &line)
+void Server::handleJoin(const int &clientFd, const std::string &line)
 {
 	std::string channelName = parseJoinChannelName(line);
 

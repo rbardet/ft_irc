@@ -36,13 +36,13 @@ const std::string Server::getUserToKick(const std::string &line) const {
 	return (user);
 }
 
-void Server::handleKick(int clientFd, const std::string &line) {
+void Server::handleKick(const int &clientFd, const std::string &line) {
 	std::string channelName = getChannelName(line);
 	std::string kick = getUserToKick(line);
 	const int kickId = findIdByName(kick);
 
 	if (kickId == -1) {
-		sendRPL(clientFd, ERR_INVALIDUSERNAME, kick, "user does not exist");
+		sendRPL(clientFd, ERR_INVALIDUSERNAME, kick, MSG_ERR_WRONGUSER);
 		return ;
 	}
 
@@ -50,7 +50,7 @@ void Server::handleKick(int clientFd, const std::string &line) {
 	std::cout << kick << std::endl;
 
 	if (kick.empty()) {
-		sendRPL(clientFd, ERR_NEEDMOREPARAMS, kick, "no param given to kick");
+		sendRPL(clientFd, ERR_NEEDMOREPARAMS, kick, MSG_ERR_NEEDMOREPARAMS);
 		return ;
 	}
 
@@ -59,14 +59,13 @@ void Server::handleKick(int clientFd, const std::string &line) {
 			std::cout << it->getName() << std::endl;
 			if (it->getName() == channelName) {
 				if (!it->hasPerm(clientFd)) {
-					std::cout << "NO PERM" << std::endl;
-					sendRPL(clientFd, ERR_NOPERMFORHOST, kick, "you have no perm on this channel");
+					sendRPL(clientFd, ERR_NOPERMFORHOST, this->Users[clientFd].getNickname(), MSG_ERR_NOPERMS);
 					return ;
 				} else if (!it->isMember(kickId)) {
-					std::cout << "NOT MEMBER" << std::endl;
-					sendRPL(clientFd, ERR_USERNOTINCHANNEL, kick, kick + " is not in this channel");
+					sendRPL(clientFd, ERR_USERNOTINCHANNEL, this->Users[clientFd].getNickname(), MSG_ERR_USERNOTINCHANNEL);
 					return ;
 				} else {
+<<<<<<< HEAD
 					// RFC confirmation - diffuser avant de retirer le membre
 					// std::string kicker = findNameById(clientFd);
 					// std::string reason = "Kicked by " + kicker;
@@ -74,11 +73,13 @@ void Server::handleKick(int clientFd, const std::string &line) {
 
 					sendRPL(kickId, ERR_KICKEDFROMCHAN, kick, kick + " just got kicked from " + channelName);
 					std::cout << kick << " VA ETRE KICK DE " << channelName << " SON FD EST" << kickId << std::endl;
+=======
+					sendRPL(kickId, ERR_KICKEDFROMCHAN, this->Users[clientFd].getNickname(), MSG_SUCCESS_KICK);
+>>>>>>> refs/remotes/origin/main
 					it->removeMember(kickId);
 					return ;
 				}
 			}
 		}
 	}
-	std::cout << "NULLLLL" << std::endl;
 }

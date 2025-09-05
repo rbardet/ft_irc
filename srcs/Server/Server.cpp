@@ -121,9 +121,8 @@ void Server::acceptUser() {
 		this->Users[userFd].setHasPass();
 	}
 
-	sendRPL(userFd, ERR_NOTREGISTERED, this->Users[userFd].getNickname(), "please enter a nickname and username");
 	if (this->hasPassword() && !this->Users[userFd].getHasPass()) {
-		sendRPL(userFd, ERR_NOTREGISTERED, this->Users[userFd].getNickname(), "enter the server pass before using it");
+		sendRPL(userFd, ERR_NOTREGISTERED, this->Users[userFd].getNickname(), MSG_NEED_PASS);
 	}
 
 	this->Users[userFd].tryRegisterUser();
@@ -159,25 +158,37 @@ void Server::parseInput(int clientFd) {
 	}
 }
 
+<<<<<<< HEAD
 void Server::handleLine(int clientFd, const std::string &line) {
 	if (line.find("NICK", 0) == 0) {
 		handleNick(clientFd, line);
 	} else if (line.find("USER", 0) == 0) {
 		handleUsername(clientFd, line);
 	} else if (line.find("PASS", 0) == 0) {
+=======
+void Server::handleLine(const int &clientFd, const std::string &line) {
+	if (line.find(CMD_NICK, 0) == 0) {
+		handleNick(clientFd, line);
+		return ;
+	} else if (line.find(CMD_USER, 0) == 0) {
+		handleUsername(clientFd, line);
+		return ;
+	} else if (line.find(CMD_PASS, 0) == 0) {
+>>>>>>> refs/remotes/origin/main
 		handlePass(clientFd, line);
-	}
-
-	if (!this->Users[clientFd].getIsRegister()) {
-		std::cout << "NOT REGISTER" << std::endl;
-		std::cout << "NICKNAME: " << this->Users[clientFd].getHasNickname() << std::endl;
-		std::cout << "USERNAME: " << this->Users[clientFd].getHasUsername() << std::endl;
-		std::cout << "PASSWORD: " << this->Users[clientFd].getHasPass() << std::endl;
-		std::cout << "ISREGISTER: " << this->Users[clientFd].getIsRegister() << std::endl;
 		return ;
 	}
 
-	std::cout << "REGISTERED" << std::endl;
+	if (!this->Users[clientFd].getIsRegister()) {
+		if (!this->Users[clientFd].getHasNickname() && this->Users[clientFd].getWelcomeMessage()) {
+			sendRPL(clientFd, ERR_NOTREGISTERED, "guest", MSG_NEED_NICK);
+		}
+
+		if (!this->Users[clientFd].getHasUsername() && this->Users[clientFd].getWelcomeMessage()) {
+			sendRPL(clientFd, ERR_NOTREGISTERED, "guest", MSG_NEED_USER);
+		}
+		return ;
+	}
 
 	if (line.find(CMD_JOIN, 0) == 0) {
 		handleJoin(clientFd, line);
@@ -189,8 +200,11 @@ void Server::handleLine(int clientFd, const std::string &line) {
 	}
 	else if (line.find(CMD_MODE, 0) == 0) {
 		handleMode(clientFd, line);
-	} else {
-		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + " this command is unknown" );
+	} else if (line.find(CMD_TOPIC, 0) == 0) {
+		handleTopic(clientFd, line);
+	}
+	else {
+		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + MSG_ERR_UNKNOWNCOMMAND);
 	}
 }
 
@@ -199,17 +213,21 @@ void Server::sendRPL(const int &clientFd, std::string code, const std::string &n
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
-void Server::handlePass(const int clientFd, const std::string &line) {
+void Server::handlePass(const int &clientFd, const std::string &line) {
+
 	if (this->password.empty()) {
 		return ;
 	}
 
 	std::string pass = getParam(PASS_CMD_LENGTH, line);
+
 	if (pass.empty() || pass != this->password) {
-		sendRPL(clientFd, ERR_PASSWDMISMATCH, this->findNameById(clientFd), "Wrong password");
+		sendRPL(clientFd, ERR_PASSWDMISMATCH, this->findNameById(clientFd), MSG_ERR_PASSWDMISMATCH);
 		this->Users[clientFd].closeConnection();
 		return ;
 	}
+
+	this->Users[clientFd].setHasPass();
 }
 
 bool Server::hasPassword() const {

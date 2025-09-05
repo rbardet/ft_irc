@@ -27,6 +27,8 @@ private:
 	bool		hasUsername;
 	bool		hasPass;
 	bool		isRegister;
+
+	bool		welcomeMessage;
 public:
 	User();
 	User(const User &src);
@@ -50,5 +52,7 @@ public:
 	const bool &getHasNickname() {return (this->hasNickname);};
 	const bool &getHasUsername() {return (this->hasUsername);};
 	const bool &getHasPass() {return (this->hasPass);};
+	const bool &getWelcomeMessage() {return (this->welcomeMessage);};
 	void tryRegisterUser();
+	void hasWelcomeMessage() {this->welcomeMessage = true;};
 };
