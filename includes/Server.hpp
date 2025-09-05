@@ -57,11 +57,16 @@ public:
 	void	handleKick(const int &clientFd, const std::string &line);
 	void	handlePing(const int &clientFd, const std::string &line);
 
+	// KICK
 	const	std::string getUserToKick(const std::string &line) const;
 	const	std::string getChannelName(const std::string &line) const;
+	const	std::string getReason(const std::string &line) const;
+	void	broadcastKickConfirmation(const std::string &channelName, const std::string &kicker, const std::string &victim, const std::string &reason);
 
 	const	std::string getTopic(const std::string &line) const;
 	void	sendTopic(const int &clientFd, const Channel &channel);
+	void	broadcastNewTopic(const std::string &topic, const std::string &channelName, const int &clientFd, Channel &channel);
+	void	broadcastTopic(const int &clientFd, Channel &channel);
 
 	bool		nickAlreadyInUse(const std::string &nick);
 	void		welcomeUser(const int &code, const std::string &name) const;
@@ -87,6 +92,5 @@ public:
 	// RFC confirmations
 	void		broadcastJoinToChannel(const std::string &channelName, int clientFd) const;
 	void		sendNamesList(int clientFd, const std::string &channelName) const;
-	void		broadcastKickConfirmation(const std::string &channelName, const std::string &kicker, const std::string &victim, const std::string &reason) const;
-
+	void		broadcastToAllMember(Channel chanel, const std::string message);
 };

@@ -155,7 +155,9 @@ void Server::parseInput(int clientFd) {
 }
 
 void Server::handleLine(const int &clientFd, const std::string &line) {
-	if (line.find(CMD_NICK, 0) == 0) {
+	if (line.find(CMD_PING, 0) == 0) {
+		handlePing(clientFd, line);
+	} else if (line.find(CMD_NICK, 0) == 0) {
 		handleNick(clientFd, line);
 		return ;
 	} else if (line.find(CMD_USER, 0) == 0) {
@@ -187,10 +189,7 @@ void Server::handleLine(const int &clientFd, const std::string &line) {
 		handleMode(clientFd, line);
 	} else if (line.find(CMD_TOPIC, 0) == 0) {
 		handleTopic(clientFd, line);
-	} else if (line.find(CMD_PING, 0) == 0) {
-		handlePing(clientFd, line);
-	}
-	else {
+	} else {
 		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + MSG_ERR_UNKNOWNCOMMAND);
 	}
 }
@@ -226,13 +225,24 @@ bool Server::hasPassword() const {
 }
 
 void Server::handlePing(const int &clientFd, const std::string &line) {
-	const std::string pong = getParam(PING_CMD_LENGTH, line);
+	const std::string param = getParam(PING_CMD_LENGTH, line);
 
-	if (pong.empty()) {
+	if (param.empty()) {
 		sendRPL(clientFd, ERR_NOORIGIN, this->Users[clientFd].getNickname(), MSG_ERR_NOORIGIN);
 		return ;
 	}
 
+	const std::string pong = param + "\r\n";
+
 	std::cout << "PONG RESPONSE:" << pong << std::endl;
 	send(clientFd, pong.c_str(), pong.size(), 0);
+}
+
+void Server::broadcastToAllMember(Channel chanel, const std::string message) {
+	std::vector<int> members = chanel.getAllMembers();
+
+	for (std::vector<int>::iterator it = members.begin(); it != members.end(); ++it) {
+		std::cout << "MESSAGE BROADCAST A " << *it << std::endl;
+		send(*it, message.c_str(), message.size(), 0);
+	}
 }

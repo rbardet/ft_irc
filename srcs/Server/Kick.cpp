@@ -18,13 +18,13 @@ const std::string Server::getChannelName(const std::string &line) const {
 const std::string Server::getUserToKick(const std::string &line) const {
 	const size_t channelPos = line.find('#');
 	if (channelPos == std::string::npos)
-		return "";
+		return (EMPTY_STRING);
 
 	const std::string tmp = line.substr(channelPos);
 
 	size_t skipChannel = tmp.find(' ');
 	if (skipChannel == std::string::npos)
-		return "";
+		return (EMPTY_STRING);
 
 	size_t userStart = skipChannel + 1;
 
@@ -36,9 +36,21 @@ const std::string Server::getUserToKick(const std::string &line) const {
 	return (user);
 }
 
+const std::string Server::getReason(const std::string &line) const {
+	const size_t reasonPos = line.find(':');
+	if (reasonPos == std::string::npos) {
+		return("No reason");
+	}
+
+	const std::string reason = line.substr(reasonPos + 1);
+
+	return (reason);
+}
+
 void Server::handleKick(const int &clientFd, const std::string &line) {
-	std::string channelName = getChannelName(line);
-	std::string kick = getUserToKick(line);
+	const std::string channelName = getChannelName(line);
+	const std::string kick = getUserToKick(line);
+	const std::string reason = getReason(line);
 	const int kickId = findIdByName(kick);
 
 	if (kickId == -1) {
@@ -66,7 +78,6 @@ void Server::handleKick(const int &clientFd, const std::string &line) {
 					return ;
 				} else {
 					std::string kicker = findNameById(clientFd);
-					std::string reason = "Kicked by " + kicker;
 					broadcastKickConfirmation(channelName, kicker, kick, reason);
 					it->removeMember(kickId);
 					return ;
@@ -75,3 +86,19 @@ void Server::handleKick(const int &clientFd, const std::string &line) {
 		}
 	}
 }
+
+
+void Server::broadcastKickConfirmation(const std::string &channelName, const std::string &kicker, const std::string &victim, const std::string &reason) {
+	for (std::vector<Channel>::const_iterator it = channelList.begin(); it != channelList.end(); ++it) {
+		if (it->getName() == channelName) {
+			std::string kickerUser = Users.at(findIdByName(kicker)).getUsername();
+			std::string kickerHost = "localhost";
+
+			const std::string kickMsg = ":" + kicker + "!" + kickerUser + "@" + kickerHost + " KICK " + channelName + " " + victim + " :" + reason + "\r\n";
+
+			broadcastToAllMember(*it, kickMsg);
+			return ;
+		}
+	}
+}
+

@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:39:17 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/05 20:41:02 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/05 22:46:12 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,10 @@
 
 #define REMOVE_LIMIT 0
 
-#define TO_BE_ON_INDEX_OF_CHANNEL 1
-#define TO_BE_ON_INDEX_OF_MODE 1
-#define TO_BE_ON_ON_INDEX_OF_ARG 4
+#define JUMP_TO_CHANNEL 1
+#define JUMP_TO_MODE 1
+#define JUMP_TO_ARG 4
+#define JUMP_TO_TOPIC 2
 
 #define RPL_WELCOME "001"
 #define RPL_YOURHOST "002"
@@ -85,6 +86,6 @@
 #define MSG_NEED_NICK "You have no nickname, enter one </nick>"
 #define MSG_NEED_USER "You have no username, enter one </user>"
 #define MSG_SUCCESS_KICK "The user got kicked from the channel"
-#define MSG_NEED_TOPIC " No topic set for this channel"
+#define MSG_NEED_TOPIC "No topic is set"
 
 const std::string getParam(int cmdLength, const std::string &line);
