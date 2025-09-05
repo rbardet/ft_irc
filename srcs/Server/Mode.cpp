@@ -12,7 +12,6 @@ void Server::handleMode(int clientFd, const std::string &line)
 	if (space_after_channelName == std::string::npos)
 		return;
 
-<<<<<<< HEAD
 	std::string channelName = line.substr(space_after_mode + TO_BE_ON_INDEX_OF_CHANNEL, space_after_channelName - space_after_mode - 1);
 	std::string mode = line.substr(space_after_channelName + TO_BE_ON_INDEX_OF_MODE, 2);
 
@@ -25,17 +24,6 @@ void Server::handleMode(int clientFd, const std::string &line)
 		arg = "";
 	else
 	    arg = line.substr(space_after_channelName + TO_BE_ON_ON_INDEX_OF_ARG);
-=======
-	std::string channelName = line.substr(idx_after_mode + 1, idx_after_channelName - idx_after_mode - 1);
-	std::string mode = line.substr(idx_after_channelName + 1, 2);
-	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
-		return;
-	std::string arg = line.substr(idx_after_channelName + 4);
-
-	if (arg.empty()) {
-		arg = "";
-	}
->>>>>>> refs/remotes/origin/main
 
 	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
 		return;

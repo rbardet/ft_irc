@@ -158,14 +158,6 @@ void Server::parseInput(int clientFd) {
 	}
 }
 
-<<<<<<< HEAD
-void Server::handleLine(int clientFd, const std::string &line) {
-	if (line.find("NICK", 0) == 0) {
-		handleNick(clientFd, line);
-	} else if (line.find("USER", 0) == 0) {
-		handleUsername(clientFd, line);
-	} else if (line.find("PASS", 0) == 0) {
-=======
 void Server::handleLine(const int &clientFd, const std::string &line) {
 	if (line.find(CMD_NICK, 0) == 0) {
 		handleNick(clientFd, line);
@@ -174,7 +166,6 @@ void Server::handleLine(const int &clientFd, const std::string &line) {
 		handleUsername(clientFd, line);
 		return ;
 	} else if (line.find(CMD_PASS, 0) == 0) {
->>>>>>> refs/remotes/origin/main
 		handlePass(clientFd, line);
 		return ;
 	}
