@@ -20,13 +20,15 @@ void Server::welcomeUser(const int &clientFd, const std::string &name) const {
 void Server::handleNick(int clientFd, const std::string &line) {
 	std::string nick = getParam(NICK_CMD_LENGTH, line);
 
+	welcomeUser(clientFd, nick);
+
 	if (nick.empty()) {
-		sendRPL(clientFd, ERR_NONICKNAMEGIVEN, this->findNameById(clientFd), "no nickname given");
+		sendRPL(clientFd, ERR_NONICKNAMEGIVEN, this->findNameById(clientFd), MSG_ERR_NEEDMOREPARAMS);
 		return ;
 	}
 
 	if (this->nickAlreadyInUse(nick)) {
-		sendRPL(clientFd, ERR_NICKCOLLISION, this->findNameById(clientFd), "this nick is already in use");
+		sendRPL(clientFd, ERR_NICKCOLLISION, this->findNameById(clientFd), MSG_ERR_NICKCOLLISION);
 		return ;
 	}
 
@@ -35,15 +37,13 @@ void Server::handleNick(int clientFd, const std::string &line) {
 	this->Users[clientFd].setHasNickname();
 
 	this->Users[clientFd].tryRegisterUser();
-
-	welcomeUser(clientFd, nick);
 }
 
 void Server::handleUsername(int clientFd, const std::string &line) {
 	std::string username = getParam(USER_CMD_LENGTH, line);
 
 	if (username.empty()) {
-		sendRPL(clientFd, ERR_NEEDMOREPARAMS, this->findNameById(clientFd), "no username given");
+		sendRPL(clientFd, ERR_NEEDMOREPARAMS, this->findNameById(clientFd), MSG_ERR_NEEDMOREPARAMS);
 		return ;
 	}
 

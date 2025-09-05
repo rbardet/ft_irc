@@ -12,7 +12,8 @@
 
 #include "../includes/User.hpp"
 
-User::User() : nickname(""), username(""), input(""), fd(0) {}
+User::User() : nickname(""), username(""), input(""), fd(0),
+hasNickname(false), hasUsername(false), hasPass(false) {}
 User::User(const User &src) {
 	*this = src;
 }

@@ -121,9 +121,8 @@ void Server::acceptUser() {
 		this->Users[userFd].setHasPass();
 	}
 
-	sendRPL(userFd, ERR_NOTREGISTERED, this->Users[userFd].getNickname(), "please enter a nickname and username");
 	if (this->hasPassword() && !this->Users[userFd].getHasPass()) {
-		sendRPL(userFd, ERR_NOTREGISTERED, this->Users[userFd].getNickname(), "enter the server pass before using it");
+		sendRPL(userFd, ERR_NOTREGISTERED, this->Users[userFd].getNickname(), MSG_NEED_PASS);
 	}
 
 	this->Users[userFd].tryRegisterUser();
@@ -169,6 +168,13 @@ void Server::handleLine(int clientFd, const std::string &line) {
 	}
 
 	if (!this->Users[clientFd].getIsRegister()) {
+		if (!this->Users[clientFd].getHasNickname()) {
+			sendRPL(clientFd, ERR_NOTREGISTERED, "guest", MSG_NEED_NICK);
+		}
+
+		if (!this->Users[clientFd].getHasUsername()) {
+			sendRPL(clientFd, ERR_NOTREGISTERED, "guest", MSG_NEED_USER);
+		}
 		std::cout << "NOT REGISTER" << std::endl;
 		std::cout << "NICKNAME: " << this->Users[clientFd].getHasNickname() << std::endl;
 		std::cout << "USERNAME: " << this->Users[clientFd].getHasUsername() << std::endl;
@@ -190,7 +196,7 @@ void Server::handleLine(int clientFd, const std::string &line) {
 	else if (line.find(CMD_MODE, 0) == 0) {
 		handleMode(clientFd, line);
 	} else {
-		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + " this command is unknown" );
+		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + MSG_ERR_UNKNOWNCOMMAND);
 	}
 }
 
@@ -200,13 +206,16 @@ void Server::sendRPL(const int &clientFd, std::string code, const std::string &n
 }
 
 void Server::handlePass(const int clientFd, const std::string &line) {
+	std::cout << "handle pass" << std::endl;
+
 	if (this->password.empty()) {
+		std::cout << "no pass given" << std::endl;
 		return ;
 	}
 
 	std::string pass = getParam(PASS_CMD_LENGTH, line);
 	if (pass.empty() || pass != this->password) {
-		sendRPL(clientFd, ERR_PASSWDMISMATCH, this->findNameById(clientFd), "Wrong password");
+		sendRPL(clientFd, ERR_PASSWDMISMATCH, this->findNameById(clientFd), MSG_ERR_PASSWDMISMATCH);
 		this->Users[clientFd].closeConnection();
 		return ;
 	}
