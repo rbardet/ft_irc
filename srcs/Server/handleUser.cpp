@@ -55,8 +55,8 @@ void Server::handleUsername(const int &clientFd, const std::string &line) {
 	this->Users[clientFd].tryRegisterUser();
 }
 
-int Server::findIdByName(const std::string &name) {
-	for (std::map<int, User>::iterator it = this->Users.begin(); it != this->Users.end(); ++it) {
+int Server::findIdByName(const std::string &name) const {
+	for (std::map<int, User>::const_iterator it = this->Users.begin(); it != this->Users.end(); ++it) {
 		if (it->second.getNickname() == name) {
 			return (it->first);
 		}
@@ -64,11 +64,12 @@ int Server::findIdByName(const std::string &name) {
 	return (-1);
 }
 
-std::string Server::findNameById(const int &clientFd) {
-	for (std::map<int, User>::iterator it = this->Users.begin(); it != this->Users.end(); ++it) {
+std::string Server::findNameById(const int &clientFd) const {
+	for (std::map<int, User>::const_iterator it = this->Users.begin(); it != this->Users.end(); ++it) {
 		if (it->second.getFd() == clientFd) {
 			return (it->second.getNickname());
 		}
 	}
 	return (" ");
 }
+

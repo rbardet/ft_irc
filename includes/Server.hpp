@@ -64,8 +64,8 @@ public:
 
 	bool		nickAlreadyInUse(const std::string &nick);
 	void		welcomeUser(const int &code, const std::string &name) const;
-	int			findIdByName(const std::string &name);
-	std::string	findNameById(const int &clientFd);
+	int 		findIdByName(const std::string &name) const;
+	std::string	findNameById(const int &clientFd) const;
 
 	//   JOIN
 	std::string	parseJoinChannelName(const std::string &line);
@@ -82,5 +82,10 @@ public:
 	void 		execMode(int clientFd, const std::string &channelName, const std::string &mode, std::string arg = "");
 	void 		setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg = "");
 	char		extractFlag(const std::string &mode);
+
+	// RFC confirmations
+	void		broadcastJoinToChannel(const std::string &channelName, int clientFd) const;
+	void		sendNamesList(int clientFd, const std::string &channelName) const;
+	void		broadcastKickConfirmation(const std::string &channelName, const std::string &kicker, const std::string &victim, const std::string &reason) const;
 
 };
