@@ -19,8 +19,8 @@ void Server::handleJoin(const int &clientFd, const std::string &line)
 		std::cout << "New channel created: " << channelName << " by user " << clientFd << std::endl;
 	}
 
-	// broadcastJoinToChannel(channelName, clientFd);
-	// sendNamesList(clientFd, channelName);
+	broadcastJoinToChannel(channelName, clientFd);
+	sendNamesList(clientFd, channelName);
 }
 
 std::string Server::parseJoinChannelName(const std::string &line)
