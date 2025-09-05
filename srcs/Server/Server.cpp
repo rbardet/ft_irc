@@ -121,10 +121,6 @@ void Server::acceptUser() {
 		this->Users[userFd].setHasPass();
 	}
 
-	if (this->hasPassword() && !this->Users[userFd].getHasPass()) {
-		sendRPL(userFd, ERR_NOTREGISTERED, this->Users[userFd].getNickname(), MSG_NEED_PASS);
-	}
-
 	this->Users[userFd].tryRegisterUser();
 	std::cout << "New User on fd : " << userFd << std::endl;
 }
@@ -185,14 +181,14 @@ void Server::handleLine(const int &clientFd, const std::string &line) {
 		handleJoin(clientFd, line);
 	} else if (line.find(CMD_KICK, 0) == 0) {
 		handleKick(clientFd, line);
-	}
-	else if (line.find(CMD_PRIVMSG, 0) == 0) {
+	} else if (line.find(CMD_PRIVMSG, 0) == 0) {
 		handleChannelMessage(clientFd, line);
-	}
-	else if (line.find(CMD_MODE, 0) == 0) {
+	} else if (line.find(CMD_MODE, 0) == 0) {
 		handleMode(clientFd, line);
 	} else if (line.find(CMD_TOPIC, 0) == 0) {
 		handleTopic(clientFd, line);
+	} else if (line.find(CMD_PING, 0) == 0) {
+		handlePing(clientFd, line);
 	}
 	else {
 		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + MSG_ERR_UNKNOWNCOMMAND);
@@ -214,6 +210,7 @@ void Server::handlePass(const int &clientFd, const std::string &line) {
 
 	if (pass.empty() || pass != this->password) {
 		sendRPL(clientFd, ERR_PASSWDMISMATCH, this->findNameById(clientFd), MSG_ERR_PASSWDMISMATCH);
+		sendRPL(clientFd, ERR_YOUWILLBEBANNED, this->findNameById(clientFd), MSG_ERR_YOUWILLBEBANNED);
 		this->Users[clientFd].closeConnection();
 		return ;
 	}
@@ -226,4 +223,16 @@ bool Server::hasPassword() const {
 		return (false);
 	}
 	return (true);
+}
+
+void Server::handlePing(const int &clientFd, const std::string &line) {
+	const std::string pong = getParam(PING_CMD_LENGTH, line);
+
+	if (pong.empty()) {
+		sendRPL(clientFd, ERR_NOORIGIN, this->Users[clientFd].getNickname(), MSG_ERR_NOORIGIN);
+		return ;
+	}
+
+	std::cout << "PONG RESPONSE: " << pong << std::endl;
+	send(clientFd, pong.c_str(), pong.size(), 0);
 }

@@ -5,7 +5,7 @@ const std::string Server::getChannelName(const std::string &line) const {
 	std::cout << line << std::endl;
 	const size_t channelPos = line.find('#');
 	if (channelPos == std::string::npos) {
-		return (" ");
+		return (EMPTY_STRING);
 	}
 
 	const std::string tmp = line.substr(channelPos, line.length());
@@ -42,7 +42,7 @@ void Server::handleKick(const int &clientFd, const std::string &line) {
 	const int kickId = findIdByName(kick);
 
 	if (kickId == -1) {
-		sendRPL(clientFd, ERR_INVALIDUSERNAME, kick, MSG_ERR_WRONGUSER);
+		sendRPL(clientFd, ERR_INVALIDUSERNAME, this->Users[clientFd].getNickname(), MSG_ERR_WRONGUSER);
 		return ;
 	}
 
@@ -50,7 +50,7 @@ void Server::handleKick(const int &clientFd, const std::string &line) {
 	std::cout << kick << std::endl;
 
 	if (kick.empty()) {
-		sendRPL(clientFd, ERR_NEEDMOREPARAMS, kick, MSG_ERR_NEEDMOREPARAMS);
+		sendRPL(clientFd, ERR_NEEDMOREPARAMS, this->Users[clientFd].getNickname(), MSG_ERR_NEEDMOREPARAMS);
 		return ;
 	}
 
