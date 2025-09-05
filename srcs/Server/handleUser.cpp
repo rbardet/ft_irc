@@ -18,7 +18,7 @@ void Server::welcomeUser(const int &clientFd, const std::string &name) const {
 }
 
 void Server::handleNick(int clientFd, const std::string &line) {
-	std::string nick = getParam(NICK_CMD, line);
+	std::string nick = getParam(NICK_CMD_LENGTH, line);
 
 	if (nick.empty()) {
 		sendRPL(clientFd, ERR_NONICKNAMEGIVEN, this->findNameById(clientFd), "no nickname given");
@@ -40,7 +40,7 @@ void Server::handleNick(int clientFd, const std::string &line) {
 }
 
 void Server::handleUsername(int clientFd, const std::string &line) {
-	std::string username = getParam(USER_CMD, line);
+	std::string username = getParam(USER_CMD_LENGTH, line);
 
 	if (username.empty()) {
 		sendRPL(clientFd, ERR_NEEDMOREPARAMS, this->findNameById(clientFd), "no username given");

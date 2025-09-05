@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:39:17 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/04 22:22:59 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/05 18:26:17 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,18 @@
 
 #define SERV_NAME "ircserv"
 
-#define MODE_CMD 5
-#define NICK_CMD 5
-#define USER_CMD 5
-#define PASS_CMD 5
+#define CMD_MODE "MODE"
+#define CMD_NICK "NICK"
+#define CMD_USER "USER"
+#define CMD_PASS "PASS"
+#define CMD_JOIN "JOIN"
+#define CMD_KICK "KICK"
+#define CMD_PRIVMSG "PRIVMSG"
+
+#define MODE_CMD_LENGTH 5
+#define NICK_CMD_LENGTH 5
+#define USER_CMD_LENGTH 5
+#define PASS_CMD_LENGTH 5
 
 #define MODE_CHAR 1
 
@@ -47,5 +55,6 @@
 #define ERR_KICKEDFROMCHAN	"470"
 #define ERR_UNKNOWNMODE "472"
 #define ERR_NOPRIVILEGES "481"
+
 
 const std::string getParam(int cmdLength, const std::string &line);

@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 14:30:37 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/04 22:41:53 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/05 17:52:05 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ public:
 	void		welcomeUser(const int &code, const std::string &name) const;
 	int			findIdByName(const std::string &name);
 	std::string	findNameById(const int &clientFd);
-	bool		hasRegistered(int clientFd);
 
 	//   JOIN
 	std::string	parseJoinChannelName(const std::string &line);
