@@ -21,6 +21,7 @@ void Server::handleNick(int clientFd, const std::string &line) {
 	std::string nick = getParam(NICK_CMD_LENGTH, line);
 
 	welcomeUser(clientFd, nick);
+	this->Users[clientFd].hasWelcomeMessage();
 
 	if (nick.empty()) {
 		sendRPL(clientFd, ERR_NONICKNAMEGIVEN, this->findNameById(clientFd), MSG_ERR_NEEDMOREPARAMS);

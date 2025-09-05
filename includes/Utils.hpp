@@ -6,7 +6,7 @@
 /*   By: rbardet- <rbardet-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 14:39:17 by rbardet-          #+#    #+#             */
-/*   Updated: 2025/09/05 19:04:19 by rbardet-         ###   ########.fr       */
+/*   Updated: 2025/09/05 19:06:19 by rbardet-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,8 @@
 #define MSG_ERR_NICKCOLLISION "This nickname is already in use"
 #define MSG_ERR_UNKNOWNCOMMAND " This command is unknown"
 #define MSG_NEED_PASS "This server has a password enter it before using it"
-#define MSG_NEED_NICK "You have no username, enter one </nick>"
-#define MSG_NEED_USER "You have no nickname, enter one </user>"
+#define MSG_NEED_NICK "You have no nickname, enter one </nick>"
+#define MSG_NEED_USER "You have no username, enter one </user>"
 #define MSG_SUCCESS_KICK "The user got kicked from the channel"
 
 const std::string getParam(int cmdLength, const std::string &line);

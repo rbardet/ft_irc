@@ -168,11 +168,11 @@ void Server::handleLine(int clientFd, const std::string &line) {
 	}
 
 	if (!this->Users[clientFd].getIsRegister()) {
-		if (!this->Users[clientFd].getHasNickname()) {
+		if (!this->Users[clientFd].getHasNickname() && this->Users[clientFd].getWelcomeMessage()) {
 			sendRPL(clientFd, ERR_NOTREGISTERED, "guest", MSG_NEED_NICK);
 		}
 
-		if (!this->Users[clientFd].getHasUsername()) {
+		if (!this->Users[clientFd].getHasUsername() && this->Users[clientFd].getWelcomeMessage()) {
 			sendRPL(clientFd, ERR_NOTREGISTERED, "guest", MSG_NEED_USER);
 		}
 		std::cout << "NOT REGISTER" << std::endl;
@@ -214,6 +214,7 @@ void Server::handlePass(const int clientFd, const std::string &line) {
 	}
 
 	std::string pass = getParam(PASS_CMD_LENGTH, line);
+	std::cout << pass << " MOT DE PASSE DU USER" << std::endl;
 	if (pass.empty() || pass != this->password) {
 		sendRPL(clientFd, ERR_PASSWDMISMATCH, this->findNameById(clientFd), MSG_ERR_PASSWDMISMATCH);
 		this->Users[clientFd].closeConnection();
