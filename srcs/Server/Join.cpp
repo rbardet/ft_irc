@@ -53,16 +53,31 @@ void Server::createChannel(const std::string &channelName, int creatorFd) {
 	channelList.push_back(Channel(channelName, creatorFd));
 }
 
-void Server::joinExistingChannel(const std::string &channelName, int userFd) {
-	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
-		if (it->getName() == channelName) {
-			it->addMember(userFd);
-			break;
-		}
-	}
+
+
+void Server::joinExistingChannel(const std::string &channelName, int userFd)
+{
+    std::string nick = findNameById(userFd);
+    std::string serverName = "server"; // Remplace par le hostname réel de ton serveur
+
+    for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)     
+    {
+        if (it->getName() == channelName) 
+        {
+            if (!it->isSpace()) 
+            {
+                std::string reply = ":" + serverName + " 471 " + nick + " " + channelName + " :Cannot join channel (+l)\r\n";
+                send(userFd, reply.c_str(), reply.length(), 0);
+                std::cout << "Sent ERR_CHANNELISFULL to " << nick << std::endl;
+                return;
+            }
+            it->addMember(userFd);
+            it->user_joined++;
+            std::cout << "User " << nick << " joined existing channel: " << channelName << std::endl;
+            break;
+        }
+    }
 }
-
-
 
 
 
