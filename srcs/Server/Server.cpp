@@ -104,6 +104,20 @@ void Server::acceptUser() {
 
 	fcntl(userFd, F_SETFL, O_NONBLOCK);
 
+	// // Récupérer l'adresse IP du client 
+    // struct sockaddr_in clientAddr;
+    // socklen_t addrLen = sizeof(clientAddr);
+    // if (getpeername(userFd, (struct sockaddr*)&clientAddr, &addrLen) == -1) {
+    //     std::cerr << "Failed to get client IP" << std::endl;
+    //     return;
+    // }
+    // std::cout << "New User connected from IP: " 
+    //           << inet_ntoa(clientAddr.sin_addr) 
+    //           << " Port: " 
+    //           << ntohs(clientAddr.sin_port) 
+    //           << std::endl;
+
+
 	epoll_event UserEvent;
 	UserEvent.events = EPOLLIN;
 	UserEvent.data.fd = userFd;
