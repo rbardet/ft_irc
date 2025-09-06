@@ -12,6 +12,7 @@
 #include <signal.h>
 #include <map>
 #include <fcntl.h>
+#include <vector>
 
 #include "User.hpp"
 #include "Channel.hpp"
@@ -76,10 +77,10 @@ public:
 	std::string	findNameById(const int &clientFd) const;
 
 	//   JOIN
-	std::string	parseJoinChannelName(const std::string &line);
-	bool		channelExists(const std::string &channelName);
-	void		createChannel(const std::string &channelName, int creatorFd);
-	bool		joinExistingChannel(const std::string &channelName, int userFd);
+	std::vector<std::string>	parseJoinChannelName(const std::string &line);
+	bool						channelExists(const std::string &channelName);
+	void						createChannel(const std::string &channelName, int creatorFd);
+	bool						joinExistingChannel(const std::string &channelName, const std::string &key, int userFd);
 	// Messages dans les channels (chat normal IRC) irssi écrit privmsg direct
 	void		handleChannelMessage(int clientFd, const std::string &line);
 	void		broadcastToChannel(const std::string &channelName, const std::string &message, int senderFd);
@@ -87,8 +88,8 @@ public:
 
 	//  MODE
 	void		handleMode(int clientFd, const std::string &line);
-	void 		execMode(int clientFd, const std::string &channelName, const std::string &mode, std::string arg = "");
-	void 		setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg = "");
+	void 		execMode(int clientFd, const std::string &channelName, const std::string &mode, std::string arg);
+	void 		setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg);
 	char		extractFlag(const std::string &mode);
 
 	// RFC confirmations
