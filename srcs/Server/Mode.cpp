@@ -35,7 +35,7 @@ void Server::handleMode(int clientFd, const std::string &line)
 }
 
 
-// version clean qui marche pas 
+// version clean qui marche pas
 
 // void Server::handleMode(int clientFd, const std::string &line)
 // {
@@ -46,7 +46,7 @@ void Server::handleMode(int clientFd, const std::string &line)
 //     size_t space_after_channelName = line.find(' ', space_after_mode + 1);
 //     std::string channelName, mode, arg;
 
-//     if (space_after_channelName != std::string::npos) 
+//     if (space_after_channelName != std::string::npos)
 //         channelName = line.substr(space_after_mode + JUMP_TO_CHANNEL, space_after_channelName - space_after_mode - 1);
 // 	else
 //         channelName = line.substr(space_after_mode + JUMP_TO_MODE);
@@ -57,10 +57,10 @@ void Server::handleMode(int clientFd, const std::string &line)
 
 //     mode = line.substr(space_after_channelName + JUMP_TO_MODE, 1);
 
-//     if (!mode.empty() && (mode[0] == '+' || mode[0] == '-')) 
+//     if (!mode.empty() && (mode[0] == '+' || mode[0] == '-'))
 // 	{
 //         size_t space_after_mode = line.find(' ', space_after_channelName + 1);
-//         if (space_after_mode != std::string::npos) 
+//         if (space_after_mode != std::string::npos)
 //             arg = line.substr(space_after_mode + JUMP_TO_ARG);
 //         execMode(clientFd, channelName, mode, arg);
 //     }
@@ -80,6 +80,28 @@ void Server::execMode(int clientFd, const std::string &channelName, const std::s
 		setMode(clientFd, channelName, mode_case, true, arg);
 	else
 		setMode(clientFd, channelName, mode_case, false, arg);
+}
+
+void Server::noticeMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status) {
+	std::string flag;
+	if (status) {
+		flag += "+";
+		flag += mode;
+	} else {
+		flag += "-";
+		flag += mode;
+	}
+
+	std::string buffer(":");
+
+	buffer += this->Users[clientFd].getNickname() + "!";
+	buffer += this->Users[clientFd].getUsername() + "@";
+	buffer += "localhost MODE ";
+	buffer += channelName + " ";
+	buffer += flag + "\r\n";
+
+	std::cout << "MESSAGE DE MODE BROADCAST:" << buffer << std::endl;
+	broadcastToAllMember(this->findChannelByName(channelName), buffer);
 }
 
 void Server::setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg)
@@ -130,7 +152,7 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 						sendRPL(clientFd, ERR_UNKNOWNMODE, this->findNameById(clientFd), "No such mode");
 				}
 			}
-			else
+			else {
 				switch (mode)
 				{
 					case 'i':
@@ -157,7 +179,10 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 					default:
 						sendRPL(clientFd, ERR_UNKNOWNMODE, this->findNameById(clientFd), "No such mode");
 				}
+			}
+			this->noticeMode(clientFd, channelName, mode, set_or_unset);
 		}
+		return ;
 	}
 	sendRPL(clientFd, ERR_NOSUCHCHANNEL, this->findNameById(clientFd), "No such channel");
 }

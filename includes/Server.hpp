@@ -74,7 +74,7 @@ public:
 
 	int 			findIdByName(const std::string &name) const;
 	std::string		findNameById(const int &clientFd) const;
-	Channel	&findChannelByName(const std::string &channelName);
+	Channel			&findChannelByName(const std::string &channelName);
 
 	//   JOIN
 	std::vector<std::string>	parseJoinChannelName(const std::string &line);
@@ -91,6 +91,7 @@ public:
 	void 		execMode(int clientFd, const std::string &channelName, const std::string &mode, std::string arg);
 	void 		setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg);
 	char		extractFlag(const std::string &mode);
+	void		noticeMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status);
 
 	// RFC confirmations
 	void		broadcastJoinToChannel(const std::string &channelName, int clientFd) const;

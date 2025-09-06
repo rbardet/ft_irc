@@ -82,7 +82,6 @@ void Server::runServer() {
 	while (running) {
 		int eventNumber = epoll_wait(this->epollFd, this->events, MAX_EVENTS, -1);
 		if (eventNumber == -1) {
-			std::cerr << "Failed to get events" << std::endl;
 			continue ;
 		}
 
@@ -126,6 +125,10 @@ void Server::acceptUser() {
 }
 
 void Server::parseInput(int clientFd) {
+	if (this->Users.size() <= 0) {
+		return ;
+	}
+
 	char input[BUFFER_SIZE];
 
 	int inputLength = read(clientFd, input, sizeof(input) - 1);
