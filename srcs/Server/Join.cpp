@@ -1,50 +1,69 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
 
+
 void Server::handleJoin(const int &clientFd, const std::string &line)
 {
-	std::string channelName = parseJoinChannelName(line);
+	std::vector<std::string> channelName_andkey = parseJoinChannelName(line);
 
-	if (channelName.empty()) 
+	if (channelName_andkey[0].empty()) 
 	{
 		std::cout << "Invalid JOIN command received from user " << clientFd << std::endl;
 		return;
 	}
 
-	if (channelExists(channelName)) 
+	if (channelExists(channelName_andkey[0])) 
 	{
-		if (joinExistingChannel(channelName, clientFd)) 
+		if (joinExistingChannel(channelName_andkey[0], channelName_andkey[1], clientFd)) 
 		{
-			std::cout << "User " << clientFd << " joined existing channel: " << channelName << std::endl;
-			broadcastJoinToChannel(channelName, clientFd);
-			sendNamesList(clientFd, channelName);
+			std::cout << "User " << clientFd << " joined existing channel: " << channelName_andkey[0] << std::endl;
+			broadcastJoinToChannel(channelName_andkey[0], clientFd);
+			sendNamesList(clientFd, channelName_andkey[0]);
 		}
 	}
 	else 
 	{
-		createChannel(channelName, clientFd);
-		std::cout << "New channel created: " << channelName << " by user " << clientFd << std::endl;
-		broadcastJoinToChannel(channelName, clientFd);
-		sendNamesList(clientFd, channelName);
+		createChannel(channelName_andkey[0], clientFd);
+		std::cout << "New channel created: " << channelName_andkey[0] << " by user " << clientFd << std::endl;
+		broadcastJoinToChannel(channelName_andkey[0], clientFd);
+		sendNamesList(clientFd, channelName_andkey[0]);
 	}
 }
 
-std::string Server::parseJoinChannelName(const std::string &line)
+
+std::vector<std::string> Server::parseJoinChannelName(const std::string &line)
 {
-	// Format attendu: JOIN #channelname ou avec &
-	size_t spacePos = line.find(' ');
+    std::vector<std::string> channelName_andkey;
 
-	if (spacePos == std::string::npos)
-		return "";
+    // Format attendu: JOIN #channelname ou avec &
+    size_t spacePos = line.find(' ');
 
-	std::string channelName = line.substr(spacePos + 1);
+    if (spacePos == std::string::npos)
+        return channelName_andkey;
 
-	// verif que commence par # ou &
-	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
-		return "";
+    // Resize sinon segfault
+    channelName_andkey.resize(2);
 
-	return channelName;
+    channelName_andkey[0] = line.substr(spacePos + 1);
+
+    size_t space_after_channelName = line.find(' ', spacePos + 1);
+    if (space_after_channelName == std::string::npos)
+        return channelName_andkey;
+
+    std::string key;
+
+    if (space_after_channelName != std::string::npos)
+        key = line.substr(space_after_channelName + 1); 
+
+    // Le nom du canal est tout ce qui est avant l'espace
+    channelName_andkey[0] = line.substr(spacePos + 1, space_after_channelName - spacePos - 1);
+
+    // Si une clé est présente, on la stocke
+    channelName_andkey[1] = key;
+
+    return channelName_andkey;
 }
+
 
 
 bool Server::channelExists(const std::string &channelName) 
@@ -68,14 +87,14 @@ void Server::sendChannelError(const int &clientFd, const std::string &code, cons
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
-bool Server::joinExistingChannel(const std::string &channelName, int userFd) 
+bool Server::joinExistingChannel(const std::string &channelName,  const std::string &key, int userFd) 
 {
 	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) 
 	{
 		if (it->getName() == channelName) 
 		{
 			std::string reason;
-			if (!it->canJoin(userFd, "", reason)) 
+			if (!it->canJoin(userFd, key, reason)) 
 			{
 				if (reason.find("limit") != std::string::npos) 
 				{

@@ -34,6 +34,39 @@ void Server::handleMode(int clientFd, const std::string &line)
 		return;
 }
 
+
+// version clean qui marche pas 
+
+// void Server::handleMode(int clientFd, const std::string &line)
+// {
+//     size_t space_after_mode = line.find(' ');
+//     if (space_after_mode == std::string::npos)
+//         return;
+
+//     size_t space_after_channelName = line.find(' ', space_after_mode + 1);
+//     std::string channelName, mode, arg;
+
+//     if (space_after_channelName != std::string::npos) 
+//         channelName = line.substr(space_after_mode + JUMP_TO_CHANNEL, space_after_channelName - space_after_mode - 1);
+// 	else
+//         channelName = line.substr(space_after_mode + JUMP_TO_MODE);
+
+//     if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
+//         return;
+
+
+//     mode = line.substr(space_after_channelName + JUMP_TO_MODE, 1);
+
+//     if (!mode.empty() && (mode[0] == '+' || mode[0] == '-')) 
+// 	{
+//         size_t space_after_mode = line.find(' ', space_after_channelName + 1);
+//         if (space_after_mode != std::string::npos) 
+//             arg = line.substr(space_after_mode + JUMP_TO_ARG);
+//         execMode(clientFd, channelName, mode, arg);
+//     }
+// }
+
+
 char Server::extractFlag(const std::string &mode)
 {
 	char mode_case = mode[MODE_FLAG];
