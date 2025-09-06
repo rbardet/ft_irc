@@ -5,22 +5,28 @@ void Server::handleJoin(const int &clientFd, const std::string &line)
 {
 	std::string channelName = parseJoinChannelName(line);
 
-	if (channelName.empty()) {
+	if (channelName.empty()) 
+	{
 		std::cout << "Invalid JOIN command received from user " << clientFd << std::endl;
 		return;
 	}
 
-	if (channelExists(channelName)) {
-		joinExistingChannel(channelName, clientFd);
-		std::cout << "User " << clientFd << " joined existing channel: " << channelName << std::endl;
+	if (channelExists(channelName)) 
+	{
+		if (joinExistingChannel(channelName, clientFd)) 
+		{
+			std::cout << "User " << clientFd << " joined existing channel: " << channelName << std::endl;
+			broadcastJoinToChannel(channelName, clientFd);
+			sendNamesList(clientFd, channelName);
+		}
 	}
-	else {
+	else 
+	{
 		createChannel(channelName, clientFd);
 		std::cout << "New channel created: " << channelName << " by user " << clientFd << std::endl;
+		broadcastJoinToChannel(channelName, clientFd);
+		sendNamesList(clientFd, channelName);
 	}
-
-	broadcastJoinToChannel(channelName, clientFd);
-	sendNamesList(clientFd, channelName);
 }
 
 std::string Server::parseJoinChannelName(const std::string &line)
@@ -41,31 +47,56 @@ std::string Server::parseJoinChannelName(const std::string &line)
 }
 
 
-bool Server::channelExists(const std::string &channelName) {
-	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
+bool Server::channelExists(const std::string &channelName) 
+{
+	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) 
+	{
 		if (it->getName() == channelName)
 			return (true);
 	}
 	return (false);
 }
 
-void Server::createChannel(const std::string &channelName, int creatorFd) {
+void Server::createChannel(const std::string &channelName, int creatorFd) 
+{
 	channelList.push_back(Channel(channelName, creatorFd));
 }
 
-void Server::joinExistingChannel(const std::string &channelName, int userFd) {
-	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
-		if (it->getName() == channelName) {
-			std::cout << it->getName() << std::endl;
-			it->addMember(userFd);
-			this->sendTopic(userFd, *it);
-			break;
-		}
-	}
+void Server::sendChannelError(const int &clientFd, const std::string &code, const std::string &nick, const std::string &channel, const std::string &message) const 
+{
+	std::string buffer = ":server " + code + " " + nick + " " + channel + " :" + message + "\r\n";
+	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
-
-
+bool Server::joinExistingChannel(const std::string &channelName, int userFd) 
+{
+	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) 
+	{
+		if (it->getName() == channelName) 
+		{
+			std::string reason;
+			if (!it->canJoin(userFd, "", reason)) 
+			{
+				if (reason.find("limit") != std::string::npos) 
+				{
+					sendChannelError(userFd, ERR_CHANNELISFULL, findNameById(userFd), channelName, "Cannot join channel (+l)");
+				} 
+				else if (reason.find("invited") != std::string::npos)
+				{
+					sendChannelError(userFd, ERR_INVITEONLYCHAN, findNameById(userFd), channelName, "Cannot join channel (+i)");
+				} 
+				else if (reason.find("password") != std::string::npos)
+				{
+					sendChannelError(userFd, ERR_BADCHANNELKEY, findNameById(userFd), channelName, "Cannot join channel (+k)");
+				}
+				return false;
+			}
+			it->addMember(userFd);
+			return true;
+		}
+	}
+	return false;
+}
 
 
 void Server::broadcastJoinToChannel(const std::string &channelName, int clientFd) const

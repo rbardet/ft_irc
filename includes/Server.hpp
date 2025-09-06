@@ -79,11 +79,11 @@ public:
 	std::string	parseJoinChannelName(const std::string &line);
 	bool		channelExists(const std::string &channelName);
 	void		createChannel(const std::string &channelName, int creatorFd);
-	void		joinExistingChannel(const std::string &channelName, int userFd);
-
+	bool		joinExistingChannel(const std::string &channelName, int userFd);
 	// Messages dans les channels (chat normal IRC) irssi écrit privmsg direct
 	void		handleChannelMessage(int clientFd, const std::string &line);
 	void		broadcastToChannel(const std::string &channelName, const std::string &message, int senderFd);
+	void		sendChannelError(const int &clientFd, const std::string &code, const std::string &nick, const std::string &channel, const std::string &message) const;
 
 	//  MODE
 	void		handleMode(int clientFd, const std::string &line);
