@@ -182,6 +182,8 @@ void Server::handleLine(const int &clientFd, const std::string &line) {
 
 	if (line.find(CMD_JOIN, 0) == 0) {
 		handleJoin(clientFd, line);
+	} else if (line.find(CMD_INVITE, 0) == 0) {
+		handleInvite(clientFd, line);
 	} else if (line.find(CMD_KICK, 0) == 0) {
 		handleKick(clientFd, line);
 	} else if (line.find(CMD_PRIVMSG, 0) == 0) {
@@ -191,7 +193,7 @@ void Server::handleLine(const int &clientFd, const std::string &line) {
 	} else if (line.find(CMD_TOPIC, 0) == 0) {
 		handleTopic(clientFd, line);
 	} else {
-		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + MSG_ERR_UNKNOWNCOMMAND);
+		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + " :" + MSG_ERR_UNKNOWNCOMMAND);
 	}
 }
 

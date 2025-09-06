@@ -56,6 +56,7 @@ public:
 	void	handleTopic(const int &clientFd, const std::string &line);
 	void	handleKick(const int &clientFd, const std::string &line);
 	void	handlePing(const int &clientFd, const std::string &line);
+	void	handleInvite(const int &clientFd, const std::string &line);
 
 	// KICK
 	const	std::string getUserToKick(const std::string &line) const;
@@ -66,14 +67,13 @@ public:
 	const	std::string getTopic(const std::string &line) const;
 	void	sendTopic(const int &clientFd, const Channel &channel);
 	void	broadcastNewTopic(const std::string &topic, const std::string &channelName, const int &clientFd, Channel &channel);
-	void	sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel);
-	void	sendRPL_TOPIC(const int &clientFd, const Channel &channel);
-	void	sendRPL_NOTOPIC(const int &clientFd, const Channel &channel);
 
 	bool		nickAlreadyInUse(const std::string &nick);
 	void		welcomeUser(const int &code, const std::string &name) const;
-	int 		findIdByName(const std::string &name) const;
-	std::string	findNameById(const int &clientFd) const;
+
+	int 			findIdByName(const std::string &name) const;
+	std::string		findNameById(const int &clientFd) const;
+	Channel	&findChannelByName(const std::string &channelName);
 
 	//   JOIN
 	std::string	parseJoinChannelName(const std::string &line);
@@ -95,4 +95,12 @@ public:
 	void		broadcastJoinToChannel(const std::string &channelName, int clientFd) const;
 	void		sendNamesList(int clientFd, const std::string &channelName) const;
 	void		broadcastToAllMember(Channel chanel, const std::string message);
+
+	void	processToInvite(const int &clientFd, const std::string &toInvite, Channel &channel);
+	void	noticeInvite(const int &clientFd, const std::string &toInvite, Channel &channel);
+
+	void	sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel);
+	void	sendRPL_TOPIC(const int &clientFd, const Channel &channel);
+	void	sendRPL_NOTOPIC(const int &clientFd, const Channel &channel);
+	void	sendRPL_INVITED(const int &clientFd, const std::string &toInvite, const Channel &channel);
 };

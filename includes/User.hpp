@@ -34,9 +34,10 @@ public:
 	std::string &getInput() {return (input);};
 	const int &getFd() const {return (fd);};
 	const bool &getIsRegister() const {return (isRegister);};
-	void setHasNickname () {this->hasNickname = true;};
+	void setHasNickname (const bool boolean) {this->hasNickname = boolean;};
 	void setHasUsername() {this->hasUsername = true;};
 	void setHasPass() {this->hasPass = true;};
+	void setHasRegister(const bool boolean) {this->isRegister = boolean;};
 	const bool &getHasNickname() {return (this->hasNickname);};
 	const bool &getHasUsername() {return (this->hasUsername);};
 	const bool &getHasPass() {return (this->hasPass);};

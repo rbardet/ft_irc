@@ -19,12 +19,14 @@
 #define CMD_PRIVMSG "PRIVMSG"
 #define CMD_TOPIC "TOPIC"
 #define CMD_PING "PING"
+#define CMD_INVITE "INVITE"
 
 #define MODE_CMD_LENGTH 5
 #define NICK_CMD_LENGTH 5
 #define USER_CMD_LENGTH 5
 #define PASS_CMD_LENGTH 5
 #define PING_CMD_LENGTH 5
+#define INVITE_CMD_LENGTH 7
 
 #define MODE_FLAG 1
 
@@ -41,17 +43,20 @@
 #define RPL_NOTOPIC "331"
 #define RPL_TOPIC "332"
 #define RPL_TOPICWHOTIME "333"
+#define RPL_INVITING "341"
 #define RPL_NAMREPLY "353"
 #define RPL_ENDOFNAMES "366"
 
-
+#define ERR_NOSUCHNICK "401"
 #define ERR_NOSUCHCHANNEL "403"
 #define ERR_CANNOTSENDTOCHAN "404"
 #define ERR_NOORIGIN "409"
 #define ERR_UNKNOWNCOMMAND "421"
 #define ERR_NONICKNAMEGIVEN "431"
+#define ERR_NICKNAMEINUSE "433"
 #define ERR_NICKCOLLISION "436"
 #define ERR_USERNOTINCHANNEL "441"
+#define ERR_USERONCHANNEL "443"
 #define ERR_NOTREGISTERED "451"
 #define ERR_NEEDMOREPARAMS "461"
 #define ERR_NOPERMFORHOST "463"
@@ -62,21 +67,26 @@
 #define ERR_CHANNELISFULL "471"
 #define ERR_UNKNOWNMODE "472"
 #define ERR_NOPRIVILEGES "481"
+#define ERR_CHANOPRIVSNEEDED "482"
 
+#define MSG_ERR_NOSUCHNICK "Nickname does not exist"
 #define MSG_ERR_PASSWDMISMATCH "Wrong password"
 #define MSG_ERR_WRONGUSER "This user does not exist"
 #define MSG_ERR_NOORIGIN "Error no messsage send by PING"
 #define MSG_ERR_NEEDMOREPARAMS "No param given to the command"
 #define MSG_ERR_NOPERMS "You have no perm on this channel"
-#define MSG_ERR_NOSUCHCHANEL " This channel does not exist"
+#define MSG_ERR_NOSUCHCHANEL "This channel does not exist"
 #define MSG_ERR_USERNOTINCHANNEL "This user is not in the channel"
-#define MSG_ERR_NICKCOLLISION "This nickname is already in use"
-#define MSG_ERR_UNKNOWNCOMMAND " This command is unknown"
+#define MSG_ERR_NICKNAMEINUSE "This nickname is already in use"
+#define MSG_ERR_INVALIDNICK "Invalid charater in nickname"
+#define MSG_ERR_UNKNOWNCOMMAND "Unknown command"
 #define MSG_ERR_YOUWILLBEBANNED "You are kicked of the server"
 #define MSG_NEED_PASS "This server has a password enter it before using it"
 #define MSG_NEED_NICK "You have no nickname, enter one </nick>"
 #define MSG_NEED_USER "You have no username, enter one </user>"
 #define MSG_SUCCESS_KICK "The user got kicked from the channel"
 #define MSG_NOTOPIC "No topic is set"
+#define MSG_RPL_INVITED "has been invited by"
+#define MSG_ERR_USERONCHANNEL "User already on the channel"
 
 const std::string getParam(int cmdLength, const std::string &line);

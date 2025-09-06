@@ -201,7 +201,6 @@ bool Channel::setTopic(int user, const std::string &topic, const std::string &se
 	}
 
 	time(&this->topicTimeSet);
-	std::cout << "TOPIC SETTER: " << setterName << std::endl;
 	this->topicSetter = setterName;
 	std::cout << topicSetter << std::endl;
 	this->topic = topic;

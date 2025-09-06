@@ -29,13 +29,20 @@ void Server::handleNick(const int &clientFd, const std::string &line) {
 	}
 
 	if (this->nickAlreadyInUse(nick)) {
-		sendRPL(clientFd, ERR_NICKCOLLISION, this->findNameById(clientFd), MSG_ERR_NICKCOLLISION);
+		sendRPL(clientFd, ERR_NICKNAMEINUSE, this->findNameById(clientFd), MSG_ERR_NICKNAMEINUSE);
+		return ;
+	}
+
+	if (nick.find('#') != std::string::npos) {
+		this->Users[clientFd].setHasNickname(false);
+		this->Users[clientFd].setHasRegister(false);
+		sendRPL(clientFd, ERR_NICKCOLLISION, this->findNameById(clientFd), MSG_ERR_INVALIDNICK);
 		return ;
 	}
 
 	this->Users[clientFd].setNickname(nick);
 
-	this->Users[clientFd].setHasNickname();
+	this->Users[clientFd].setHasNickname(true);
 
 	this->Users[clientFd].tryRegisterUser();
 }
