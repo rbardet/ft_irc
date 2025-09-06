@@ -18,7 +18,6 @@ void Server::broadcastNewTopic(const std::string &topic, const std::string &chan
 	const std::string host = "localhost";
 	const std::string msg = ":" + nick + "!" + user + "@" + host + " TOPIC " + channelName + " :" + topic + "\r\n";
 
-	std::cout << "NOUVEAU TOPIC: " << topic << std::endl;
 	broadcastToAllMember(channel, msg);
 }
 

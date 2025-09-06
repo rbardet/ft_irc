@@ -91,5 +91,6 @@
 #define MSG_RPL_INVITED "has been invited by"
 #define MSG_ERR_USERONCHANNEL "User already on the channel"
 #define MSG_ERR_CHANOPRIVSNEEDED "You’re not channel operator"
+#define MSG_ERR_UNKNOWNMODE "is unknown mode char to me"
 
 const std::string getParam(int cmdLength, const std::string &line);
