@@ -15,7 +15,7 @@ void Server::handleInvite(const int &clientFd, const std::string &line) {
 	bool userExist = false;
 
 	if (toInvite.empty()) {
-		sendRPL(clientFd, ERR_NEEDMOREPARAMS, this->Users[clientFd].getNickname(), MSG_ERR_NEEDMOREPARAMS);
+		sendERR_NEEDMOREPARAMS(clientFd, CMD_INVITE);
 		return ;
 	}
 
@@ -34,7 +34,7 @@ void Server::handleInvite(const int &clientFd, const std::string &line) {
 	const std::string channelName = getChannelName(line);
 
 	if (!channelExists(channelName)) {
-		sendRPL(clientFd, ERR_NOSUCHCHANNEL, this->Users[clientFd].getNickname(), MSG_ERR_NOSUCHCHANEL);
+		sendERR_NOSUCHCHANNEL(clientFd, channelName);
 		return ;
 	}
 
@@ -50,7 +50,7 @@ void Server::processToInvite(const int &clientFd, const std::string &toInvite, C
 		} else if (channel.isMember(this->findIdByName(toInvite))) {
 			sendRPL(clientFd, ERR_USERONCHANNEL, toInvite, toInvite + " " + channel.getName() + " :" + MSG_ERR_USERONCHANNEL);
 		} else {
-			noticeInvite(clientFd, toInvite, channel);
+			notifyInvite(clientFd, toInvite, channel);
 			sendRPL_INVITED(clientFd, toInvite, channel);
 		}
 		return ;
@@ -59,12 +59,12 @@ void Server::processToInvite(const int &clientFd, const std::string &toInvite, C
 			sendRPL(clientFd, ERR_USERONCHANNEL, toInvite, toInvite + " " + channel.getName() + " :" + MSG_ERR_USERONCHANNEL);
 			return ;
 		}
-		noticeInvite(clientFd, toInvite, channel);
+		notifyInvite(clientFd, toInvite, channel);
 		sendRPL_INVITED(clientFd, toInvite, channel);
 	}
 }
 
-void Server::noticeInvite(const int &clientFd, const std::string &toInvite, Channel &channel) {
+void Server::notifyInvite(const int &clientFd, const std::string &toInvite, Channel &channel) {
 	std::string buffer(":");
 
 	buffer += this->Users[clientFd].getNickname() + "!";
@@ -75,16 +75,4 @@ void Server::noticeInvite(const int &clientFd, const std::string &toInvite, Chan
 
 	channel.invite(this->findIdByName(toInvite));
 	send(this->findIdByName(toInvite), buffer.c_str(), buffer.size(), 0);
-}
-
-void Server::sendRPL_INVITED(const int &clientFd, const std::string &toInvite, const Channel &channel) {
-	const std::string code = RPL_INVITING;
-
-	std::string buffer(SERV_NAME);
-	buffer += code + " ";
-	buffer += this->Users[clientFd].getNickname() + " ";
-	buffer += toInvite + " ";
-	buffer += channel.getName() + "\r\n";
-
-	broadcastToAllMember(channel, buffer);
 }

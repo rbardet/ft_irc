@@ -19,6 +19,7 @@
 #define CMD_PRIVMSG "PRIVMSG"
 #define CMD_TOPIC "TOPIC"
 #define CMD_PING "PING"
+#define CMD_PART "PART"
 #define CMD_INVITE "INVITE"
 
 #define MODE_CMD_LENGTH 5
@@ -27,6 +28,7 @@
 #define PASS_CMD_LENGTH 5
 #define PING_CMD_LENGTH 5
 #define INVITE_CMD_LENGTH 7
+#define PART_CMD_LENGTH 5
 
 #define MODE_FLAG 1
 
@@ -76,7 +78,7 @@
 #define MSG_ERR_PASSWDMISMATCH "Wrong password"
 #define MSG_ERR_WRONGUSER "This user does not exist"
 #define MSG_ERR_NOORIGIN "Error no messsage send by PING"
-#define MSG_ERR_NEEDMOREPARAMS "No param given to the command"
+#define MSG_ERR_NEEDMOREPARAMS "Not enough parameters"
 #define MSG_ERR_NOPERMS "You have no perm on this channel"
 #define MSG_ERR_NOSUCHCHANEL "This channel does not exist"
 #define MSG_ERR_USERNOTINCHANNEL "This user is not in the channel"
@@ -93,5 +95,7 @@
 #define MSG_ERR_USERONCHANNEL "User already on the channel"
 #define MSG_ERR_CHANOPRIVSNEEDED "You’re not channel operator"
 #define MSG_ERR_UNKNOWNMODE "is unknown mode char to me"
+#define MSG_PART "Leaved the channel"
+#define MSG_RPL_ENDOFNAMES "End of /NAMES list"
 
 const std::string getParam(int cmdLength, const std::string &line);

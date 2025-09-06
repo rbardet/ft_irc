@@ -49,6 +49,7 @@ public:
 	void	parseInput(int userFd);
 	bool	hasPassword() const;
 	void	sendRPL(const int &clientFd, const std::string code, const std::string &nick, const std::string &message) const;
+
 	void	handleNick(const int &clientFd, const std::string &line);
 	void	handleUsername(const int &clientFd, const std::string &line);
 	void	handleLine(const int &clientFd, const std::string &line);
@@ -58,6 +59,8 @@ public:
 	void	handleKick(const int &clientFd, const std::string &line);
 	void	handlePing(const int &clientFd, const std::string &line);
 	void	handleInvite(const int &clientFd, const std::string &line);
+	void	handlePart(const int &clientFd, const std::string &line);
+	void	handleMode(int clientFd, const std::string &line);
 
 	// KICK
 	const	std::string getUserToKick(const std::string &line) const;
@@ -87,24 +90,28 @@ public:
 	void		sendChannelError(const int &clientFd, const std::string &code, const std::string &nick, const std::string &channel, const std::string &message) const;
 
 	//  MODE
-	void		handleMode(int clientFd, const std::string &line);
 	void 		execMode(int clientFd, const std::string &channelName, const std::string &mode, std::string arg);
 	void 		setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg);
 	char		extractFlag(const std::string &mode);
-	void		noticeMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg);
-	void		sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel);
 
 	// RFC confirmations
-	void		broadcastJoinToChannel(const std::string &channelName, int clientFd) const;
-	void		sendNamesList(int clientFd, const std::string &channelName) const;
+	void		notifyJoin(const std::string &channelName, int clientFd);
 	void		broadcastToAllMember(Channel chanel, const std::string message);
 
 	void	processToInvite(const int &clientFd, const std::string &toInvite, Channel &channel);
-	void	noticeInvite(const int &clientFd, const std::string &toInvite, Channel &channel);
 
+	void	notifyInvite(const int &clientFd, const std::string &toInvite, Channel &channel);
+	void	notifyMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg);
+	void	notifyPart(const int &clientFd, const std::string &channelName);
+
+	void	sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel);
 	void	sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel);
 	void	sendRPL_TOPIC(const int &clientFd, const Channel &channel);
 	void	sendRPL_NOTOPIC(const int &clientFd, const Channel &channel);
 	void	sendRPL_INVITED(const int &clientFd, const std::string &toInvite, const Channel &channel);
 	void	sendERR_CHANOPRIVSNEEDED(const int &clientFd, const std::string &channelName);
+	void	sendERR_NEEDMOREPARAMS(const int &clientFd, const std::string &command);
+	void	sendERR_NOSUCHCHANNEL(const int &clientFd, const std::string &channelName);
+	void	sendRPL_NAMEREPLY(const int &clientFd, Channel &channel);
+	void	sendRPL_ENDOFNAMES(const int &clientFd, Channel &channel);
 };

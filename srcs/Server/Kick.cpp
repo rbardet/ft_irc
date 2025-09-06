@@ -2,7 +2,6 @@
 #include "../../includes/Utils.hpp"
 
 const std::string Server::getChannelName(const std::string &line) const {
-	std::cout << line << std::endl;
 	const size_t channelPos = line.find('#');
 	if (channelPos == std::string::npos) {
 		return (EMPTY_STRING);
@@ -58,17 +57,14 @@ void Server::handleKick(const int &clientFd, const std::string &line) {
 		return ;
 	}
 
-	std::cout << channelName << std::endl;
-	std::cout << kick << std::endl;
 
 	if (kick.empty()) {
-		sendRPL(clientFd, ERR_NEEDMOREPARAMS, this->Users[clientFd].getNickname(), MSG_ERR_NEEDMOREPARAMS);
+		sendERR_NEEDMOREPARAMS(clientFd, CMD_KICK);
 		return ;
 	}
 
 	else {
 		for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
-			std::cout << it->getName() << std::endl;
 			if (it->getName() == channelName) {
 				if (!it->hasPerm(clientFd)) {
 					sendERR_CHANOPRIVSNEEDED(clientFd, channelName);
@@ -100,18 +96,4 @@ void Server::broadcastKickConfirmation(const std::string &channelName, const std
 			return ;
 		}
 	}
-}
-
-void Server::sendERR_CHANOPRIVSNEEDED(const int &clientFd, const std::string &channelName) {
-	const std::string code(ERR_CHANOPRIVSNEEDED);
-
-	std::string buffer(SERV_NAME);
-	buffer += code + " ";
-	buffer += this->Users[clientFd].getNickname() + " ";
-	buffer += channelName + " :";
-	buffer += MSG_ERR_CHANOPRIVSNEEDED;
-	buffer += "\r\n";
-
-	std::cout << "NO PERM MESSAGE:" << buffer << " ENVOYER A : " << clientFd << std::endl;
-	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }

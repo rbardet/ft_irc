@@ -13,15 +13,17 @@ void Server::handleJoin(const int &clientFd, const std::string &line) {
 	if (channelExists(channelName_andkey[0])) {
 		if (joinExistingChannel(channelName_andkey[0], channelName_andkey[1], clientFd)) {
 			std::cout << "User " << clientFd << " joined existing channel: " << channelName_andkey[0] << std::endl;
-			broadcastJoinToChannel(channelName_andkey[0], clientFd);
-			sendNamesList(clientFd, channelName_andkey[0]);
+			notifyJoin(channelName_andkey[0], clientFd);
+			sendRPL_NAMEREPLY(clientFd, this->findChannelByName(channelName_andkey[0]));
+			sendRPL_ENDOFNAMES(clientFd, this->findChannelByName(channelName_andkey[0]));
 		}
 	}
 	else {
 		createChannel(channelName_andkey[0], clientFd);
 		std::cout << "New channel created: " << channelName_andkey[0] << " by user " << clientFd << std::endl;
-		broadcastJoinToChannel(channelName_andkey[0], clientFd);
-		sendNamesList(clientFd, channelName_andkey[0]);
+		notifyJoin(channelName_andkey[0], clientFd);
+		sendRPL_NAMEREPLY(clientFd, this->findChannelByName(channelName_andkey[0]));
+		sendRPL_ENDOFNAMES(clientFd, this->findChannelByName(channelName_andkey[0]));
 	}
 }
 
@@ -70,8 +72,6 @@ bool Server::channelExists(const std::string &channelName) {
 }
 
 void Server::createChannel(const std::string &channelName, int creatorFd) {
-	std::cout << "CREATE CHANNEL:" << channelName << std::endl;
-	std::cout << "CHANNEL FD:" << creatorFd << std::endl;
 	Channel newChannel(channelName, creatorFd);
 	this->channelList.push_back(newChannel);
 }
@@ -108,53 +108,16 @@ bool Server::joinExistingChannel(const std::string &channelName,  const std::str
 }
 
 
-void Server::broadcastJoinToChannel(const std::string &channelName, int clientFd) const
+void Server::notifyJoin(const std::string &channelName, int clientFd)
 {
-	std::string nick = findNameById(clientFd);
-	std::string user = Users.at(clientFd).getUsername();
-	std::string host = "localhost";
+	std::string buffer(":");
+	buffer += this->Users[clientFd].getNickname() + "!";
+	buffer += this->Users[clientFd].getUsername() + "@";
+	buffer += "localhost JOIN ";
+	buffer += channelName + "\r\n";
 
-	// pour que irssi sache (RFC format)
-	std::string joinMsg = ":" + nick + "!" + user + "@" + host + " JOIN :" + channelName + "\r\n";
+	Channel &channel = this->findChannelByName(channelName);
 
-	// dire à TOUS les membres du canal
-	for (std::vector<Channel>::const_iterator it = channelList.begin(); it != channelList.end(); ++it)
-	{
-		if (it->getName() == channelName)
-		{
-			std::vector<int> members = it->getAllMembers();
-			for (size_t i = 0; i < members.size(); ++i)
-				send(members[i], joinMsg.c_str(), joinMsg.size(), 0);
-			break;
-		}
-	}
+	broadcastToAllMember(channel, buffer);
 }
-
-void Server::sendNamesList(int clientFd, const std::string &channelName) const
-{
-	//dire la list des membre a irssi
-	std::string nick = findNameById(clientFd);
-	std::string namesList = ":server " + std::string(RPL_NAMREPLY) + " " + nick + " = " + channelName + " :";
-
-	for (std::vector<Channel>::const_iterator it = channelList.begin(); it != channelList.end(); ++it)
-	{
-		if (it->getName() == channelName)
-		{
-			std::vector<int> members = it->getAllMembers();
-			for (size_t i = 0; i < members.size(); ++i)
-			{
-				if (i > 0) namesList += " ";
-				if (it->isOperator(members[i])) namesList += "@";
-				namesList += findNameById(members[i]);
-			}
-			break;
-		}
-	}
-	namesList += "\r\n";
-	send(clientFd, namesList.c_str(), namesList.size(), 0);
-
-	std::string endNames = ":server " + std::string(RPL_ENDOFNAMES) + " " + nick + " " + channelName + " :End of /NAMES list\r\n";
-	send(clientFd, endNames.c_str(), endNames.size(), 0);
-}
-
 

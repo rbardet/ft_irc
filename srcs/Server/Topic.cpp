@@ -25,9 +25,8 @@ void Server::handleTopic(const int &clientFd, const std::string &line)
 {
 	const std::string channelName = getChannelName(line);
 
-	if (!this->channelExists(channelName))
-	{
-		sendRPL(clientFd, ERR_NOSUCHCHANNEL, this->Users[clientFd].getNickname(), channelName + MSG_ERR_NOSUCHCHANEL);
+	if (!this->channelExists(channelName)) {
+		sendERR_NOSUCHCHANNEL(clientFd, channelName);
 		return ;
 	}
 
@@ -58,43 +57,4 @@ void Server::sendTopic(const int &clientFd, const Channel &channel) {
 		this->sendRPL_TOPIC(clientFd, channel);
 		this->sendRPL_TOPICWHOTIME(clientFd, channel);
 	}
-}
-
-void Server::sendRPL_NOTOPIC(const int &clientFd, const Channel &channel) {
-	const std::string code = RPL_NOTOPIC;
-
-	std::string buffer(SERV_NAME);
-	buffer += code + " ";
-	buffer += this->Users[clientFd].getUsername() + " ";
-	buffer += channel.getName() + " :";
-	buffer += MSG_NOTOPIC;
-	buffer += "\r\n";
-
-	send(clientFd, buffer.c_str(), buffer.size(), 0);
-}
-
-void Server::sendRPL_TOPIC(const int &clientFd, const Channel &channel) {
-	const std::string code = RPL_TOPIC;
-
-	std::string buffer(SERV_NAME);
-	buffer += code + " ";
-	buffer += this->Users[clientFd].getUsername() + " ";
-	buffer += channel.getName() + " :";
-	buffer += channel.getTopic() + "\r\n";
-
-	send(clientFd, buffer.c_str(), buffer.size(), 0);
-}
-
-void Server::sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel) {
-	std::ostringstream oss;
-	oss << channel.getTopicTime();
-	const std::string code = RPL_TOPICWHOTIME;
-
-	std::string buffer(SERV_NAME);
-	buffer += code + " ";
-	buffer += this->Users[clientFd].getNickname() + " ";
-	buffer += channel.getName() + " ";
-	buffer += channel.getTopicSetter() + " ";
-	buffer += oss.str() + "\r\n";
-	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }

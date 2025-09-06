@@ -16,6 +16,8 @@ SRCS = srcs/main.cpp \
 	   srcs/Server/handleUser.cpp \
 	   srcs/Server/Topic.cpp \
 	   srcs/Server/Invite.cpp \
+	   srcs/Server/Part.cpp \
+	   srcs/Server/reply.cpp \
 	   srcs/Utils.cpp \
 
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
@@ -24,8 +26,7 @@ RM = rm -f
 
 all: $(NAME)
 	@echo "Compiled successfully!"
-	@echo "\n\n\n\n\n" # 5 lignes vides
-	@EXEC_LINE="=> execute ./$(NAME)"; \
+	@EXEC_LINE="=> execute ./$(NAME) <port> <password>"; \
 	LEN=$$(echo "$$EXEC_LINE" | wc -c); \
 	LEN=$$((LEN - 1)); \
 	BORDER_LEN=$$((LEN + 2)); \

@@ -104,17 +104,17 @@ void Server::acceptUser() {
 
 	fcntl(userFd, F_SETFL, O_NONBLOCK);
 
-	// // Récupérer l'adresse IP du client 
+	// // Récupérer l'adresse IP du client
     // struct sockaddr_in clientAddr;
     // socklen_t addrLen = sizeof(clientAddr);
     // if (getpeername(userFd, (struct sockaddr*)&clientAddr, &addrLen) == -1) {
     //     std::cerr << "Failed to get client IP" << std::endl;
     //     return;
     // }
-    // std::cout << "New User connected from IP: " 
-    //           << inet_ntoa(clientAddr.sin_addr) 
-    //           << " Port: " 
-    //           << ntohs(clientAddr.sin_port) 
+    // std::cout << "New User connected from IP: "
+    //           << inet_ntoa(clientAddr.sin_addr)
+    //           << " Port: "
+    //           << ntohs(clientAddr.sin_port)
     //           << std::endl;
 
 
@@ -199,6 +199,8 @@ void Server::handleLine(const int &clientFd, const std::string &line) {
 
 	if (line.find(CMD_JOIN, 0) == 0) {
 		handleJoin(clientFd, line);
+	} else if (line.find(CMD_PART, 0) == 0) {
+		handlePart(clientFd, line);
 	} else if (line.find(CMD_INVITE, 0) == 0) {
 		handleInvite(clientFd, line);
 	} else if (line.find(CMD_KICK, 0) == 0) {
@@ -212,12 +214,6 @@ void Server::handleLine(const int &clientFd, const std::string &line) {
 	} else {
 		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + " :" + MSG_ERR_UNKNOWNCOMMAND);
 	}
-}
-
-void Server::sendRPL(const int &clientFd, std::string code, const std::string &nick, const std::string &message) const {
-	std::string buffer = ":server " + code + " " + nick + " :" + message + "\r\n";
-	std::cout << "RPL: " << buffer << std::endl;
-	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
 void Server::handlePass(const int &clientFd, const std::string &line) {
@@ -253,9 +249,8 @@ void Server::handlePing(const int &clientFd, const std::string &line) {
 		return ;
 	}
 
-	const std::string pong = param + "\r\n";
+	const std::string pong = "PONG :" + param + "\r\n";
 
-	std::cout << "PONG RESPONSE:" << pong << std::endl;
 	send(clientFd, pong.c_str(), pong.size(), 0);
 }
 
@@ -263,6 +258,7 @@ void Server::broadcastToAllMember(Channel chanel, const std::string message) {
 	std::vector<int> members = chanel.getAllMembers();
 
 	for (std::vector<int>::iterator it = members.begin(); it != members.end(); ++it) {
+		std::cout << "BROADCAST FOR: " << *it << " " << message << std::endl;
 		send(*it, message.c_str(), message.size(), 0);
 	}
 }

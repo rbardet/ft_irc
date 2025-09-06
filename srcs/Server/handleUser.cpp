@@ -10,7 +10,6 @@ bool Server::nickAlreadyInUse(const std::string &nick) {
 	return (false);
 }
 
-
 void Server::welcomeUser(const int &clientFd, const std::string &name) const {
 	sendRPL(clientFd, RPL_WELCOME, name, "Welcome to the IRC server " + name + "!");
 	sendRPL(clientFd, RPL_YOURHOST, name, "Your host is ircserv");
@@ -24,7 +23,7 @@ void Server::handleNick(const int &clientFd, const std::string &line) {
 	this->Users[clientFd].hasWelcomeMessage();
 
 	if (nick.empty()) {
-		sendRPL(clientFd, ERR_NONICKNAMEGIVEN, this->findNameById(clientFd), MSG_ERR_NEEDMOREPARAMS);
+		sendERR_NEEDMOREPARAMS(clientFd, CMD_NICK);
 		return ;
 	}
 
@@ -51,7 +50,7 @@ void Server::handleUsername(const int &clientFd, const std::string &line) {
 	std::string username = getParam(USER_CMD_LENGTH, line);
 
 	if (username.empty()) {
-		sendRPL(clientFd, ERR_NEEDMOREPARAMS, this->findNameById(clientFd), MSG_ERR_NEEDMOREPARAMS);
+		sendERR_NEEDMOREPARAMS(clientFd, CMD_USER);
 		return ;
 	}
 

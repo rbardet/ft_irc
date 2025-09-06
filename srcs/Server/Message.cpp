@@ -51,6 +51,6 @@ void Server::broadcastToChannel(const std::string &channelName, const std::strin
 			return;
 		}
 	}
-	sendRPL(senderFd, ERR_NOSUCHCHANNEL, this->findNameById(senderFd), "No such channel");
+	sendERR_NOSUCHCHANNEL(senderFd, channelName);
 }
 

@@ -46,7 +46,7 @@ void Server::execMode(int clientFd, const std::string &channelName, const std::s
 		setMode(clientFd, channelName, mode_case, false, arg);
 }
 
-void Server::noticeMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg) {
+void Server::notifyMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg) {
 	std::string flag;
 	if (status) {
 		flag += "+";
@@ -137,53 +137,9 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 						return ;
 				}
 			}
-			this->noticeMode(clientFd, channelName, mode, set_or_unset, arg);
+			this->notifyMode(clientFd, channelName, mode, set_or_unset, arg);
 			return ;
 		}
 	}
-	sendRPL(clientFd, ERR_NOSUCHCHANNEL, this->findNameById(clientFd), "No such channel");
-}
-
-void Server::sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel) {
-	std::string mode;
-	std::string value;
-	if (channel.getInviteOnly()) {
-		mode += "i";
-	} if (channel.getTopicOpOnly()) {
-		mode += "t";
-	} if (channel.getHasKey()) {
-		mode += "k";
-		value += channel.getKey();
-	} if (channel.getUserLimit() > 0) {
-		mode += "l";
-		std::ostringstream oss;
-		oss << channel.getUserLimit();
-		if (value.empty()) {
-			value += oss.str();
-		} else {
-			value += " ";
-			value += oss.str();
-		}
-		std::cout << channel.getUserLimit() << std::endl;
-		std::cout << "USER LIMIT:" << value << std::endl;
-	}
-
-	const std::string code = RPL_CHANNELMODEIS;
-
-	std::string buffer(SERV_NAME);
-	buffer += code + " ";
-	buffer += this->Users[clientFd].getNickname() + " ";
-	buffer += channel.getName();
-
-	if (mode.empty()) {
-		buffer += "\r\n";
-		send(clientFd, buffer.c_str(), buffer.size(), 0);
-		return ;
-	}
-
-	buffer += " +" + mode + " ";
-	buffer += value + "\r\n";
-
-	std::cout << "ALL MODE OF CHANNEL:" << buffer << std::endl;
-	send(clientFd, buffer.c_str(), buffer.size(), 0);
+	sendERR_NOSUCHCHANNEL(clientFd, channelName);
 }
