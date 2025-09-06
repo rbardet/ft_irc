@@ -49,22 +49,51 @@ void Server::handleTopic(const int &clientFd, const std::string &line) {
 		}
 }
 
+void Server::sendTopic(const int &clientFd, const Channel &channel) {
+
+	if (channel.getTopic().empty()) {
+		this->sendRPL_NOTOPIC(clientFd, channel);
+	} else {
+		this->sendRPL_TOPIC(clientFd, channel);
+		this->sendRPL_TOPICWHOTIME(clientFd, channel);
+	}
+}
+
+void Server::sendRPL_NOTOPIC(const int &clientFd, const Channel &channel) {
+	const std::string code = RPL_NOTOPIC;
+
+	std::string buffer(SERV_NAME);
+	buffer += code + " ";
+	buffer += this->Users[clientFd].getUsername() + " ";
+	buffer += channel.getName() + " :";
+	buffer += MSG_NOTOPIC;
+	buffer += "\r\n";
+
+	send(clientFd, buffer.c_str(), buffer.size(), 0);
+}
+
+void Server::sendRPL_TOPIC(const int &clientFd, const Channel &channel) {
+	const std::string code = RPL_TOPIC;
+
+	std::string buffer(SERV_NAME);
+	buffer += code + " ";
+	buffer += this->Users[clientFd].getUsername() + " ";
+	buffer += channel.getName() + " :";
+	buffer += channel.getTopic() + "\r\n";
+
+	send(clientFd, buffer.c_str(), buffer.size(), 0);
+}
+
 void Server::sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel) {
 	std::ostringstream oss;
 	oss << channel.getTopicTime();
 	const std::string code = RPL_TOPICWHOTIME;
-	const std::string msg = ":server " + code + " " + this->Users[clientFd].getNickname() + " " + channel.getName() + " " + channel.getTopicSetter() + " " + oss.str();
 
-	send(clientFd, msg.c_str(), msg.size(), 0);
-}
-
-
-void Server::sendTopic(const int &clientFd, const Channel &channel) {
-
-	if (channel.getTopic().empty()) {
-		sendRPL(clientFd, RPL_NOTOPIC, this->Users[clientFd].getNickname(), channel.getName() + " :" + MSG_NEED_TOPIC);
-	} else {
-		sendRPL(clientFd, RPL_TOPIC, this->Users[clientFd].getNickname(), channel.getName() + " :" + channel.getTopic());
-		this->sendRPL_TOPICWHOTIME(clientFd, channel);
-	}
+	std::string buffer(SERV_NAME);
+	buffer += code + " ";
+	buffer += this->Users[clientFd].getNickname() + " ";
+	buffer += channel.getName() + " ";
+	buffer += channel.getTopicSetter() + " ";
+	buffer += oss.str() + "\r\n";
+	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }

@@ -6,7 +6,7 @@
 #define PORT 1
 #define PASSWORD 2
 
-#define SERV_NAME "ircserv"
+#define SERV_NAME ":server "
 
 #define EMPTY_STRING ""
 
@@ -77,6 +77,6 @@
 #define MSG_NEED_NICK "You have no nickname, enter one </nick>"
 #define MSG_NEED_USER "You have no username, enter one </user>"
 #define MSG_SUCCESS_KICK "The user got kicked from the channel"
-#define MSG_NEED_TOPIC "No topic is set"
+#define MSG_NOTOPIC "No topic is set"
 
 const std::string getParam(int cmdLength, const std::string &line);

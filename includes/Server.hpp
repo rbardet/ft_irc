@@ -67,6 +67,8 @@ public:
 	void	sendTopic(const int &clientFd, const Channel &channel);
 	void	broadcastNewTopic(const std::string &topic, const std::string &channelName, const int &clientFd, Channel &channel);
 	void	sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel);
+	void	sendRPL_TOPIC(const int &clientFd, const Channel &channel);
+	void	sendRPL_NOTOPIC(const int &clientFd, const Channel &channel);
 
 	bool		nickAlreadyInUse(const std::string &nick);
 	void		welcomeUser(const int &code, const std::string &name) const;
