@@ -71,7 +71,7 @@ void Server::handleKick(const int &clientFd, const std::string &line) {
 			std::cout << it->getName() << std::endl;
 			if (it->getName() == channelName) {
 				if (!it->hasPerm(clientFd)) {
-					sendRPL(clientFd, ERR_NOPERMFORHOST, this->Users[clientFd].getNickname(), MSG_ERR_NOPERMS);
+					sendERR_CHANOPRIVSNEEDED(clientFd, channelName);
 					return ;
 				} else if (!it->isMember(kickId)) {
 					sendRPL(clientFd, ERR_USERNOTINCHANNEL, this->Users[clientFd].getNickname(), MSG_ERR_USERNOTINCHANNEL);
@@ -102,3 +102,16 @@ void Server::broadcastKickConfirmation(const std::string &channelName, const std
 	}
 }
 
+void Server::sendERR_CHANOPRIVSNEEDED(const int &clientFd, const std::string &channelName) {
+	const std::string code(ERR_CHANOPRIVSNEEDED);
+
+	std::string buffer(SERV_NAME);
+	buffer += code + " ";
+	buffer += this->Users[clientFd].getNickname() + " ";
+	buffer += channelName + " :";
+	buffer += MSG_ERR_CHANOPRIVSNEEDED;
+	buffer += "\r\n";
+
+	std::cout << "NO PERM MESSAGE:" << buffer << " ENVOYER A : " << clientFd << std::endl;
+	send(clientFd, buffer.c_str(), buffer.size(), 0);
+}

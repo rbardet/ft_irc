@@ -46,7 +46,7 @@ void Server::handleInvite(const int &clientFd, const std::string &line) {
 void Server::processToInvite(const int &clientFd, const std::string &toInvite, Channel &channel) {
 	if (channel.getInviteOnly()) {
 		if (!channel.isOperator(clientFd)) {
-			sendRPL(clientFd, ERR_CHANOPRIVSNEEDED, this->Users[clientFd].getNickname(), channel.getName() + " :" + MSG_ERR_NOPERMS);
+			sendERR_CHANOPRIVSNEEDED(clientFd, channel.getName());
 		} else if (channel.isMember(this->findIdByName(toInvite))) {
 			sendRPL(clientFd, ERR_USERONCHANNEL, toInvite, toInvite + " " + channel.getName() + " :" + MSG_ERR_USERONCHANNEL);
 		} else {

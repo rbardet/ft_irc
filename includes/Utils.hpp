@@ -90,5 +90,6 @@
 #define MSG_NOTOPIC "No topic is set"
 #define MSG_RPL_INVITED "has been invited by"
 #define MSG_ERR_USERONCHANNEL "User already on the channel"
+#define MSG_ERR_CHANOPRIVSNEEDED "You’re not channel operator"
 
 const std::string getParam(int cmdLength, const std::string &line);

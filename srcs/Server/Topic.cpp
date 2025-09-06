@@ -22,7 +22,7 @@ void Server::broadcastNewTopic(const std::string &topic, const std::string &chan
 	broadcastToAllMember(channel, msg);
 }
 
-void Server::handleTopic(const int &clientFd, const std::string &line) 
+void Server::handleTopic(const int &clientFd, const std::string &line)
 {
 	const std::string channelName = getChannelName(line);
 
@@ -41,7 +41,7 @@ void Server::handleTopic(const int &clientFd, const std::string &line)
 					return ;
 				} else {
 					if (!it->setTopic(clientFd, topic, this->Users[clientFd].getNickname())) {
-						sendRPL(clientFd, ERR_NOPERMFORHOST, this->Users[clientFd].getNickname(), MSG_ERR_NOPERMS);
+						sendERR_CHANOPRIVSNEEDED(clientFd, channelName);
 					} else {
 						broadcastNewTopic(topic, channelName, clientFd, *it);
 					}

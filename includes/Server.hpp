@@ -91,7 +91,7 @@ public:
 	void 		execMode(int clientFd, const std::string &channelName, const std::string &mode, std::string arg);
 	void 		setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg);
 	char		extractFlag(const std::string &mode);
-	void		noticeMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status);
+	void		noticeMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg);
 
 	// RFC confirmations
 	void		broadcastJoinToChannel(const std::string &channelName, int clientFd) const;
@@ -105,4 +105,5 @@ public:
 	void	sendRPL_TOPIC(const int &clientFd, const Channel &channel);
 	void	sendRPL_NOTOPIC(const int &clientFd, const Channel &channel);
 	void	sendRPL_INVITED(const int &clientFd, const std::string &toInvite, const Channel &channel);
+	void	sendERR_CHANOPRIVSNEEDED(const int &clientFd, const std::string &channelName);
 };

@@ -82,7 +82,7 @@ void Server::execMode(int clientFd, const std::string &channelName, const std::s
 		setMode(clientFd, channelName, mode_case, false, arg);
 }
 
-void Server::noticeMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status) {
+void Server::noticeMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg) {
 	std::string flag;
 	if (status) {
 		flag += "+";
@@ -98,7 +98,11 @@ void Server::noticeMode(const int &clientFd, const std::string &channelName, con
 	buffer += this->Users[clientFd].getUsername() + "@";
 	buffer += "localhost MODE ";
 	buffer += channelName + " ";
-	buffer += flag + "\r\n";
+	buffer += flag;
+	if (!arg.empty()) {
+		buffer += " " + arg;
+	}
+	buffer += "\r\n";
 
 	std::cout << "MESSAGE DE MODE BROADCAST:" << buffer << std::endl;
 	broadcastToAllMember(this->findChannelByName(channelName), buffer);
@@ -106,17 +110,19 @@ void Server::noticeMode(const int &clientFd, const std::string &channelName, con
 
 void Server::setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg)
 {
+	std::cout << "MODE TESTTTTTTTTTTTTTTTTTTTT" << std::endl;
 	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it)
 	{
 		if (it->getName() == channelName)
 		{
 			if (!it->isOperator(clientFd))
 			{
-				sendRPL(clientFd, ERR_NOPRIVILEGES, this->findNameById(clientFd), "No operator privileges");
+				sendERR_CHANOPRIVSNEEDED(clientFd, channelName);
 				return;
 			}
 			if (set_or_unset == true)
 			{
+				std::cout << "MODE +++++++" << std::endl;
 				switch (mode)
 				{
 					case 'i':
@@ -155,6 +161,7 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 			else {
 				switch (mode)
 				{
+					std::cout << "MODE ------" << std::endl;
 					case 'i':
 						it->setInviteOnly(false);
 						std::cout <<  "Invite is : " << it->getInviteOnly() << "\n";
@@ -180,9 +187,10 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 						sendRPL(clientFd, ERR_UNKNOWNMODE, this->findNameById(clientFd), "No such mode");
 				}
 			}
-			this->noticeMode(clientFd, channelName, mode, set_or_unset);
+			this->noticeMode(clientFd, channelName, mode, set_or_unset, arg);
 		}
 		return ;
 	}
+	std::cout << "CHANNEL EXISTE PAS" << std::endl;
 	sendRPL(clientFd, ERR_NOSUCHCHANNEL, this->findNameById(clientFd), "No such channel");
 }
