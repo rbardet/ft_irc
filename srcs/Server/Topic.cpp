@@ -22,10 +22,12 @@ void Server::broadcastNewTopic(const std::string &topic, const std::string &chan
 	broadcastToAllMember(channel, msg);
 }
 
-void Server::handleTopic(const int &clientFd, const std::string &line) {
+void Server::handleTopic(const int &clientFd, const std::string &line) 
+{
 	const std::string channelName = getChannelName(line);
 
-	if (!this->channelExists(channelName)){
+	if (!this->channelExists(channelName))
+	{
 		sendRPL(clientFd, ERR_NOSUCHCHANNEL, this->Users[clientFd].getNickname(), channelName + MSG_ERR_NOSUCHCHANEL);
 		return ;
 	}
