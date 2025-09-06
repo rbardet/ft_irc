@@ -92,6 +92,7 @@ public:
 	void 		setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg);
 	char		extractFlag(const std::string &mode);
 	void		noticeMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg);
+	void		sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel);
 
 	// RFC confirmations
 	void		broadcastJoinToChannel(const std::string &channelName, int clientFd) const;

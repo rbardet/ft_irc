@@ -138,7 +138,52 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 				}
 			}
 			this->noticeMode(clientFd, channelName, mode, set_or_unset, arg);
+			return ;
 		}
 	}
 	sendRPL(clientFd, ERR_NOSUCHCHANNEL, this->findNameById(clientFd), "No such channel");
+}
+
+void Server::sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel) {
+	std::string mode;
+	std::string value;
+	if (channel.getInviteOnly()) {
+		mode += "i";
+	} if (channel.getTopicOpOnly()) {
+		mode += "t";
+	} if (channel.getHasKey()) {
+		mode += "k";
+		value += channel.getKey();
+	} if (channel.getUserLimit() > 0) {
+		mode += "l";
+		std::ostringstream oss;
+		oss << channel.getUserLimit();
+		if (value.empty()) {
+			value += oss.str();
+		} else {
+			value += " ";
+			value += oss.str();
+		}
+		std::cout << channel.getUserLimit() << std::endl;
+		std::cout << "USER LIMIT:" << value << std::endl;
+	}
+
+	const std::string code = RPL_CHANNELMODEIS;
+
+	std::string buffer(SERV_NAME);
+	buffer += code + " ";
+	buffer += this->Users[clientFd].getNickname() + " ";
+	buffer += channel.getName();
+
+	if (mode.empty()) {
+		buffer += "\r\n";
+		send(clientFd, buffer.c_str(), buffer.size(), 0);
+		return ;
+	}
+
+	buffer += " +" + mode + " ";
+	buffer += value + "\r\n";
+
+	std::cout << "ALL MODE OF CHANNEL:" << buffer << std::endl;
+	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }

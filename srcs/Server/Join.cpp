@@ -100,6 +100,7 @@ bool Server::joinExistingChannel(const std::string &channelName,  const std::str
 			}
 			it->addMember(userFd);
 			this->sendTopic(userFd, *it);
+			this->sendRPL_CHANNELMODEIS(userFd, *it);
 			return true;
 		}
 	}
