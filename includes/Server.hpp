@@ -33,6 +33,7 @@ private:
 	epoll_event	event;
 	epoll_event	events[MAX_EVENTS];
 	std::map<int, User>	Users;
+	User		ircBot;
 public:
 	Server();
 	Server(const Server &src);
@@ -45,6 +46,13 @@ public:
 	void	initServer(const int &port, const std::string &password);
 	void	runServer();
 	static void	signalHandler(int signum);
+
+	int 			findIdByName(const std::string &name) const;
+	std::string		findNameById(const int &clientFd) const;
+	Channel			&findChannelByName(const std::string &channelName);
+
+	bool	nickAlreadyInUse(const std::string &nick);
+	void	welcomeUser(const int &code, const std::string &name) const;
 	void	acceptUser();
 	void	parseInput(int userFd);
 	bool	hasPassword() const;
@@ -71,13 +79,6 @@ public:
 	const	std::string getTopic(const std::string &line) const;
 	void	sendTopic(const int &clientFd, const Channel &channel);
 	void	broadcastNewTopic(const std::string &topic, const std::string &channelName, const int &clientFd, Channel &channel);
-
-	bool		nickAlreadyInUse(const std::string &nick);
-	void		welcomeUser(const int &code, const std::string &name) const;
-
-	int 			findIdByName(const std::string &name) const;
-	std::string		findNameById(const int &clientFd) const;
-	Channel			&findChannelByName(const std::string &channelName);
 
 	//   JOIN
 	std::vector<std::string>	parseJoinChannelName(const std::string &line);

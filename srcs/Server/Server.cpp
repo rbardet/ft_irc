@@ -258,7 +258,6 @@ void Server::broadcastToAllMember(Channel chanel, const std::string message) {
 	std::vector<int> members = chanel.getAllMembers();
 
 	for (std::vector<int>::iterator it = members.begin(); it != members.end(); ++it) {
-		std::cout << "BROADCAST FOR: " << *it << " " << message << std::endl;
 		send(*it, message.c_str(), message.size(), 0);
 	}
 }

@@ -5,6 +5,7 @@
 
 #define PORT 1
 #define PASSWORD 2
+#define IP 3
 
 #define SERV_NAME ":server "
 
