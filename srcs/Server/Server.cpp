@@ -139,7 +139,8 @@ void Server::acceptUser() {
 	if (!this->hasPassword()) {
 		this->Users[userFd].setHasPass();
 	}
-
+	
+	handleCapReq(userFd);
 	this->Users[userFd].tryRegisterUser();
 	std::cout << "New User on fd : " << userFd << std::endl;
 }
