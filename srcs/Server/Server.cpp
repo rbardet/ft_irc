@@ -95,6 +95,11 @@ void Server::runServer() {
 	}
 }
 
+void Server::handleCapReq(const int &userFd) const {
+    std::string msg = ":server CAP * LS :multi-prefix sasl\r\n";
+    send(userFd, msg.c_str(), msg.length(), 0);
+}
+
 void Server::acceptUser() {
 	std::cout << "TENTATIVE DE CONNECTION" << std::endl;
 	int userFd = accept(this->socketfd, NULL, NULL);
