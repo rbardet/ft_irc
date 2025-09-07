@@ -95,6 +95,11 @@ void Server::runServer() {
 	}
 }
 
+void Server::handleCapReq(const int &userFd) const {
+    std::string msg = ":server CAP * LS :multi-prefix sasl\r\n";
+    send(userFd, msg.c_str(), msg.length(), 0);
+}
+
 void Server::acceptUser() {
 	std::cout << "TENTATIVE DE CONNECTION" << std::endl;
 	int userFd = accept(this->socketfd, NULL, NULL);
@@ -134,7 +139,8 @@ void Server::acceptUser() {
 	if (!this->hasPassword()) {
 		this->Users[userFd].setHasPass();
 	}
-
+	
+	handleCapReq(userFd);
 	this->Users[userFd].tryRegisterUser();
 	std::cout << "New User on fd : " << userFd << std::endl;
 }
