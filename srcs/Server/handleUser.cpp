@@ -19,9 +19,6 @@ void Server::welcomeUser(const int &clientFd, const std::string &name) const {
 void Server::handleNick(const int &clientFd, const std::string &line) {
 	std::string nick = getParam(NICK_CMD_LENGTH, line);
 
-	welcomeUser(clientFd, nick);
-	this->Users[clientFd].hasWelcomeMessage();
-
 	if (nick.empty()) {
 		sendERR_NEEDMOREPARAMS(clientFd, CMD_NICK);
 		return ;
@@ -40,10 +37,14 @@ void Server::handleNick(const int &clientFd, const std::string &line) {
 	}
 
 	this->Users[clientFd].setNickname(nick);
-
 	this->Users[clientFd].setHasNickname(true);
-
 	this->Users[clientFd].tryRegisterUser();
+
+	// Envoyer les messages de bienvenue seulement après enregistrement complet
+	if (this->Users[clientFd].getIsRegister() && !this->Users[clientFd].getWelcomeMessage()) {
+		welcomeUser(clientFd, nick);
+		this->Users[clientFd].hasWelcomeMessage();
+	}
 }
 
 void Server::handleUsername(const int &clientFd, const std::string &line) {
@@ -55,10 +56,14 @@ void Server::handleUsername(const int &clientFd, const std::string &line) {
 	}
 
 	this->Users[clientFd].setHasUsername();
-
 	this->Users[clientFd].setUsername(username);
-
 	this->Users[clientFd].tryRegisterUser();
+
+	// Envoyer les messages de bienvenue seulement après enregistrement complet
+	if (this->Users[clientFd].getIsRegister() && !this->Users[clientFd].getWelcomeMessage()) {
+		welcomeUser(clientFd, this->Users[clientFd].getNickname());
+		this->Users[clientFd].hasWelcomeMessage();
+	}
 }
 
 int Server::findIdByName(const std::string &name) const {

@@ -179,7 +179,10 @@ void Server::parseInput(int clientFd) {
 }
 
 void Server::handleLine(const int &clientFd, const std::string &line) {
-	if (line.find(CMD_PING, 0) == 0) {
+	if (line.find(CMD_CAP, 0) == 0) {
+		handleCapReq(clientFd);
+		return ;
+	} else if (line.find(CMD_PING, 0) == 0) {
 		handlePing(clientFd, line);
 		return ;
 	} else if (line.find(CMD_NICK, 0) == 0) {
