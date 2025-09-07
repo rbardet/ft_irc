@@ -207,7 +207,7 @@ void Server::handleLine(const int &clientFd, const std::string &line) {
 	} else if (line.find(CMD_KICK, 0) == 0) {
 		handleKick(clientFd, line);
 	} else if (line.find(CMD_PRIVMSG, 0) == 0) {
-		handleChannelMessage(clientFd, line);
+		handlePrivateMessage(clientFd, line);
 	} else if (line.find(CMD_MODE, 0) == 0) {
 		handleMode(clientFd, line);
 	} else if (line.find(CMD_TOPIC, 0) == 0) {
