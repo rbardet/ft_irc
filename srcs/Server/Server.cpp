@@ -96,6 +96,7 @@ void Server::runServer() {
 }
 
 void Server::acceptUser() {
+	std::cout << "TENTATIVE DE CONNECTION" << std::endl;
 	int userFd = accept(this->socketfd, NULL, NULL);
 	if (userFd < 0) {
 		std::cerr << "Failed to accept User" << std::endl;
@@ -158,7 +159,7 @@ void Server::parseInput(int clientFd) {
 
 	input[inputLength] = '\0';
 
-	std::string &tmp = this->Users[clientFd].getInput();
+	std::string tmp;
 	tmp.append(input, inputLength);
 
 	size_t pos;

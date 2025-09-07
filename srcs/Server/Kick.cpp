@@ -1,19 +1,6 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
 
-const std::string Server::getChannelName(const std::string &line) const {
-	const size_t channelPos = line.find('#');
-	if (channelPos == std::string::npos) {
-		return (EMPTY_STRING);
-	}
-
-	const std::string tmp = line.substr(channelPos, line.length());
-
-	const std::string channelName = tmp.substr(0, tmp.find(' '));
-
-	return (channelName);
-}
-
 const std::string Server::getUserToKick(const std::string &line) const {
 	const size_t channelPos = line.find('#');
 	if (channelPos == std::string::npos)

@@ -11,6 +11,8 @@
 
 #define EMPTY_STRING ""
 
+#define BUFFER_SIZE 1024
+
 #define CMD_MODE "MODE"
 #define CMD_NICK "NICK"
 #define CMD_USER "USER"
@@ -100,3 +102,4 @@
 #define MSG_RPL_ENDOFNAMES "End of /NAMES list"
 
 const std::string getParam(int cmdLength, const std::string &line);
+const	std::string getChannelName(const std::string &line);

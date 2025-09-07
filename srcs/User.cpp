@@ -1,6 +1,6 @@
 #include "../includes/User.hpp"
 
-User::User() : nickname(""), username(""), input(""), fd(-1),
+User::User() : nickname(""), username(""), fd(-1),
 hasNickname(false), hasUsername(false), hasPass(false), isRegister(false), welcomeMessage(false) {}
 
 User::User(const User &src) {
@@ -11,7 +11,6 @@ User &User::operator=(const User &src) {
 		return (*this);
 	this->nickname = src.nickname;
 	this->username = src.username;
-	this->input = src.input;
 	this->fd = src.fd;
 	this->hasNickname = src.hasNickname;
 	this->hasUsername = src.hasUsername;
@@ -23,7 +22,7 @@ User &User::operator=(const User &src) {
 User::~User() {}
 
 User::User(const std::string &nickname, const std::string &username) :
-nickname(nickname), username(username), input(""), fd(-1),
+nickname(nickname), username(username), fd(-1),
 hasNickname(false), hasUsername(false), hasPass(false), isRegister(false), welcomeMessage(false) {}
 
 void User::setFd(const int &fd) {

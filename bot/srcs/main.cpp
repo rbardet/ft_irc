@@ -67,6 +67,8 @@ int main(int ac, char **av) {
 	try {
 		Bot ircBot(std::atoi(av[PORT]), av[PASSWORD], ip);
 		setupSignal();
+		ircBot.connectBot();
+		ircBot.runBot();
 	}
 	catch(const std::exception& e) {
 		std::cerr << e.what() << '\n';

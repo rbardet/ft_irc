@@ -173,7 +173,6 @@ void Server::sendRPL_NAMEREPLY(const int &clientFd, Channel &channel) {
 
 	buffer += name + "\r\n";
 
-	std::cout << "LIST DES MEMBRES:" << buffer << std::endl;
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }
 
@@ -187,6 +186,5 @@ void Server::sendRPL_ENDOFNAMES(const int &clientFd, Channel &channel) {
 	buffer += MSG_RPL_ENDOFNAMES;
 	buffer += "\r\n";
 
-	std::cout << "END OF NAME:" << buffer << std::endl;
 	send(clientFd, buffer.c_str(), buffer.size(), 0);
 }

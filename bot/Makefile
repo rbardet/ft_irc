@@ -7,6 +7,7 @@ OBJDIR = ./objects
 
 SRCS = srcs/main.cpp \
 	   srcs/Bot.cpp \
+	../srcs/Utils.cpp \
 
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 

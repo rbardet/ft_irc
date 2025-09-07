@@ -20,7 +20,6 @@
 
 #define MAX_USER 1024
 #define MAX_EVENTS 10
-#define BUFFER_SIZE 1024
 
 class Server
 {
@@ -72,7 +71,6 @@ public:
 
 	// KICK
 	const	std::string getUserToKick(const std::string &line) const;
-	const	std::string getChannelName(const std::string &line) const;
 	const	std::string getReason(const std::string &line) const;
 	void	broadcastKickConfirmation(const std::string &channelName, const std::string &kicker, const std::string &victim, const std::string &reason);
 
