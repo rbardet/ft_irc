@@ -13,11 +13,12 @@ const std::string Server::getTopic(const std::string &line) const {
 }
 
 void Server::broadcastNewTopic(const std::string &topic, const std::string &channelName, const int &clientFd, Channel &channel) {
-	const std::string nick = this->Users[clientFd].getNickname();
-	const std::string user = this->Users[clientFd].getUsername();
-	const std::string host = "localhost";
-	const std::string msg = ":" + nick + "!" + user + "@" + host + " TOPIC " + channelName + " :" + topic + "\r\n";
-
+	std::string msg(":");
+	msg += this->Users[clientFd].getNickname() + "!";
+	msg += this->Users[clientFd].getUsername() + "@";
+	msg += "localhost TOPIC " + channelName;
+	msg += " :" + topic;
+	msg += "\r\n";
 	broadcastToAllMember(channel, msg);
 }
 
