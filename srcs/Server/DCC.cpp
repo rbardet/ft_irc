@@ -39,7 +39,7 @@ void Server::sendFile(const int &clientFd, const std::string &targetNick, t_dcc 
 	(void)clientFd;
 	(void)targetNick;
 	int dccsocket = initDccSocket(std::atoi(dccData.port.c_str()));
-	if (dccsocket) {
+	if (dccsocket < 0) {
 		return ;
 	}
 
@@ -78,7 +78,7 @@ int Server::initDccSocket(const int &port)
 	DccAdress.sin_addr.s_addr = htonl(INADDR_ANY);
 	DccAdress.sin_port = htons(port);
 
-	if (setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+	if (setsockopt(dccfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
 		close(dccfd);
 		std::cerr << "Error while setting option for socket" << std::endl;
 		return(-1);
