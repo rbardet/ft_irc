@@ -9,6 +9,7 @@ private:
 	std::string	nickname;
 	std::string	username;
 	int			fd;
+	std::string	ip;
 
 	bool		hasNickname;
 	bool		hasUsername;
@@ -30,12 +31,14 @@ public:
 	void closeConnection();
 	const std::string &getNickname() const {return (nickname);};
 	const std::string &getUsername() const {return (username);};
+	const std::string &getIp() const {return (ip);};
 	const int &getFd() const {return (fd);};
 	const bool &getIsRegister() const {return (isRegister);};
 	void setHasNickname (const bool boolean) {this->hasNickname = boolean;};
 	void setHasUsername() {this->hasUsername = true;};
 	void setHasPass() {this->hasPass = true;};
 	void setHasRegister(const bool boolean) {this->isRegister = boolean;};
+	void setIp(const std::string &ip) {this->ip = ip;};
 	const bool &getHasNickname() {return (this->hasNickname);};
 	const bool &getHasUsername() {return (this->hasUsername);};
 	const bool &getHasPass() {return (this->hasPass);};

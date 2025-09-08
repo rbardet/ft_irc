@@ -31,53 +31,98 @@ void Server::handleDCC(const int &clientFd, const std::string &targetNick, const
 	if (dccData.mode == DCC_MODE_SEND) {
 		sendFile(clientFd, targetNick, dccData);
 	} else if (dccData.mode == DCC_MODE_GET) {
-		getFile(clientFd, targetNick, dccData);
+		getFile(clientFd, dccData);
 	}
 }
 
 void Server::sendFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData) {
 	int dccsocket = initDccSocket(dccData);
-	if (dccsocket < 0) {
-		return ;
-	}
+	if (dccsocket < 0) return;
+
 	notifyDCCsend(clientFd, targetNick, dccData);
-	
-	fcntl(dccsocket, F_SETFL, O_NONBLOCK);
 
 	int clientDcc = accept(dccsocket, NULL, NULL);
 	if (clientDcc < 0) {
-		return ;
+		std::cerr << "Failed to accept" << std::endl;
+		return;
 	}
 
-	fcntl(clientDcc, F_SETFL, O_NONBLOCK);
-
-	std::string toOpen = "/home/rbardet-/" + dccData.filename;
-	std::ifstream file(toOpen.c_str());
+	std::string toOpen =  "/home/" + this->Users[clientFd].getUsername() + "/" + dccData.filename;
+	std::cout << toOpen << std::endl;
+	std::ifstream file(toOpen.c_str(), std::ios::binary);
 	if (!file.is_open()) {
 		std::cerr << "Error: cannot open " << dccData.filename << std::endl;
+		close(clientDcc);
 		close(dccsocket);
 		return;
 	}
 
-	char	buffer[BUFFER_SIZE];
-	while (!file.eof()) {
+	char buffer[BUFFER_SIZE];
+	while (file.good()) {
 		file.read(buffer, sizeof(buffer));
 		std::streamsize bytes = file.gcount();
 		if (bytes > 0) {
 			send(clientDcc, buffer, bytes, 0);
 		}
 	}
+
 	file.close();
 	close(clientDcc);
 	close(dccsocket);
 }
 
-void Server::getFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData) {
+
+void Server::getFile(const int &clientFd, t_dcc &dccData) {
 	(void)clientFd;
-	(void)targetNick;
-	(void)dccData;
+	int dccSocket = openDccSocket(dccData);
+	if (dccSocket < 0) {
+		return ;
+	}
+
+	std::string toOpen =  "/home/" + this->Users[clientFd].getUsername() + "/" + dccData.filename;
+	std::cout << toOpen << std::endl;
+	std::ofstream file(toOpen.c_str(), std::ios::binary);
+	if (!file.is_open()) {
+		std::cerr << "Failed to open the file" << std::endl;
+		close(dccSocket);
+		return ;
+	}
+
+	char buffer[BUFFER_SIZE];
+	int total = 0;
+	int size = atoi(dccData.fileSize.c_str());
+	while (total < size) {
+		size_t len = read(dccSocket, buffer, BUFFER_SIZE);
+		if (len <= 0) {
+			break ;
+		}
+		file.write(buffer, len);
+		total += len;
+	}
+	file.close();
+	close(dccSocket);
 }
 
+int Server::openDccSocket(t_dcc &dccData) {
+	int dccfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (dccfd < 0) {
+		std::cerr << "Error while setting option for socket" << std::endl;
+		return(-1);
+	}
+
+	struct sockaddr_in DccAdress;
+	DccAdress.sin_family = AF_INET;
+	DccAdress.sin_addr.s_addr = inet_addr(dccData.ip.c_str());
+	DccAdress.sin_port = htons(std::atoi(dccData.port.c_str()));
+
+	if (connect(dccfd, (struct sockaddr*)&DccAdress, sizeof(DccAdress)) < 0) {
+		close(dccfd);
+		std::cerr << "Error while connection to dcc socket" << std::endl;
+		return(-1);
+	}
+
+	return (dccfd);
+}
 
 int Server::initDccSocket(t_dcc &dccData)
 {
@@ -122,17 +167,30 @@ int Server::initDccSocket(t_dcc &dccData)
 	return (dccfd);
 }
 
+unsigned long ipToDecimal(const std::string &ip) {
+	struct in_addr addr;
+	inet_aton(ip.c_str(), &addr);
+	return ntohl(addr.s_addr);
+}
+
 void Server::notifyDCCsend(const int &clientFd, const std::string &targetNick, const t_dcc &dccData) {
 	std::string msg(":");
 	msg += this->Users[clientFd].getNickname() + "!";
 	msg += this->Users[clientFd].getUsername() + "@";
-	msg += "localhost PRIVMSG " + targetNick + " :";
+	msg += this->Users[clientFd].getIp();
+	msg += " PRIVMSG " + targetNick + " :";
 	msg += "\x01";
 	msg += "DCC SEND " + dccData.filename;
-	msg += " " + dccData.ip;
-	std::stringstream ss;
-	ss << dccData.realPort;
-	msg += " " + ss.str();
+
+	unsigned long ipDec = ipToDecimal(this->Users[clientFd].getIp());
+	std::stringstream ssIp;
+	ssIp << ipDec;
+	msg += " " + ssIp.str();
+
+	std::stringstream ssPort;
+	ssPort << dccData.realPort;
+	msg += " " + ssPort.str();
+
 	msg += " " + dccData.fileSize;
 	msg += "\x01\r\n";
 

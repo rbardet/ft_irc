@@ -120,6 +120,15 @@ void Server::acceptUser() {
 		this->Users[userFd].setHasPass();
 	}
 
+	struct sockaddr_in addr;
+	socklen_t addrLen = sizeof(addr);
+	if (getpeername(userFd, (struct sockaddr*)&addr, &addrLen) == -1) {
+		std::cerr << "Error while getting ip" << std::endl;
+		return ;
+	}
+
+	std::string ip(inet_ntoa(addr.sin_addr));
+	this->Users[userFd].setIp(ip);
 	this->Users[userFd].tryRegisterUser();
 	std::cout << "New User on fd : " << userFd << std::endl;
 }

@@ -124,9 +124,10 @@ public:
 	// Dcc
 
 	void	sendFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData);
-	void	getFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData);
+	void	getFile(const int &clientFd, t_dcc &dccData);
 	t_dcc	getDCCInfo(const std::string &message);
 	int		initDccSocket(t_dcc &dccData);
+	int		openDccSocket(t_dcc &dccData);
 	bool	hasAllDCCData(const t_dcc &dccData);
 	void	notifyDCCsend(const int &clientFd, const std::string &targetNick, const t_dcc &dccData);
 
