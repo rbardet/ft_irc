@@ -126,6 +126,5 @@ public:
 
 	// Dcc
 
-	int initDccSocket(int port);
-
+	const int &Server::initDccSocket(const int &port);
 };

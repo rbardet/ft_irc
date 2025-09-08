@@ -52,7 +52,7 @@ void Server::getFile(const int &clientFd, const std::string &targetNick, const s
 }
 
 
-int Server::initDccSocket(int port)
+const int &Server::initDccSocket(const int &port)
 {
 
 	int dccfd = socket(AF_INET, SOCK_STREAM, 0);
