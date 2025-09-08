@@ -122,4 +122,9 @@ public:
 	void	sendERR_NOSUCHCHANNEL(const int &clientFd, const std::string &channelName);
 	void	sendRPL_NAMEREPLY(const int &clientFd, Channel &channel);
 	void	sendRPL_ENDOFNAMES(const int &clientFd, Channel &channel);
+
+	// Dcc
+
+	int initDccSocket(int port);
+
 };
