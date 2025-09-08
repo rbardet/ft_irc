@@ -13,6 +13,8 @@
 #include <map>
 #include <fcntl.h>
 #include <vector>
+#include <fstream>
+#include <cstdlib>
 
 #include "User.hpp"
 #include "Channel.hpp"
@@ -120,8 +122,8 @@ public:
 
 	// Dcc
 
-	void	sendFile(const int &clientFd, const std::string &targetNick, const std::string &message, const t_dcc &dccData);
-	void	getFile(const int &clientFd, const std::string &targetNick, const std::string &message, const t_dcc &dccData);
+	void	sendFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData);
+	void	getFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData);
 	t_dcc	getDCCInfo(const std::string &message);
 	int		initDccSocket(const int &port);
 	bool	hasAllDCCData(const t_dcc &dccData);

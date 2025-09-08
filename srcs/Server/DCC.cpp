@@ -21,7 +21,7 @@ bool Server::hasAllDCCData(const t_dcc &dccData) {
 }
 
 void Server::handleDCC(const int &clientFd, const std::string &targetNick, const std::string &message) {
-	const t_dcc dccData = getDCCInfo(message);
+	t_dcc dccData = getDCCInfo(message);
 
 	if (!this->hasAllDCCData(dccData)) {
 		sendERR_NEEDMOREPARAMS(clientFd, CMD_DCC);
@@ -29,43 +29,34 @@ void Server::handleDCC(const int &clientFd, const std::string &targetNick, const
 	}
 
 	if (dccData.mode == DCC_MODE_SEND) {
-		sendFile(clientFd, targetNick, message, dccData);
+		sendFile(clientFd, targetNick, dccData);
 	} else if (dccData.mode == DCC_MODE_GET) {
-		getFile(clientFd, targetNick, message, dccData);
+		getFile(clientFd, targetNick, dccData);
 	}
 }
 
-void Server::sendFile(const int &clientFd, const std::string &targetNick, const std::string &message, const std::string &filename) 
-{
+void Server::sendFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData) {
 	(void)clientFd;
 	(void)targetNick;
-	(void)message;
+	int dccsocket = initDccSocket(std::atoi(dccData.port.c_str()));
 
+	std::ifstream file(dccData.filename.c_str());
+	if (!file.is_open()) {
+		std::cerr << "Error: cannot open " << dccData.filename << std::endl;
+		close(dccsocket);
+		return;
+	}
 
-
-	int port = 1;
-	int dccsocket = initDccSocket(port);
-
-	std::ifstream file(filename, std::ios::binary);
-	if (!file.is_open()) 
-	{
-        std::cerr << "Error: cannot open " << filename << std::endl;
-        close(dccsocket);
-        return;
-    }
-
-	char buffer[1024];
-	while (!file.eof()) 
-	{
+	char	buffer[BUFFER_SIZE];
+	while (!file.eof()) {
 		file.read(buffer, sizeof(buffer));
-		send();
+		send(dccsocket, buffer, sizeof(buffer), 0);
 	}
 }
 
-void Server::getFile(const int &clientFd, const std::string &targetNick, const std::string &message, const t_dcc &dccData) {
+void Server::getFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData) {
 	(void)clientFd;
 	(void)targetNick;
-	(void)message;
 	(void)dccData;
 }
 
@@ -84,11 +75,13 @@ int Server::initDccSocket(const int &port)
 
 
 	if (bind(dccfd, (struct sockaddr *) &DccAdress, sizeof(DccAdress)) < 0) {
-		throw(std::runtime_error("Error while binding address"));
+		close(dccfd);
+		std::cerr << "Error while binding address" << std::endl;
 	}
 
 	if (listen(dccfd, MAX_USER) < 0) {
-		throw(std::runtime_error("Error while opening the server"));
+		close(dccfd);
+		std::cerr << "Error while binding address" << std::endl;
 	}
 
 	return (dccfd);
