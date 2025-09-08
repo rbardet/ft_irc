@@ -45,7 +45,6 @@ public:
 	void	initServer(const int &port, const std::string &password);
 	void	runServer();
 	static void	signalHandler(int signum);
-	void	handleCapReq(const int &userFd) const;
 
 	int 			findIdByName(const std::string &name) const;
 	std::string		findNameById(const int &clientFd) const;
@@ -58,6 +57,7 @@ public:
 	bool	hasPassword() const;
 	void	sendRPL(const int &clientFd, const std::string code, const std::string &nick, const std::string &message) const;
 
+	void	handleCap(const int &clientFd, const std::string &line);
 	void	handleNick(const int &clientFd, const std::string &line);
 	void	handleUsername(const int &clientFd, const std::string &line);
 	void	handleLine(const int &clientFd, const std::string &line);

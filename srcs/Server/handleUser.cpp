@@ -40,7 +40,6 @@ void Server::handleNick(const int &clientFd, const std::string &line) {
 	this->Users[clientFd].setHasNickname(true);
 	this->Users[clientFd].tryRegisterUser();
 
-	// Envoyer les messages de bienvenue seulement après enregistrement complet
 	if (this->Users[clientFd].getIsRegister() && !this->Users[clientFd].getWelcomeMessage()) {
 		welcomeUser(clientFd, nick);
 		this->Users[clientFd].hasWelcomeMessage();
@@ -59,7 +58,6 @@ void Server::handleUsername(const int &clientFd, const std::string &line) {
 	this->Users[clientFd].setUsername(username);
 	this->Users[clientFd].tryRegisterUser();
 
-	// Envoyer les messages de bienvenue seulement après enregistrement complet
 	if (this->Users[clientFd].getIsRegister() && !this->Users[clientFd].getWelcomeMessage()) {
 		welcomeUser(clientFd, this->Users[clientFd].getNickname());
 		this->Users[clientFd].hasWelcomeMessage();

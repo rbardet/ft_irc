@@ -95,13 +95,7 @@ void Server::runServer() {
 	}
 }
 
-void Server::handleCapReq(const int &userFd) const {
-    std::string msg = ":server CAP * LS :multi-prefix sasl\r\n";
-    send(userFd, msg.c_str(), msg.length(), 0);
-}
-
 void Server::acceptUser() {
-	std::cout << "TENTATIVE DE CONNECTION" << std::endl;
 	int userFd = accept(this->socketfd, NULL, NULL);
 	if (userFd < 0) {
 		std::cerr << "Failed to accept User" << std::endl;
@@ -109,20 +103,6 @@ void Server::acceptUser() {
 	}
 
 	fcntl(userFd, F_SETFL, O_NONBLOCK);
-
-	// // Récupérer l'adresse IP du client
-    // struct sockaddr_in clientAddr;
-    // socklen_t addrLen = sizeof(clientAddr);
-    // if (getpeername(userFd, (struct sockaddr*)&clientAddr, &addrLen) == -1) {
-    //     std::cerr << "Failed to get client IP" << std::endl;
-    //     return;
-    // }
-    // std::cout << "New User connected from IP: "
-    //           << inet_ntoa(clientAddr.sin_addr)
-    //           << " Port: "
-    //           << ntohs(clientAddr.sin_port)
-    //           << std::endl;
-
 
 	epoll_event UserEvent;
 	UserEvent.events = EPOLLIN;
@@ -139,8 +119,7 @@ void Server::acceptUser() {
 	if (!this->hasPassword()) {
 		this->Users[userFd].setHasPass();
 	}
-	
-	handleCapReq(userFd);
+
 	this->Users[userFd].tryRegisterUser();
 	std::cout << "New User on fd : " << userFd << std::endl;
 }
@@ -180,7 +159,7 @@ void Server::parseInput(int clientFd) {
 
 void Server::handleLine(const int &clientFd, const std::string &line) {
 	if (line.find(CMD_CAP, 0) == 0) {
-		handleCapReq(clientFd);
+		handleCap(clientFd, line);
 		return ;
 	} else if (line.find(CMD_PING, 0) == 0) {
 		handlePing(clientFd, line);
@@ -224,6 +203,25 @@ void Server::handleLine(const int &clientFd, const std::string &line) {
 	} else {
 		sendRPL(clientFd, ERR_UNKNOWNCOMMAND, this->findNameById(clientFd), line + " :" + MSG_ERR_UNKNOWNCOMMAND);
 	}
+}
+
+void Server::handleCap(const int &clientFd, const std::string &line) {
+	const std::string arg = getParam(CAP_CMD_LENGTH, line);
+	if (arg.empty()) {
+		sendERR_NEEDMOREPARAMS(clientFd, CMD_CAP);
+	}
+
+	std::string msg(SERV_NAME);
+	if (arg == "LS") {
+		msg += "CAP * LS :";
+	}
+
+	if (arg == "REQ") {
+		msg += "CAP * NAK : not supported";
+	}
+
+	msg += "\r\n";
+	send(clientFd, msg.c_str(), msg.length(), 0);
 }
 
 void Server::handlePass(const int &clientFd, const std::string &line) {
