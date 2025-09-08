@@ -39,6 +39,9 @@ void Server::sendFile(const int &clientFd, const std::string &targetNick, t_dcc 
 	(void)clientFd;
 	(void)targetNick;
 	int dccsocket = initDccSocket(std::atoi(dccData.port.c_str()));
+	if (dccsocket) {
+		return ;
+	}
 
 	std::ifstream file(dccData.filename.c_str());
 	if (!file.is_open()) {
@@ -63,9 +66,11 @@ void Server::getFile(const int &clientFd, const std::string &targetNick, t_dcc &
 
 int Server::initDccSocket(const int &port)
 {
+	int opt = 1;
 	int dccfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (dccfd < 0) {
-		throw(std::runtime_error("Error while opening the socket"));
+		std::cerr << "Error while setting option for socket" << std::endl;
+		return(-1);
 	}
 
 	struct sockaddr_in DccAdress;
@@ -73,17 +78,22 @@ int Server::initDccSocket(const int &port)
 	DccAdress.sin_addr.s_addr = htonl(INADDR_ANY);
 	DccAdress.sin_port = htons(port);
 
+	if (setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+		close(dccfd);
+		std::cerr << "Error while setting option for socket" << std::endl;
+		return(-1);
+	}
 
 	if (bind(dccfd, (struct sockaddr *) &DccAdress, sizeof(DccAdress)) < 0) {
 		close(dccfd);
 		std::cerr << "Error while binding address" << std::endl;
-		return ;
+		return(-1);
 	}
 
 	if (listen(dccfd, MAX_USER) < 0) {
 		close(dccfd);
 		std::cerr << "Error while binding address" << std::endl;
-		return ;
+		return(-1);
 	}
 
 	return (dccfd);

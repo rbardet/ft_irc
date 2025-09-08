@@ -42,7 +42,7 @@ void Server::initSocket() {
 	servAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 	servAddress.sin_port = htons(this->port);
 
-	if (setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
+	if (setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
 		throw(std::runtime_error("Error while setting option for socket"));
 	}
 
