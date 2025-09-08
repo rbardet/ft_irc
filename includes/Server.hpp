@@ -109,8 +109,9 @@ public:
 	void	notifyMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg);
 	void	notifyPart(const int &clientFd, const std::string &channelName);
 
-	void	sendFile(const int &clientFd, const std::string &targetNick, const std::string &message);
-	void	getFile(const int &clientFd, const std::string &targetNick, const std::string &message);
+	void	sendFile(const int &clientFd, const std::string &targetNick, const std::string &message, const std::string &filename);
+	void	getFile(const int &clientFd, const std::string &targetNick, const std::string &message, const std::string &filename);
+	std::string getFilename(const std::string & );
 
 	void	sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel);
 	void	sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel);

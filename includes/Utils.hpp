@@ -26,6 +26,8 @@
 #define CMD_INVITE "INVITE"
 #define CMD_CAP "CAP"
 #define CMD_DCC "DCC"
+#define DCC_MODE_SEND "SEND"
+#define DCC_MODE_GET "GET"
 
 #define MODE_CMD_LENGTH 5
 #define NICK_CMD_LENGTH 5
