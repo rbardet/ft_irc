@@ -77,11 +77,13 @@ int Server::initDccSocket(const int &port)
 	if (bind(dccfd, (struct sockaddr *) &DccAdress, sizeof(DccAdress)) < 0) {
 		close(dccfd);
 		std::cerr << "Error while binding address" << std::endl;
+		return ;
 	}
 
 	if (listen(dccfd, MAX_USER) < 0) {
 		close(dccfd);
 		std::cerr << "Error while binding address" << std::endl;
+		return ;
 	}
 
 	return (dccfd);
