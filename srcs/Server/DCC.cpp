@@ -52,9 +52,8 @@ void Server::getFile(const int &clientFd, const std::string &targetNick, const s
 }
 
 
-const int &Server::initDccSocket(const int &port)
+int Server::initDccSocket(const int &port)
 {
-
 	int dccfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (dccfd < 0) {
 		throw(std::runtime_error("Error while opening the socket"));

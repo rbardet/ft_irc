@@ -111,7 +111,7 @@ public:
 
 	void	sendFile(const int &clientFd, const std::string &targetNick, const std::string &message, const std::string &filename);
 	void	getFile(const int &clientFd, const std::string &targetNick, const std::string &message, const std::string &filename);
-	std::string getFilename(const std::string & );
+	std::string getFilename(const std::string &message);
 
 	void	sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel);
 	void	sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel);
@@ -126,5 +126,5 @@ public:
 
 	// Dcc
 
-	const int &Server::initDccSocket(const int &port);
+	int initDccSocket(const int &port);
 };
