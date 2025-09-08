@@ -30,6 +30,7 @@ typedef struct {
 	std::string ip;
 	std::string port;
 	std::string fileSize;
+	uint16_t	realPort;
 }				t_dcc;
 
 class Server
@@ -125,8 +126,9 @@ public:
 	void	sendFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData);
 	void	getFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData);
 	t_dcc	getDCCInfo(const std::string &message);
-	int		initDccSocket(const int &port);
+	int		initDccSocket(t_dcc &dccData);
 	bool	hasAllDCCData(const t_dcc &dccData);
+	void	notifyDCCsend(const int &clientFd, const std::string &targetNick, const t_dcc &dccData);
 
 	void	sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel);
 	void	sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel);

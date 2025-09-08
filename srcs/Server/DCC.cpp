@@ -36,14 +36,23 @@ void Server::handleDCC(const int &clientFd, const std::string &targetNick, const
 }
 
 void Server::sendFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData) {
-	(void)clientFd;
-	(void)targetNick;
-	int dccsocket = initDccSocket(std::atoi(dccData.port.c_str()));
+	int dccsocket = initDccSocket(dccData);
 	if (dccsocket < 0) {
 		return ;
 	}
+	notifyDCCsend(clientFd, targetNick, dccData);
+	
+	fcntl(dccsocket, F_SETFL, O_NONBLOCK);
 
-	std::ifstream file(dccData.filename.c_str());
+	int clientDcc = accept(dccsocket, NULL, NULL);
+	if (clientDcc < 0) {
+		return ;
+	}
+
+	fcntl(clientDcc, F_SETFL, O_NONBLOCK);
+
+	std::string toOpen = "/home/rbardet-/" + dccData.filename;
+	std::ifstream file(toOpen.c_str());
 	if (!file.is_open()) {
 		std::cerr << "Error: cannot open " << dccData.filename << std::endl;
 		close(dccsocket);
@@ -53,8 +62,14 @@ void Server::sendFile(const int &clientFd, const std::string &targetNick, t_dcc 
 	char	buffer[BUFFER_SIZE];
 	while (!file.eof()) {
 		file.read(buffer, sizeof(buffer));
-		send(dccsocket, buffer, sizeof(buffer), 0);
+		std::streamsize bytes = file.gcount();
+		if (bytes > 0) {
+			send(clientDcc, buffer, bytes, 0);
+		}
 	}
+	file.close();
+	close(clientDcc);
+	close(dccsocket);
 }
 
 void Server::getFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData) {
@@ -64,7 +79,7 @@ void Server::getFile(const int &clientFd, const std::string &targetNick, t_dcc &
 }
 
 
-int Server::initDccSocket(const int &port)
+int Server::initDccSocket(t_dcc &dccData)
 {
 	int opt = 1;
 	int dccfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -76,7 +91,7 @@ int Server::initDccSocket(const int &port)
 	struct sockaddr_in DccAdress;
 	DccAdress.sin_family = AF_INET;
 	DccAdress.sin_addr.s_addr = htonl(INADDR_ANY);
-	DccAdress.sin_port = htons(port);
+	DccAdress.sin_port = htons(0);
 
 	if (setsockopt(dccfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
 		close(dccfd);
@@ -90,6 +105,14 @@ int Server::initDccSocket(const int &port)
 		return(-1);
 	}
 
+	socklen_t len = sizeof(DccAdress);
+	if (getsockname(dccfd, (struct sockaddr*)&DccAdress, &len) == -1) {
+		close(dccfd);
+		std::cerr << "Error while getting port" << std::endl;
+		return(-1);
+	}
+
+	dccData.realPort = ntohs(DccAdress.sin_port);
 	if (listen(dccfd, MAX_USER) < 0) {
 		close(dccfd);
 		std::cerr << "Error while binding address" << std::endl;
@@ -97,4 +120,22 @@ int Server::initDccSocket(const int &port)
 	}
 
 	return (dccfd);
+}
+
+void Server::notifyDCCsend(const int &clientFd, const std::string &targetNick, const t_dcc &dccData) {
+	std::string msg(":");
+	msg += this->Users[clientFd].getNickname() + "!";
+	msg += this->Users[clientFd].getUsername() + "@";
+	msg += "localhost PRIVMSG " + targetNick + " :";
+	msg += "\x01";
+	msg += "DCC SEND " + dccData.filename;
+	msg += " " + dccData.ip;
+	std::stringstream ss;
+	ss << dccData.realPort;
+	msg += " " + ss.str();
+	msg += " " + dccData.fileSize;
+	msg += "\x01\r\n";
+
+	std::cout << "MESSAGE:" << msg << std::endl;
+	send(this->findIdByName(targetNick), msg.c_str(), msg.size(), 0);
 }
