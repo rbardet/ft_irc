@@ -2,39 +2,36 @@
 #include "../../includes/Utils.hpp"
 #include <fstream>
 
-std::string getFilename(const std::string &message) {
+t_dcc Server::getDCCInfo(const std::string &message) {
 	std::istringstream iss(message);
-	std::string	dcc;
-	std::string	send;
-	std::string	filename;
+	t_dcc	dccData;
 
-	iss >> dcc >> send >> filename;
+	iss >> dccData.dcc >> dccData.mode >> dccData.filename >> dccData.ip >> dccData.port >> dccData.fileSize;
 
-	if (dcc == CMD_DCC && (send == DCC_MODE_SEND || send == DCC_MODE_GET)) {
-		return filename;
+	return(dccData);
+}
+
+bool Server::hasAllDCCData(const t_dcc &dccData) {
+	if (dccData.dcc.empty() || dccData.mode.empty() || dccData.filename.empty() || dccData.ip.empty() ||
+		dccData.port.empty() || dccData.fileSize.empty()) {
+		return(false);
 	}
-	return (EMPTY_STRING);
+
+	return (true);
 }
 
 void Server::handleDCC(const int &clientFd, const std::string &targetNick, const std::string &message) {
-	const std::string mode = getParam(DCC_CMD_LENGTH, message);
+	const t_dcc dccData = getDCCInfo(message);
 
-	std::cout << "MODE DE DCC:" << std::endl;
-	if (mode.empty()) {
+	if (!this->hasAllDCCData(dccData)) {
 		sendERR_NEEDMOREPARAMS(clientFd, CMD_DCC);
 		return ;
 	}
 
-	const std::string filename(message);
-	if (filename.empty()) {
-		sendERR_NEEDMOREPARAMS(clientFd, CMD_DCC);
-	}
-
-	std::cout << "NOM DU FICHIER" << filename << std::endl;
-	if (mode == DCC_MODE_SEND) {
-		sendFile(clientFd, targetNick, message, filename);
-	} else if (mode == DCC_MODE_GET) {
-		getFile(clientFd, targetNick, message, filename);
+	if (dccData.mode == DCC_MODE_SEND) {
+		sendFile(clientFd, targetNick, message, dccData);
+	} else if (dccData.mode == DCC_MODE_GET) {
+		getFile(clientFd, targetNick, message, dccData);
 	}
 }
 
@@ -65,17 +62,16 @@ void Server::sendFile(const int &clientFd, const std::string &targetNick, const 
 	}
 }
 
-void Server::getFile(const int &clientFd, const std::string &targetNick, const std::string &message, const std::string &filename) {
+void Server::getFile(const int &clientFd, const std::string &targetNick, const std::string &message, const t_dcc &dccData) {
 	(void)clientFd;
 	(void)targetNick;
 	(void)message;
-	(void)filename;
+	(void)dccData;
 }
 
 
-int Server::initDccSocket(int port)
+int Server::initDccSocket(const int &port)
 {
-
 	int dccfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (dccfd < 0) {
 		throw(std::runtime_error("Error while opening the socket"));
