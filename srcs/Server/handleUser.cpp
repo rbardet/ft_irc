@@ -29,7 +29,7 @@ void Server::handleNick(const int &clientFd, const std::string &line) {
 		return ;
 	}
 
-	if (nick.find('#') != std::string::npos) {
+	if (nick.find('#') != std::string::npos || nick.find(':') != std::string::npos || nick.find(':') != std::string::npos) {
 		this->Users[clientFd].setHasNickname(false);
 		this->Users[clientFd].setHasRegister(false);
 		sendRPL(clientFd, ERR_NICKCOLLISION, this->findNameById(clientFd), MSG_ERR_INVALIDNICK);
