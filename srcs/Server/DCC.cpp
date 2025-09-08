@@ -1,5 +1,6 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
+#include <fstream>
 
 std::string getFilename(const std::string &message) {
 	std::istringstream iss(message);
@@ -37,11 +38,31 @@ void Server::handleDCC(const int &clientFd, const std::string &targetNick, const
 	}
 }
 
-void Server::sendFile(const int &clientFd, const std::string &targetNick, const std::string &message, const std::string &filename) {
+void Server::sendFile(const int &clientFd, const std::string &targetNick, const std::string &message, const std::string &filename) 
+{
 	(void)clientFd;
 	(void)targetNick;
 	(void)message;
-	(void)filename;
+
+
+
+	int port = 1;
+	int dccsocket = initDccSocket(port);
+
+	std::ifstream file(filename, std::ios::binary);
+	if (!file.is_open()) 
+	{
+        std::cerr << "Error: cannot open " << filename << std::endl;
+        close(dccsocket);
+        return;
+    }
+
+	char buffer[1024];
+	while (!file.eof()) 
+	{
+		file.read(buffer, sizeof(buffer));
+		send();
+	}
 }
 
 void Server::getFile(const int &clientFd, const std::string &targetNick, const std::string &message, const std::string &filename) {
