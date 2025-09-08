@@ -21,6 +21,15 @@
 #define MAX_USER 1024
 #define MAX_EVENTS 10
 
+typedef struct {
+	std::string	dcc;
+	std::string	mode;
+	std::string	filename;
+	std::string ip;
+	std::string port;
+	std::string fileSize;
+}				t_dcc;
+
 class Server
 {
 private:
@@ -109,9 +118,13 @@ public:
 	void	notifyMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg);
 	void	notifyPart(const int &clientFd, const std::string &channelName);
 
-	void	sendFile(const int &clientFd, const std::string &targetNick, const std::string &message, const std::string &filename);
-	void	getFile(const int &clientFd, const std::string &targetNick, const std::string &message, const std::string &filename);
-	std::string getFilename(const std::string &message);
+	// Dcc
+
+	void	sendFile(const int &clientFd, const std::string &targetNick, const std::string &message, const t_dcc &dccData);
+	void	getFile(const int &clientFd, const std::string &targetNick, const std::string &message, const t_dcc &dccData);
+	t_dcc	getDCCInfo(const std::string &message);
+	int		initDccSocket(const int &port);
+	bool	hasAllDCCData(const t_dcc &dccData);
 
 	void	sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel);
 	void	sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel);
@@ -123,8 +136,5 @@ public:
 	void	sendERR_NOSUCHCHANNEL(const int &clientFd, const std::string &channelName);
 	void	sendRPL_NAMEREPLY(const int &clientFd, Channel &channel);
 	void	sendRPL_ENDOFNAMES(const int &clientFd, Channel &channel);
-
-	// Dcc
-
-	int initDccSocket(const int &port);
 };
+
