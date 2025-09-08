@@ -65,16 +65,16 @@ void Server::broadcastToChannel(const std::string &channelName, const std::strin
 
 void Server::sendPrivateMessage(const std::string &targetNick, const std::string &message, int senderFd)
 {
-	if (message.find(SOH, 0) == 0) {
-		handleDCC(senderFd, targetNick, message);
-		return ;
-	}
-
 	int targetFd = findIdByName(targetNick);
 	if (targetFd == -1) {
 		// Utilisateur introuvable
 		sendRPL(senderFd, ERR_NOSUCHNICK, this->findNameById(senderFd), MSG_ERR_NOSUCHNICK);
 		return;
+	}
+
+	if (message.find(SOH, 0) == 0) {
+		handleDCC(senderFd, targetNick, message);
+		return ;
 	}
 
 	std::string nick = Users.at(senderFd).getNickname();
