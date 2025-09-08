@@ -35,6 +35,8 @@
 #define PART_CMD_LENGTH 5
 #define CAP_CMD_LENGTH 4
 
+#define LIST_CAP "CAP * LS :sasl"
+
 #define MODE_FLAG 1
 
 #define REMOVE_LIMIT 0
@@ -103,5 +105,5 @@
 #define MSG_PART "Leaved the channel"
 #define MSG_RPL_ENDOFNAMES "End of /NAMES list"
 
-const std::string getParam(int cmdLength, const std::string &line);
+const	std::string getParam(int cmdLength, const std::string &line);
 const	std::string getChannelName(const std::string &line);

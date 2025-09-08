@@ -205,6 +205,25 @@ void Server::handleLine(const int &clientFd, const std::string &line) {
 	}
 }
 
+std::vector<std::string> Server::getReqCap(const std::string line) {
+	size_t pos = 0;
+	size_t lastPos = line.find(':');
+	std::vector<std::string> allCap;
+
+	while (pos != std::string::npos) {
+		pos = line.find(' ');
+		if (pos == std::string::npos) {
+			return (allCap);
+		}
+
+		allCap.push_back(line.substr(lastPos, pos - lastPos));
+
+		lastPos = pos + 1;
+	}
+
+	return (allCap);
+}
+
 void Server::handleCap(const int &clientFd, const std::string &line) {
 	const std::string arg = getParam(CAP_CMD_LENGTH, line);
 	if (arg.empty()) {
@@ -213,15 +232,25 @@ void Server::handleCap(const int &clientFd, const std::string &line) {
 
 	std::string msg(SERV_NAME);
 	if (arg == "LS") {
-		msg += "CAP * LS :";
+		msg += LIST_CAP;
+		msg += "\r\n";
+		send(clientFd, msg.c_str(), msg.length(), 0);
+		return ;
 	}
 
 	if (arg == "REQ") {
-		msg += "CAP * NAK : not supported";
+		std::vector<std::string> allCap = getReqCap(line);
+		for (size_t i = 0; i < allCap.size(); i++) {
+			if (allCap[i] == "sasl") {
+				msg += "CAP * ACK :" + allCap[i] + "\r\n";
+			} else {
+				msg += "CAP * NAK :" + allCap[i] + "\r\n";
+			}
+			std::cout << "CAP" << arg << std::endl;
+			send(clientFd, msg.c_str(), msg.length(), 0);
+		}
+		return ;
 	}
-
-	msg += "\r\n";
-	send(clientFd, msg.c_str(), msg.length(), 0);
 }
 
 void Server::handlePass(const int &clientFd, const std::string &line) {

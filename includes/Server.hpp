@@ -56,6 +56,7 @@ public:
 	void	parseInput(int userFd);
 	bool	hasPassword() const;
 	void	sendRPL(const int &clientFd, const std::string code, const std::string &nick, const std::string &message) const;
+	std::vector<std::string> getReqCap(const std::string line);
 
 	void	handleCap(const int &clientFd, const std::string &line);
 	void	handleNick(const int &clientFd, const std::string &line);
