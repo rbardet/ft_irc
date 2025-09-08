@@ -18,6 +18,7 @@ SRCS = srcs/main.cpp \
 	   srcs/Server/Invite.cpp \
 	   srcs/Server/Part.cpp \
 	   srcs/Server/reply.cpp \
+	   srcs/Server/DCC.cpp \
 	   srcs/Utils.cpp \
 
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))

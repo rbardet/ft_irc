@@ -25,6 +25,7 @@
 #define CMD_PART "PART"
 #define CMD_INVITE "INVITE"
 #define CMD_CAP "CAP"
+#define CMD_DCC "DCC"
 
 #define MODE_CMD_LENGTH 5
 #define NICK_CMD_LENGTH 5
@@ -34,8 +35,11 @@
 #define INVITE_CMD_LENGTH 7
 #define PART_CMD_LENGTH 5
 #define CAP_CMD_LENGTH 4
+#define DCC_CMD_LENGTH 4
 
 #define LIST_CAP "CAP * LS :sasl"
+
+#define SOH "\x01"
 
 #define MODE_FLAG 1
 

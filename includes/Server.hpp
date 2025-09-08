@@ -69,7 +69,8 @@ public:
 	void	handlePing(const int &clientFd, const std::string &line);
 	void	handleInvite(const int &clientFd, const std::string &line);
 	void	handlePart(const int &clientFd, const std::string &line);
-	void	handleMode(int clientFd, const std::string &line);
+	void	handleMode(const int & clientFd, const std::string &line);
+	void	handleDCC(const int &clientFd, const std::string &targetNick, const std::string &message);
 
 	// KICK
 	const	std::string getUserToKick(const std::string &line) const;
@@ -107,6 +108,9 @@ public:
 	void	notifyInvite(const int &clientFd, const std::string &toInvite, Channel &channel);
 	void	notifyMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg);
 	void	notifyPart(const int &clientFd, const std::string &channelName);
+
+	void	sendFile(const int &clientFd, const std::string &targetNick, const std::string &message);
+	void	getFile(const int &clientFd, const std::string &targetNick, const std::string &message);
 
 	void	sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel);
 	void	sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel);

@@ -22,7 +22,7 @@ void Server::handlePrivateMessage(int clientFd, const std::string &line)
 		return;
 
 	// si le destinateur commence par # ou & = channel
-	if (target[0] == '#' || target[0] == '&') 
+	if (target[0] == '#' || target[0] == '&')
 	{
 		broadcastToChannel(target, message, clientFd);
 		return;
@@ -63,8 +63,13 @@ void Server::broadcastToChannel(const std::string &channelName, const std::strin
 }
 
 
-void Server::sendPrivateMessage(const std::string &targetNick, const std::string &message, int senderFd) 
+void Server::sendPrivateMessage(const std::string &targetNick, const std::string &message, int senderFd)
 {
+	if (message.find(SOH, 0) == 0) {
+		handleDCC(senderFd, targetNick, message);
+		return ;
+	}
+
 	int targetFd = findIdByName(targetNick);
 	if (targetFd == -1) {
 		// Utilisateur introuvable
@@ -79,4 +84,3 @@ void Server::sendPrivateMessage(const std::string &targetNick, const std::string
 	std::string full = ":" + nick + "!" + user + "@" + host + " PRIVMSG " + targetNick + " :" + message + "\r\n";
 	send(targetFd, full.c_str(), full.length(), 0);
 }
-

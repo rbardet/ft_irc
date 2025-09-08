@@ -2,7 +2,7 @@
 #include "../../includes/Utils.hpp"
 #include <stdlib.h>
 
-void Server::handleMode(int clientFd, const std::string &line) {
+void Server::handleMode(const int &clientFd, const std::string &line) {
 	size_t space_after_mode = line.find(' ');
 	if (space_after_mode == std::string::npos)
 		return;
