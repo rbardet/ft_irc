@@ -157,7 +157,16 @@ void Server::parseInput(int clientFd) {
 	tmp.append(input, inputLength);
 
 	size_t pos;
-	while ((pos = tmp.find("\r\n")) != std::string::npos) {
+	while (true) {
+		pos = tmp.find("\r\n");
+		if (pos == std::string::npos) {
+			pos = tmp.find("\n");
+		}
+
+		if (pos == std::string::npos) {
+			break ;
+		}
+
 		std::string line = tmp.substr(0, pos);
 		tmp.erase(0, pos + 2);
 		std::cout << "LINE: " << line << std::endl;
