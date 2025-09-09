@@ -52,7 +52,6 @@ void Server::sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel) 
 			value += " ";
 			value += oss.str();
 		}
-		std::cout << channel.getUserLimit() << std::endl;
 	}
 
 	const std::string code = RPL_CHANNELMODEIS;

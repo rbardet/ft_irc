@@ -255,7 +255,6 @@ void Server::handleCap(const int &clientFd, const std::string &line) {
 			} else {
 				msg += "CAP * NAK :" + allCap[i] + "\r\n";
 			}
-			std::cout << "CAP" << arg << std::endl;
 			send(clientFd, msg.c_str(), msg.length(), 0);
 		}
 		return ;

@@ -189,13 +189,11 @@ bool Channel::setTopic(int user, const std::string &topic, const std::string &se
 {
 	// si op only pour modif topic verif que bien op
 	if (this->topic_op_only && this->operators.find(user) == this->operators.end()) {
-		std::cout << "Only operators can change the topic of this channel." << std::endl;
 		return (false);
 	}
 
 	time(&this->topicTimeSet);
 	this->topicSetter = setterName;
-	std::cout << topicSetter << std::endl;
 	this->topic = topic;
 	return (true);
 }
@@ -249,7 +247,6 @@ std::vector<int> Channel::getAllMembers() const
 
 bool Channel::isSpace()
 {
-	std::cout << "test" << std::endl;
 	if (user_limit > 0)
 	{
 		if (user_joined == user_limit)

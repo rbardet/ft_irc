@@ -48,7 +48,6 @@ void Server::sendFile(const int &clientFd, const std::string &targetNick, t_dcc 
 	}
 
 	std::string toOpen =  "/home/" + this->Users[clientFd].getUsername() + "/" + dccData.filename;
-	std::cout << toOpen << std::endl;
 	std::ifstream file(toOpen.c_str(), std::ios::binary);
 	if (!file.is_open()) {
 		std::cerr << "Error: cannot open " << dccData.filename << std::endl;
@@ -80,7 +79,6 @@ void Server::getFile(const int &clientFd, t_dcc &dccData) {
 	}
 
 	std::string toOpen =  "/home/" + this->Users[clientFd].getUsername() + "/" + dccData.filename;
-	std::cout << toOpen << std::endl;
 	std::ofstream file(toOpen.c_str(), std::ios::binary);
 	if (!file.is_open()) {
 		std::cerr << "Failed to open the file" << std::endl;
@@ -194,6 +192,5 @@ void Server::notifyDCCsend(const int &clientFd, const std::string &targetNick, c
 	msg += " " + dccData.fileSize;
 	msg += "\x01\r\n";
 
-	std::cout << "MESSAGE:" << msg << std::endl;
 	send(this->findIdByName(targetNick), msg.c_str(), msg.size(), 0);
 }

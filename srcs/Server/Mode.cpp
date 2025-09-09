@@ -84,7 +84,6 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 				switch (mode) {
 					case 'i':
 						it->setInviteOnly(true);
-						std::cout <<  "Invite is : " << it->getInviteOnly() << "\n";
 						break;
 					case 't':
 						it->setTopicOpOnly(true);
@@ -94,7 +93,6 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 						break;
 					case 'o':
 						it->addOperator(findIdByName(arg));
-						std::cout << arg << " is operator ? : " << it->isOperator(findIdByName(arg)) << "\n";
 						break;
 					case 'l':
 						if (arg.empty()) {
@@ -102,7 +100,6 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 							return;
 						}
 						it->setUserLimit(atoi(arg.c_str()));
-						std::cout <<  "userLimit is : " << it->getUserLimit() << "\n";
 						break;
 					default:
 						sendRPL(clientFd, ERR_UNKNOWNMODE, this->findNameById(clientFd), "No such mode");
@@ -113,24 +110,18 @@ void Server::setMode(int clientFd, const std::string &channelName, char mode, bo
 				switch (mode) {
 					case 'i':
 						it->setInviteOnly(false);
-						std::cout <<  "Invite is : " << it->getInviteOnly() << "\n";
 						break;
 					case 't':
 						it->setTopicOpOnly(false);
-						std::cout <<  "topicOnly is : " << it->getInviteOnly() << "\n";
 						break;
 					case 'k':
 						it->clearKey();
-						std::cout <<  "key is : " << it->getHasKey() << "\n";
-						std::cout <<  "the key is : " << it->getKey() << "\n";
 						break;
 					case 'o':
 						it->removeOperator(findIdByName(arg));
-						std::cout << arg << " is operator ? : " << it->isOperator(findIdByName(arg)) << "\n";
 						break;
 					case 'l':
 						it->setUserLimit(REMOVE_LIMIT);
-						std::cout <<  "userLimit is : " << it->getUserLimit() << "\n";
 						break;
 					default:
 						sendRPL(clientFd, ERR_UNKNOWNMODE, this->findNameById(clientFd), "No such mode");
