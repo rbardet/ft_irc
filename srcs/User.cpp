@@ -22,7 +22,7 @@ User &User::operator=(const User &src) {
 User::~User() {}
 
 User::User(const std::string &nickname, const std::string &username) :
-nickname(nickname), username(username), fd(-1),
+nickname(nickname), username(username), fd(-1), buffer(""),
 hasNickname(false), hasUsername(false), hasPass(false), isRegister(false), welcomeMessage(false) {}
 
 void User::setFd(const int &fd) {

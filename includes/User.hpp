@@ -11,6 +11,7 @@ private:
 	int			fd;
 	std::string	ip;
 
+	std::string	buffer;
 	bool		hasNickname;
 	bool		hasUsername;
 	bool		hasPass;
@@ -32,6 +33,8 @@ public:
 	const std::string &getNickname() const {return (nickname);};
 	const std::string &getUsername() const {return (username);};
 	const std::string &getIp() const {return (ip);};
+	const std::string &getBuffer() const {return (buffer);};
+	void addToBuffer(const std::string &toAdd) {this->buffer += toAdd;};
 	const int &getFd() const {return (fd);};
 	const bool &getIsRegister() const {return (isRegister);};
 	void setHasNickname (const bool boolean) {this->hasNickname = boolean;};

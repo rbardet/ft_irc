@@ -153,9 +153,10 @@ void Server::parseInput(int clientFd) {
 
 	input[inputLength] = '\0';
 
-	std::string tmp;
+	std::string tmp = this->Users[clientFd].getBuffer();
 	tmp.append(input, inputLength);
 
+	this->Users[clientFd].addToBuffer(tmp);
 	size_t pos;
 	while (true) {
 		pos = tmp.find("\r\n");
