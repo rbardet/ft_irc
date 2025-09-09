@@ -1,7 +1,6 @@
 #include "../includes/Channel.hpp"
 
-Channel::Channel()
-{
+Channel::Channel() {
 	this->invite_only = false;
 	this->topic_op_only = false;
 	this->has_key = false;
@@ -9,8 +8,7 @@ Channel::Channel()
 	this->user_joined = 1;
 }
 
-Channel::Channel(const std::string &name, int creator)
-{
+Channel::Channel(const std::string &name, int creator) {
 	this->name = name;
 	this->invite_only = false;
 	this->topic_op_only = false;
