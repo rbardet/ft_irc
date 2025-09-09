@@ -172,6 +172,7 @@ void Server::parseInput(int clientFd) {
 		tmp.erase(0, pos + 2);
 		std::cout << "LINE: " << line << std::endl;
 
+		this->Users[clientFd].clearBuffer();
 		handleLine(clientFd, line);
 	}
 }

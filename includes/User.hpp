@@ -35,6 +35,7 @@ public:
 	const std::string &getIp() const {return (ip);};
 	const std::string &getBuffer() const {return (buffer);};
 	void addToBuffer(const std::string &toAdd) {this->buffer += toAdd;};
+	void clearBuffer() {this->buffer = "";};
 	const int &getFd() const {return (fd);};
 	const bool &getIsRegister() const {return (isRegister);};
 	void setHasNickname (const bool boolean) {this->hasNickname = boolean;};
