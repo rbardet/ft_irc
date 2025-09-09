@@ -10,21 +10,20 @@ class Channel
 {
 private:
 	std::string		name;
-	std::string		key;			// mode k (mot de passe du channel)
-	bool			invite_only;	// mode i (invitation uniquement)
-	bool			topic_op_only;	// mode t (si actif seuls les ops peuvent changer le topic)
-	bool			has_key;		// mode k actif ? = les passwords
-	int				user_limit;		// mode l (limite d'utilisateurs, 0 = pas de limite)
+	std::string		key;
+	bool			invite_only;
+	bool			topic_op_only;
+	bool			has_key;
+	int				user_limit;
 
 	std::string		topic;
 	std::string		topicSetter;
 	time_t			topicTimeSet;
 
-	// chaque user a un fd unique dont on regarde que le fd.  dont tab d int
 	int				host;
-	std::set<int>	operators;		//
-	std::set<int>	users;			//
-	std::set<int>	invited;		// fd des utilisateurs invit (si mode i)
+	std::set<int>	operators;
+	std::set<int>	users;
+	std::set<int>	invited;
 
 public:
 	Channel();
@@ -35,8 +34,6 @@ public:
 
 	int				user_joined;
 
-
-	// ===== GESTION DES MEMBRES =====
 	bool	canJoin(int fd, const std::string &key, std::string &reason) const;
 	bool	addMember(int fd);
 	bool	removeMember(int fd);
@@ -45,36 +42,29 @@ public:
 	bool	hasPerm(const int & clientFd) const;
 	bool	isHost(const int &clientFd) const;
 
-	// ===== GESTION DES OPÉRATEURS =====
 	bool	isOperator(int fd) const;
 	bool	addOperator(int fd);
 	bool	removeOperator(int fd);
 
-	// ===== GESTION DES MODES (selon le sujet) =====
-	void	setInviteOnly(bool on);		// mode i
-	void	setTopicOpOnly(bool on);	// mode t
-	void	setKey(const std::string &key);	// mode k
-	void	clearKey();					// mode k
-	void	setUserLimit(int limit);	// mode l
-	void	resetUserLimit();			// mode l
+	void	setInviteOnly(bool on);
+	void	setTopicOpOnly(bool on);
+	void	setKey(const std::string &key);
+	void	clearKey();
+	void	setUserLimit(int limit);
+	void	resetUserLimit();
 
-	// ===== GESTION DU TOPIC =====
-	bool	setTopic(int byFd, const std::string &topic, const std::string &setterName); // respecte le mode t
+	bool	setTopic(int byFd, const std::string &topic, const std::string &setterName);
 	const std::string &getTopic() const;
 
-	// ===== GESTION DES INVITATIONS =====
 	void	invite(int fd);
 	bool	isInvited(int fd) const;
 	void	clearInvite(int fd);
 
-
-	// ===== UTILITAIRES =====
 	const std::string	&getName() const;
 	std::vector<int>	getAllMembers() const;
 	const int 			&getHost() const;
 	bool				isSpace();
 
-	// ===== GETTERS POUR LES MODES =====
 	bool	getInviteOnly() const;
 	bool	getTopicOpOnly() const;
 	bool	getHasKey() const;

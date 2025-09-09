@@ -93,25 +93,20 @@ public:
 	void	sendTopic(const int &clientFd, const Channel &channel);
 	void	broadcastNewTopic(const std::string &topic, const std::string &channelName, const int &clientFd, Channel &channel);
 
-	//   JOIN
 	std::vector<std::string>	parseJoinChannelName(const std::string &line);
 	bool						channelExists(const std::string &channelName);
 	void						createChannel(const std::string &channelName, int creatorFd);
 	bool						joinExistingChannel(const std::string &channelName, const std::string &key, int userFd);
-	// Messages dans les channels (chat normal IRC) irssi écrit privmsg direct
 	void		broadcastToChannel(const std::string &channelName, const std::string &message, int senderFd);
 	void		sendChannelError(const int &clientFd, const std::string &code, const std::string &nick, const std::string &channel, const std::string &message) const;
 
-	// messages prive /msg
 	void		handlePrivateMessage(int clientFd, const std::string &line);
 	void		sendPrivateMessage(const std::string &targetNick, const std::string &message, int senderFd);
 
-	//  MODE
 	void 		execMode(int clientFd, const std::string &channelName, const std::string &mode, std::string arg);
 	void 		setMode(int clientFd, const std::string &channelName, char mode, bool set_or_unset, std::string arg);
 	char		extractFlag(const std::string &mode);
 
-	// RFC confirmations
 	void		notifyJoin(const std::string &channelName, int clientFd);
 	void		broadcastToAllMember(Channel chanel, const std::string message);
 
@@ -120,8 +115,6 @@ public:
 	void	notifyInvite(const int &clientFd, const std::string &toInvite, Channel &channel);
 	void	notifyMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg);
 	void	notifyPart(const int &clientFd, const std::string &channelName);
-
-	// Dcc
 
 	void	sendFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData);
 	void	getFile(const int &clientFd, t_dcc &dccData);

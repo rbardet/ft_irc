@@ -6,6 +6,7 @@ hasNickname(false), hasUsername(false), hasPass(false), isRegister(false), welco
 User::User(const User &src) {
 	*this = src;
 }
+
 User &User::operator=(const User &src) {
 	if (this == &src)
 		return (*this);
@@ -19,6 +20,7 @@ User &User::operator=(const User &src) {
 	this->welcomeMessage = src.welcomeMessage;
 	return (*this);
 }
+
 User::~User() {}
 
 User::User(const std::string &nickname, const std::string &username) :

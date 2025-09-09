@@ -5,17 +5,17 @@
 void Server::handleMode(const int &clientFd, const std::string &line) {
 	size_t space_after_mode = line.find(' ');
 	if (space_after_mode == std::string::npos)
-		return;
+		return ;
 
 	size_t space_after_channelName = line.find(' ', space_after_mode + 1);
 	if (space_after_channelName == std::string::npos)
-		return;
+		return ;
 
 	std::string channelName = line.substr(space_after_mode + JUMP_TO_CHANNEL, space_after_channelName - space_after_mode - 1);
 	std::string mode = line.substr(space_after_channelName + JUMP_TO_MODE, 2);
 
 	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
-		return;
+		return ;
 
 	std::string arg;
 
@@ -25,12 +25,12 @@ void Server::handleMode(const int &clientFd, const std::string &line) {
 		arg = line.substr(space_after_channelName + JUMP_TO_ARG);
 
 	if (channelName.empty() || (channelName[0] != '#' && channelName[0] != '&'))
-		return;
+		return ;
 
 	if (!mode.empty() && (mode[0] == '+' || mode[0] == '-'))
 		execMode(clientFd, channelName, mode, arg);
 	else
-		return;
+		return ;
 }
 
 char Server::extractFlag(const std::string &mode) {
