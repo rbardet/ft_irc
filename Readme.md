@@ -95,11 +95,3 @@ Type input in parts, send with `Ctrl+D` to simulate partial packet reception.
 - Forking is forbidden
 
 ---
-
-
-> “Code is like humor. When you have to explain it, it’s bad.”  
-> — Cory House
-
----
-
-Feel free to check out the code, use it, and reach out if you have questions or want to contribute!
