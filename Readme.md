@@ -57,7 +57,10 @@ make
 ## 💡 How it Works
 
 - Connect with any IRC client (we used irssi for the project).
-- You can connect the server with the following command : irssi -c "ip of the server" -n "your nickname" -w "server password" -p "server port"
+- You can connect the server with the following command :
+```bash
+irssi -c "ip of the server" -n "your nickname" -w "server password" -p "server port"
+```
 - Authenticate using the provided password.
 - Set your nickname and username, join channels, and start chatting!
 - Operators can manage channels and users using IRC commands.
