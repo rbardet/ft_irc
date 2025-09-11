@@ -30,6 +30,59 @@ Welcome to **ft_irc**, my implementation of an IRC (Internet Relay Chat) server 
 
 ---
 
+## 🗂️ Project Structure Overview
+
+```plaintext
+ft_irc/
+├── Makefile
+├── README.md
+├── bot/
+│   ├── includes/
+│   │   ├── Channel.hpp
+│   │   ├── Server.hpp
+│   │   ├── User.hpp
+│   │   └── Utils.hpp
+│   ├── Makefile
+│   └── srcs/
+│       ├── Channel.cpp
+│       ├── main.cpp
+│       ├── Server.cpp
+│       ├── User.cpp
+│       └── Utils.cpp
+```
+
+---
+
+## 📁 Top-Level Files
+
+- **Makefile**: Compiles the IRC server with standard rules (`all`, `clean`, `fclean`, `re`).
+- **README.md**: Project documentation, usage instructions, and architecture overview.
+- **bot/**: Contains a separate program from the server. For more about IRC bots, see [Wikipedia: IRC bot](https://en.wikipedia.org/wiki/IRC_bot).
+
+---
+
+### includes/
+Header files defining core classes and utilities:
+
+- **Channel.hpp**: Channel management, users, modes, and operator commands.
+- **Server.hpp**: Server logic, networking, client handling, and main loop.
+- **User.hpp**: User authentication, attributes (nickname, username, permissions).
+- **Utils.hpp**: Utility functions and helpers (string manipulation, error handling).
+
+### srcs/
+Source files implementing the logic defined in headers:
+
+- **Channel.cpp**: Channel-related operations.
+- **main.cpp**: Entry point, argument parsing, server initialization.
+- **Server/**: Implementation of IRC server, socket management, event loop and command management.
+- **User.cpp**: User management.
+- **Utils.cpp**: Utilities shared between modules.
+
+### Makefile
+Build automation for the bot, with the same standards as the main Makefile.
+
+---
+
 ## ⚙️ Usage
 
 ### Build
