@@ -82,7 +82,7 @@ Type input in parts, send with `Ctrl+D` to simulate partial packet reception.
 ## 📁 Project Structure
 
 - `Makefile` — Build automation
-- `*.cpp`, `*.h`, `*.hpp`— Source files
+- `*.cpp`, `*.hpp`— Source files
 - Optional configuration file
 
 ---
@@ -93,5 +93,3 @@ Type input in parts, send with `Ctrl+D` to simulate partial packet reception.
 - No external libraries (including Boost)
 - Single non-blocking I/O handler (`poll()` or equivalent)
 - Forking is forbidden
-
----
